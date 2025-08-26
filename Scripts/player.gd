@@ -3,7 +3,7 @@ extends CharacterBody2D
 signal health_changed
 signal initialize_health
 
-const SPEED = 500.0
+const SPEED = 700.0
 const JUMP_VELOCITY = -700.0
 const MAX_HEALTH = 100
 # Get the gravity from the project settings to be synced with RigidBody nodes.
@@ -46,8 +46,8 @@ func move(delta):
 	if is_on_floor():
 		if direction == 0:
 			animated_sprite.play("idle")
-#		else:
-#			animated_sprite.play("walk")
+		else:
+			animated_sprite.play("walk")
 	move_and_slide()
 
 func _on_enemy_hit_player(damage):
