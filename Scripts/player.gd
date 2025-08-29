@@ -3,8 +3,9 @@ extends CharacterBody2D
 signal health_changed
 signal initialize_health
 
-const SPEED = 700.0
-const JUMP_VELOCITY = -700.0
+const GROUND_SPEED = 700.0
+const AIR_SPEED = 900.0
+const JUMP_VELOCITY = -1000.0
 const MAX_HEALTH = 100
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
@@ -32,9 +33,9 @@ func move(delta):
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var direction = Input.get_axis("ui_left", "ui_right")
 	if direction:
-		velocity.x = direction * SPEED
+		velocity.x = direction * GROUND_SPEED
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
+		velocity.x = move_toward(velocity.x, 0, GROUND_SPEED)
 
 	#Flip sprite
 	if direction > 0:
@@ -48,6 +49,13 @@ func move(delta):
 			animated_sprite.play("idle")
 		else:
 			animated_sprite.play("walk")
+	#Change speed when jumping
+	else:
+		if direction:
+			velocity.x = direction * AIR_SPEED
+		else:
+			velocity.x = move_toward(velocity.x, 0, AIR_SPEED)
+
 	move_and_slide()
 
 func _on_enemy_hit_player(damage):
