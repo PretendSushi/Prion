@@ -13,6 +13,7 @@ var damage = 25
 var time_since_last_attack = 0.0
 var attack_cooldown = 2
 var can_attack
+var health = 100
 
 @onready var detectBox = $DetectBox
 @onready var animated_sprite = $AnimatedSprite2D
@@ -71,4 +72,7 @@ func attempt_hit_player(bodies):
 				if distance_to_player <= 300:
 					emit_signal("hit_player", damage)
 				break
+				
+func _on_player_attack(damage):
+	health -= damage
 			

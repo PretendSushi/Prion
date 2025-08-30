@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://uqe5a2rw7h7h"]
+[gd_scene load_steps=22 format=3 uid="uid://uqe5a2rw7h7h"]
 
 [ext_resource type="Script" uid="uid://bb643hqwrxmyd" path="res://Scripts/player.gd" id="1_6ltq4"]
 [ext_resource type="Texture2D" uid="uid://db16l1p7wv2et" path="res://Assets/Sprites/player/idle/still.png" id="2_igrcy"]
@@ -86,6 +86,9 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jm6k1"]
 size = Vector2(72, 324)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_igrcy"]
+size = Vector2(268, 273)
+
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_6ltq4")
 
@@ -98,3 +101,9 @@ autoplay = "idle"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(2, -195)
 shape = SubResource("RectangleShape2D_jm6k1")
+
+[node name="Hitbox" type="Area2D" parent="."]
+
+[node name="HitCollision" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(163, -181.5)
+shape = SubResource("RectangleShape2D_igrcy")
