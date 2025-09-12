@@ -7,6 +7,7 @@ signal player_attack
 const GROUND_SPEED = 700.0
 const AIR_SPEED = 900.0
 const JUMP_VELOCITY = -1000.0
+const BOUNCE_VELOCITY = -1200.0
 const MAX_HEALTH = 100
 const ATTACK_DAMAGE = 10
 # Get the gravity from the project settings to be synced with RigidBody nodes.
@@ -18,17 +19,23 @@ var direction = 0
 var health = 100
 
 @onready var animated_sprite = $AnimatedSprite2D
-@onready var hitbox = $Hitbox
+@onready var front_hitbox = $FrontHitbox
+@onready var back_hitbox = $BackHitbox
+@onready var bottom_hitbox = $BottomCollision
 
 func _ready():
 	emit_signal("initialize_health", MAX_HEALTH, health)
 
 func _physics_process(delta):
-	direction = move(delta)
+	direction = move(delta,"")
 	play_animations(direction)
-	attack()
+	check_for_inputs()
 
-func move(delta):
+func check_for_inputs():
+	if Input.is_action_just_pressed("Attack"):
+		attack(Input.is_action_pressed("Down"))
+
+func move(delta, action):
 	if not is_on_floor():
 		velocity.y += gravity * delta
 		animated_sprite.play("idle")
@@ -71,11 +78,24 @@ func _on_enemy_hit_player(damage):
 	health -= damage
 	emit_signal("health_changed", health)
 
-func attack():
-	if Input.is_action_just_pressed("Attack"):
-		var bodies = hitbox.get_overlapping_bodies()
-		for body in bodies:
-			if body.name == "Enemy":
-				player_attack.connect(body._on_player_attack.bind())
-				emit_signal("player_attack", ATTACK_DAMAGE)
+func bounce():
+	velocity.y = BOUNCE_VELOCITY
+
+func attack(down_pressed):
+	#Decide which hitbox to use
+	var hitbox = front_hitbox
+	if direction == -1.0:
+		hitbox = back_hitbox
+	if not is_on_floor():
+		if down_pressed:
+			hitbox = bottom_hitbox
+	#Find every NPC who should take damage
+	var bodies = hitbox.get_overlapping_bodies()
+	for body in bodies:
+		if body.name == "Enemy":
+			player_attack.connect(body._on_player_attack.bind())
+			emit_signal("player_attack", ATTACK_DAMAGE)
+			bounce()
+		
+	
 		

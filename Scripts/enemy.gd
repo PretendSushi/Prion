@@ -59,6 +59,9 @@ func move(delta, direction):
 func _on_detect_box_body_entered(body):
 	find_player_direction(body)
 
+func _on_detect_box_body_exited(body: Node2D) -> void:
+	direction = 0
+	
 func find_player_direction(body):
 	if body.name == "Player":
 		direction = (body.global_position - global_position).normalized()
