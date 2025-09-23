@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://uqe5a2rw7h7h"]
+[gd_scene load_steps=25 format=3 uid="uid://uqe5a2rw7h7h"]
 
 [ext_resource type="Script" uid="uid://bb643hqwrxmyd" path="res://Scripts/player.gd" id="1_6ltq4"]
 [ext_resource type="Texture2D" uid="uid://db16l1p7wv2et" path="res://Assets/Sprites/player/idle/still.png" id="2_igrcy"]
@@ -95,6 +95,9 @@ size = Vector2(268, 273)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_l6n3p"]
 size = Vector2(268, 273)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_olqyp"]
+size = Vector2(268, 273)
+
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_6ltq4")
 
@@ -113,7 +116,7 @@ shape = SubResource("RectangleShape2D_jm6k1")
 [node name="HitCollision" type="CollisionShape2D" parent="FrontHitbox"]
 position = Vector2(163, -181.5)
 shape = SubResource("RectangleShape2D_igrcy")
-debug_color = Color(0.992157, 0, 0.239216, 0.529412)
+debug_color = Color(0, 0.600158, 0.694439, 0.529412)
 
 [node name="BackHitbox" type="Area2D" parent="."]
 
@@ -125,3 +128,9 @@ shape = SubResource("RectangleShape2D_fs7ks")
 
 [node name="HitCollision" type="CollisionShape2D" parent="BottomCollision"]
 shape = SubResource("RectangleShape2D_l6n3p")
+
+[node name="TopCollision" type="Area2D" parent="."]
+
+[node name="HitCollision" type="CollisionShape2D" parent="TopCollision"]
+position = Vector2(0, -375)
+shape = SubResource("RectangleShape2D_olqyp")

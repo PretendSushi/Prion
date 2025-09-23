@@ -13,6 +13,7 @@ const ATTACK_DAMAGE = 10
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
+var is_walking = false
 
 
 
@@ -22,6 +23,7 @@ var health = 100
 @onready var front_hitbox = $FrontHitbox
 @onready var back_hitbox = $BackHitbox
 @onready var bottom_hitbox = $BottomCollision
+@onready var top_hitbox = $TopCollision
 
 func _ready():
 	emit_signal("initialize_health", MAX_HEALTH, health)
@@ -33,7 +35,7 @@ func _physics_process(delta):
 
 func check_for_inputs():
 	if Input.is_action_just_pressed("Attack"):
-		attack(Input.is_action_pressed("Down"))
+		attack(Input.is_action_pressed("Down"), Input.is_action_pressed("Jump"))
 
 func move(delta, action):
 	if not is_on_floor():
@@ -45,12 +47,18 @@ func move(delta, action):
 		velocity.y = JUMP_VELOCITY
 
 	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
-	var direction = Input.get_axis("Left", "Right")
-	if direction:
+	# As good practice, you should replace UI actions with custom gameplay actions.aaa
+	if Input.is_action_pressed("Left"):
+		direction = -1.0
 		velocity.x = direction * GROUND_SPEED
+		is_walking = true
+	elif Input.is_action_pressed("Right"):
+		direction = 1.0
+		velocity.x = direction * GROUND_SPEED
+		is_walking = true
 	else:
 		velocity.x = move_toward(velocity.x, 0, GROUND_SPEED)
+		is_walking = false
 
 	#Flip sprite
 	if direction > 0:
@@ -63,11 +71,12 @@ func move(delta, action):
 	
 func play_animations(direction):
 	if is_on_floor():
-		if direction == 0:
+		if !is_walking:
 			animated_sprite.play("idle")
 		else:
 			animated_sprite.play("walk")
 	#Change speed when jumping
+	#THIS SHOULD BE MOVED WHY IS THIS HERE
 	else:
 		if direction:
 			velocity.x = direction * AIR_SPEED
@@ -81,7 +90,7 @@ func _on_enemy_hit_player(damage):
 func bounce():
 	velocity.y = BOUNCE_VELOCITY
 
-func attack(down_pressed):
+func attack(down_pressed, up_pressed):
 	#Decide which hitbox to use
 	var hitbox = front_hitbox
 	if direction == -1.0:
@@ -89,6 +98,8 @@ func attack(down_pressed):
 	if not is_on_floor():
 		if down_pressed:
 			hitbox = bottom_hitbox
+	if up_pressed:
+		hitbox = top_hitbox
 	#Find every NPC who should take damage
 	var bodies = hitbox.get_overlapping_bodies()
 	for body in bodies:
