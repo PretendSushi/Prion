@@ -55,7 +55,10 @@ func move(delta, action):
 	# Handle Jump.
 	if Input.is_action_just_pressed("Jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
-
+	#var current_speed = is_on_floor() ? GROUND_SPEED : AIR_SPEED
+	var current_speed = GROUND_SPEED
+	if !is_on_floor():
+		current_speed = AIR_SPEED
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.aaa
 	if Input.is_action_pressed("Left"):
@@ -89,11 +92,7 @@ func play_animations(direction, attack):
 			animated_sprite.play("idle")
 	#Change speed when jumping
 	#THIS SHOULD BE MOVED WHY IS THIS HERE
-	else:
-		if direction:
-			velocity.x = direction * AIR_SPEED
-		else:
-			velocity.x = move_toward(velocity.x, 0, AIR_SPEED)
+
 
 func _on_enemy_hit_player(damage):
 	health -= damage
