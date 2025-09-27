@@ -3,6 +3,8 @@ extends CharacterBody2D
 signal health_changed
 signal initialize_health
 signal player_attack
+signal show_inventory
+signal initialize_inventory
 
 const GROUND_SPEED = 700.0
 const AIR_SPEED = 900.0
@@ -15,9 +17,9 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
 var is_walking = false
 
-
-
 var health = 100
+
+var notes_list = []
 
 @onready var animated_sprite = $AnimatedSprite2D
 @onready var front_hitbox = $FrontHitbox
@@ -27,6 +29,9 @@ var health = 100
 
 func _ready():
 	emit_signal("initialize_health", MAX_HEALTH, health)
+	notes_list.append("Sample1")
+	notes_list.append("Sample2")
+	emit_signal("initialize_inventory", notes_list)
 
 func _physics_process(delta):
 	direction = move(delta,"")
@@ -36,6 +41,8 @@ func _physics_process(delta):
 func check_for_inputs():
 	if Input.is_action_just_pressed("Attack"):
 		attack(Input.is_action_pressed("Down"), Input.is_action_pressed("Jump"))
+	if Input.is_action_just_pressed("Inventory"):
+		emit_signal("show_inventory")
 
 func move(delta, action):
 	if not is_on_floor():
