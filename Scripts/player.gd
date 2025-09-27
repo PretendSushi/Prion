@@ -16,6 +16,7 @@ const ATTACK_DAMAGE = 10
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
 var is_walking = false
+var is_attacking = false
 
 var health = 100
 
@@ -32,15 +33,17 @@ func _ready():
 	notes_list.append("Sample1")
 	notes_list.append("Sample2")
 	emit_signal("initialize_inventory", notes_list)
+	animated_sprite.animation_finished.connect(_on_animation_finished)
 
 func _physics_process(delta):
 	direction = move(delta,"")
-	play_animations(direction)
+	play_animations(direction,false)
 	check_for_inputs()
 
 func check_for_inputs():
 	if Input.is_action_just_pressed("Attack"):
 		attack(Input.is_action_pressed("Down"), Input.is_action_pressed("Jump"))
+		play_animations(direction, true)
 	if Input.is_action_just_pressed("Inventory"):
 		emit_signal("show_inventory")
 
@@ -76,12 +79,14 @@ func move(delta, action):
 	move_and_slide()
 	return direction
 	
-func play_animations(direction):
+func play_animations(direction, attack):
+	if is_attacking:
+		return
 	if is_on_floor():
-		if !is_walking:
-			animated_sprite.play("idle")
-		else:
+		if is_walking:
 			animated_sprite.play("walk")
+		else:
+			animated_sprite.play("idle")
 	#Change speed when jumping
 	#THIS SHOULD BE MOVED WHY IS THIS HERE
 	else:
@@ -98,6 +103,8 @@ func bounce():
 	velocity.y = BOUNCE_VELOCITY
 
 func attack(down_pressed, up_pressed):
+	is_attacking = true
+	animated_sprite.play("attack")
 	#Decide which hitbox to use
 	var hitbox = front_hitbox
 	if direction == -1.0:
@@ -113,7 +120,12 @@ func attack(down_pressed, up_pressed):
 		if body.name == "Enemy":
 			player_attack.connect(body._on_player_attack.bind())
 			emit_signal("player_attack", ATTACK_DAMAGE)
-			bounce()
+			if hitbox == bottom_hitbox:
+				bounce()
+	#MOVE THIS LATER
+func _on_animation_finished():
+	if animated_sprite.animation == "attack":
+		is_attacking = false
 		
 	
 		

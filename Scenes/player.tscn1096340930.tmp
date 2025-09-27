@@ -46,9 +46,9 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("7_83xs0")
 }],
-"loop": false,
+"loop": true,
 "name": &"attack",
-"speed": 10.0
+"speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -135,7 +135,7 @@ position = Vector2(15, -213)
 sprite_frames = SubResource("SpriteFrames_gn6c1")
 animation = &"attack"
 autoplay = "idle"
-frame_progress = 0.0553808
+frame_progress = 0.0317989
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(2, -195)
