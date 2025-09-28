@@ -51,3 +51,22 @@ func get_note_encoded(note_content):
 		return data["encoded"]
 	return null
 	
+func decode_note(note_encoded, note_decoded, scan_percent, last_percent_decode, dec_word_idxs):
+	#This method needs testing
+	if scan_percent == 100:
+		return note_decoded
+	scan_percent = scan_percent - last_percent_decode
+	var enc_words = note_encoded.split(" ") #array of words ENCODED (random ASCII)
+	var dec_words = note_decoded.split(" ") #array of words DECODED (real English words)
+	var dec_word_count = int(dec_words.size() * scan_percent / 100) #The number of words that need to be decoded
+	
+	#loop for the number of words that need to be decoded
+	for i in dec_word_count: 
+		var idx = randi_range(0, enc_words.size() - 1) #generate a random number
+		while idx in dec_word_idxs: #if that word is already decoded, keep generating numbers until we get one that isn't
+			idx = randi_range(0, enc_words.size() - 1) 
+		enc_words[idx] = dec_words[idx] #replace the encoded word with the decoded word
+		dec_word_idxs.append(idx) #add the index to the list of indeces of decoded words
+	
+	note_encoded = " ".join(enc_words) #replace the original encoded note with the partially decoded one
+	return note_encoded
