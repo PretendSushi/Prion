@@ -14,7 +14,6 @@ func _process(delta):
 
 
 func _on_player_show_inventory() -> void:
-	
 	visible = !visible
 
 
@@ -24,7 +23,11 @@ func _on_player_initialize_inventory(notes_list) -> void:
 		create_button(note)
 	var content = load_note_content(default_note)
 	var encoded = get_note_encoded(content)
-	note_content.append_text(encoded)
+	var decoded = get_note_decoded(content)
+	var last_scan_percent = get_note_last_scan_percent(content)
+	var decoded_words = get_decoded_words(content)
+	var note = decode_note(encoded,decoded,25,last_scan_percent,decoded_words)
+	note_content.append_text(note)
 
 func create_button(label):
 	var button = Button.new()
@@ -49,6 +52,30 @@ func get_note_encoded(note_content):
 	if result == OK:
 		var data = json.get_data()
 		return data["encoded"]
+	return null
+	
+func get_note_decoded(note_content):
+	var json = JSON.new()
+	var result = json.parse(note_content)
+	if result == OK:
+		var data = json.get_data()
+		return data["content"]
+	return null
+
+func get_note_last_scan_percent(note_content):
+	var json = JSON.new()
+	var result = json.parse(note_content)
+	if result == OK:
+		var data = json.get_data()
+		return data["last_precent_decode"]
+	return null
+	
+func get_decoded_words(note_content):
+	var json = JSON.new()
+	var result = json.parse(note_content)
+	if result == OK:
+		var data = json.get_data()
+		return data["decoded_words"]
 	return null
 	
 func decode_note(note_encoded, note_decoded, scan_percent, last_percent_decode, dec_word_idxs):
