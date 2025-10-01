@@ -53,14 +53,14 @@ grow_vertical = 2
 size_flags_vertical = 3
 metadata/_edit_use_anchors_ = true
 
+[node name="HUD" parent="Player/UICanvas/UI" instance=ExtResource("4_70ean")]
+layout_mode = 1
+
 [node name="Notes" parent="Player/UICanvas/UI" instance=ExtResource("3_0f350")]
 visible = false
 layout_mode = 1
 size_flags_horizontal = 4
 size_flags_vertical = 4
-
-[node name="HUD" parent="Player/UICanvas/UI" instance=ExtResource("4_70ean")]
-layout_mode = 1
 
 [node name="PauseScreen" parent="Player/UICanvas/UI" instance=ExtResource("5_wqkje")]
 visible = false
