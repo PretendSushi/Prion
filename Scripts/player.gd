@@ -11,7 +11,7 @@ const AIR_SPEED = 900.0
 const JUMP_VELOCITY = -1000.0
 const BOUNCE_VELOCITY = -1200.0
 const MAX_HEALTH = 100
-const ATTACK_DAMAGE = 10
+const ATTACK_DAMAGE = 40
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
@@ -91,15 +91,21 @@ func play_animations(direction, attack):
 		else:
 			animated_sprite.play("idle")
 
-
 func _on_enemy_hit_player(damage):
 	health -= damage
 	emit_signal("health_changed", health)
+	if health <= 0:
+		die()
+
+func die():
+	pass
 
 func bounce():
 	velocity.y = BOUNCE_VELOCITY
 
 func attack(down_pressed, up_pressed):
+	if is_attacking:
+		return
 	is_attacking = true
 	animated_sprite.play("attack")
 	#Decide which hitbox to use
@@ -119,10 +125,11 @@ func attack(down_pressed, up_pressed):
 			emit_signal("player_attack", ATTACK_DAMAGE)
 			if hitbox == bottom_hitbox:
 				bounce()
-	#MOVE THIS LATER
+				
 func _on_animation_finished():
 	if animated_sprite.animation == "attack":
 		is_attacking = false
 		
-	
-		
+func _on_health_pickup_picked_up():
+	health += 10
+	emit_signal("health_changed", health)

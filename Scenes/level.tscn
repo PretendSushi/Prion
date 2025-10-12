@@ -1,5 +1,6 @@
-[gd_scene load_steps=10 format=3 uid="uid://i2khwini8146"]
+[gd_scene load_steps=11 format=3 uid="uid://i2khwini8146"]
 
+[ext_resource type="Script" uid="uid://cob3thhyjfwnv" path="res://Scripts/level.gd" id="1_8c0lf"]
 [ext_resource type="PackedScene" uid="uid://uqe5a2rw7h7h" path="res://Scenes/player.tscn" id="1_ls57i"]
 [ext_resource type="Texture2D" uid="uid://xtkj34vsm70c" path="res://Assets/World/wood1.png" id="2_eva7n"]
 [ext_resource type="PackedScene" uid="uid://ju1nlt54nwfm" path="res://Scenes/Notes.tscn" id="3_0f350"]
@@ -20,6 +21,7 @@ tile_size = Vector2i(256, 256)
 sources/1 = SubResource("TileSetAtlasSource_q13m2")
 
 [node name="Level" type="Node2D"]
+script = ExtResource("1_8c0lf")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(366, 299)
@@ -73,4 +75,5 @@ position = Vector2(161, 351)
 [connection signal="initialize_health" from="Player" to="Player/UICanvas/UI/HUD" method="_on_player_initialize_health"]
 [connection signal="initialize_inventory" from="Player" to="Player/UICanvas/UI/Notes" method="_on_player_initialize_inventory"]
 [connection signal="show_inventory" from="Player" to="Player/UICanvas/UI/Notes" method="_on_player_show_inventory"]
+[connection signal="drop_health" from="Enemy" to="." method="_on_enemy_drop_health"]
 [connection signal="hit_player" from="Enemy" to="Player" method="_on_enemy_hit_player"]

@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://6k3ht8cy3di5"]
+
+[ext_resource type="Script" uid="uid://cxjejt3uscmbf" path="res://Scripts/health_pickup.gd" id="1_m7rh5"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sxjjq"]
+size = Vector2(40, 40)
+
+[node name="HealthPickup" type="Node2D"]
+script = ExtResource("1_m7rh5")
+
+[node name="DetectBox" type="Area2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="DetectBox"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectBox"]
+position = Vector2(20, 20)
+shape = SubResource("RectangleShape2D_sxjjq")
+
+[connection signal="body_entered" from="DetectBox" to="." method="_on_detect_box_body_entered"]

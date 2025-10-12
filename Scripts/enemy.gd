@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 signal hit_player
+signal drop_health
 
 const SPEED = 400.0
 const JUMP_VELOCITY = -400.0
@@ -14,11 +15,13 @@ var time_since_last_attack = 0.0
 var attack_cooldown = 2
 var can_attack
 var health = 100
+var health_pickup = null
 
 @onready var detectBox = $DetectBox
 @onready var animated_sprite = $AnimatedSprite2D
 
 func _ready():
+	health_pickup = preload("res://Scenes/HealthPickup.tscn")
 	player_in_range = false
 	can_attack = true
 
@@ -78,4 +81,10 @@ func attempt_hit_player(bodies):
 				
 func _on_player_attack(damage):
 	health -= damage
+	if health <= 0:
+		die()
 			
+func die():
+	
+	emit_signal("drop_health", health_pickup, global_position.x, global_position.y)
+	queue_free()
