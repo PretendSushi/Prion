@@ -90,8 +90,6 @@ func play_animations(direction, attack):
 			animated_sprite.play("walk")
 		else:
 			animated_sprite.play("idle")
-	#Change speed when jumping
-	#THIS SHOULD BE MOVED WHY IS THIS HERE
 
 
 func _on_enemy_hit_player(damage):

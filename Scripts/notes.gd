@@ -89,6 +89,7 @@ func decode_note(note_encoded, note_decoded, scan_percent, last_percent_decode, 
 	var dec_words = note_decoded.split(" ") #array of words DECODED (real English words)
 	var dec_word_count = int(dec_words.size() * curr_scan_percent / 100) #The number of words that need to be decoded
 	
+	#if the note has no new words to decode, then we just need to spit out the version that was already decoded
 	if dec_word_count == 0:
 		return redecode_note(note_encoded, note_decoded, dec_word_idxs)
 	
@@ -100,7 +101,7 @@ func decode_note(note_encoded, note_decoded, scan_percent, last_percent_decode, 
 		enc_words[idx] = dec_words[idx] #replace the encoded word with the decoded word
 		dec_word_idxs.append(idx) #add the index to the list of indeces of decoded words
 	
-	update_note_meta(file_path, dec_word_idxs, scan_percent)
+	update_note_meta(file_path, dec_word_idxs, scan_percent) #the note metadata needs to be saved
 	note_encoded = " ".join(enc_words) #replace the original encoded note with the partially decoded one
 	return note_encoded
 	
