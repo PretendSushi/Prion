@@ -5,6 +5,8 @@ signal drop_health
 
 const SPEED = 400.0
 const JUMP_VELOCITY = -400.0
+const KNOCKBACK_DURATION = 0.4
+const KNOCKBACK = 700
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
@@ -16,6 +18,7 @@ var attack_cooldown = 2
 var can_attack
 var health = 100
 var health_pickup = null
+var knockback_timer = 0
 
 @onready var detectBox = $DetectBox
 @onready var animated_sprite = $AnimatedSprite2D
@@ -26,21 +29,27 @@ func _ready():
 	can_attack = true
 
 func _physics_process(delta):
-	move(delta, direction)
+	if knockback_timer > 0:
+		knockback_timer -= delta
+	else:
+		velocity.x = 0
+		move(delta, direction)
 	
-	var bodies = detectBox.get_overlapping_bodies()
-	for body in bodies:
-		find_player_direction(body)
-	
-	if not can_attack:
-		time_since_last_attack += delta
-		if time_since_last_attack >= attack_cooldown:
-			can_attack = true
+		var bodies = detectBox.get_overlapping_bodies()
+		for body in bodies:
+			find_player_direction(body)
+		
+		if not can_attack:
+			time_since_last_attack += delta
+			if time_since_last_attack >= attack_cooldown:
+				can_attack = true
+				time_since_last_attack = 0.0
+		if can_attack:
+			attempt_hit_player(bodies)
 			time_since_last_attack = 0.0
-	if can_attack:
-		attempt_hit_player(bodies)
-		time_since_last_attack = 0.0
-		can_attack = false
+			can_attack = false
+			
+	move_and_slide()
 	
 func move(delta, direction):
 	if not is_on_floor():
@@ -57,7 +66,6 @@ func move(delta, direction):
 	#Flip sprite
 	animated_sprite.flip_h = velocity.x < 0
 
-	move_and_slide()
 
 func _on_detect_box_body_entered(body):
 	find_player_direction(body)
@@ -76,12 +84,13 @@ func attempt_hit_player(bodies):
 			if body.name == "Player":
 				var distance_to_player = global_position.distance_to(body.global_position)
 				if distance_to_player <= 300:
-					print("hit1")
-					emit_signal("hit_player", damage)
+					emit_signal("hit_player", damage, KNOCKBACK)
 				break
 				
-func _on_player_attack(damage):
+func _on_player_attack(damage, knockback):
 	health -= damage
+	velocity.x = knockback * -direction.x
+	knockback_timer = KNOCKBACK_DURATION
 	if health <= 0:
 		die()
 			

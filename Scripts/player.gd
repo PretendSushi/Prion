@@ -12,11 +12,14 @@ const JUMP_VELOCITY = -1000.0
 const BOUNCE_VELOCITY = -1200.0
 const MAX_HEALTH = 100
 const ATTACK_DAMAGE = 40
+const KNOCKBACK = 1000
+const KNOCKBACK_DURATION = 0.4
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
 var is_walking = false
 var is_attacking = false
+var knockback_timer = 0
 
 var health = 100
 
@@ -36,9 +39,13 @@ func _ready():
 	animated_sprite.animation_finished.connect(_on_animation_finished)
 
 func _physics_process(delta):
-	direction = move(delta,"")
+	if knockback_timer > 0:
+		knockback_timer -= delta
+	else:
+		direction = move(delta,"")
 	play_animations(direction,false)
 	check_for_inputs()
+	move_and_slide()
 
 func check_for_inputs():
 	if Input.is_action_just_pressed("Attack"):
@@ -63,11 +70,17 @@ func move(delta, action):
 	# As good practice, you should replace UI actions with custom gameplay actions.aaa
 	if Input.is_action_pressed("Left"):
 		direction = -1.0
-		velocity.x = direction * GROUND_SPEED
+		if not is_on_floor():
+			velocity.x = direction * AIR_SPEED
+		else:
+			velocity.x = direction * GROUND_SPEED
 		is_walking = true
 	elif Input.is_action_pressed("Right"):
 		direction = 1.0
-		velocity.x = direction * GROUND_SPEED
+		if not is_on_floor():
+			velocity.x = direction * AIR_SPEED
+		else:
+			velocity.x = direction * GROUND_SPEED
 		is_walking = true
 	else:
 		velocity.x = move_toward(velocity.x, 0, GROUND_SPEED)
@@ -79,7 +92,7 @@ func move(delta, action):
 	elif direction < 0:
 		animated_sprite.flip_h = true
 
-	move_and_slide()
+	#move_and_slide()
 	return direction
 	
 func play_animations(direction, attack):
@@ -91,10 +104,11 @@ func play_animations(direction, attack):
 		else:
 			animated_sprite.play("idle")
 
-func _on_enemy_hit_player(damage):
-	print("hit2")
+func _on_enemy_hit_player(damage, knockback):
 	health -= damage
 	emit_signal("health_changed", health)
+	velocity.x = knockback * -direction
+	knockback_timer = KNOCKBACK_DURATION
 	if health <= 0:
 		die()
 
@@ -123,7 +137,7 @@ func attack(down_pressed, up_pressed):
 	for body in bodies:
 		if body.name == "Enemy":
 			player_attack.connect(body._on_player_attack.bind())
-			emit_signal("player_attack", ATTACK_DAMAGE)
+			emit_signal("player_attack", ATTACK_DAMAGE, KNOCKBACK)
 			if hitbox == bottom_hitbox:
 				bounce()
 				
