@@ -92,6 +92,7 @@ func play_animations(direction, attack):
 			animated_sprite.play("idle")
 
 func _on_enemy_hit_player(damage):
+	print("hit2")
 	health -= damage
 	emit_signal("health_changed", health)
 	if health <= 0:

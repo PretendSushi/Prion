@@ -76,6 +76,7 @@ func attempt_hit_player(bodies):
 			if body.name == "Player":
 				var distance_to_player = global_position.distance_to(body.global_position)
 				if distance_to_player <= 300:
+					print("hit1")
 					emit_signal("hit_player", damage)
 				break
 				
@@ -85,6 +86,5 @@ func _on_player_attack(damage):
 		die()
 			
 func die():
-	
 	emit_signal("drop_health", health_pickup, global_position.x, global_position.y)
 	queue_free()

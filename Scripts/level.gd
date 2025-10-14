@@ -35,6 +35,7 @@ func get_all_nodes(children):
 		
 func spawn_enemy():
 	var enemy_instance = enemy.instantiate()
+	enemy_instance.hit_player.connect(player._on_enemy_hit_player)
 	enemy_instance.drop_health.connect(_on_enemy_drop_health)
 	add_child(enemy_instance)
 
