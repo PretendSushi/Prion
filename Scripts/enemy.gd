@@ -7,6 +7,7 @@ const SPEED = 400.0
 const JUMP_VELOCITY = -400.0
 const KNOCKBACK_DURATION = 0.4
 const KNOCKBACK = 700
+const V_KNOCKBACK = 100
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
@@ -90,6 +91,7 @@ func attempt_hit_player(bodies):
 func _on_player_attack(damage, knockback):
 	health -= damage
 	velocity.x = knockback * -direction.x
+	velocity.y = -V_KNOCKBACK
 	knockback_timer = KNOCKBACK_DURATION
 	if health <= 0:
 		die()

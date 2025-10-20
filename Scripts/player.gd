@@ -14,6 +14,7 @@ const MAX_HEALTH = 100
 const ATTACK_DAMAGE = 40
 const KNOCKBACK = 1000
 const KNOCKBACK_DURATION = 0.4
+const V_KNOCKBACK = 150
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
@@ -108,6 +109,7 @@ func _on_enemy_hit_player(damage, knockback):
 	health -= damage
 	emit_signal("health_changed", health)
 	velocity.x = knockback * -direction
+	velocity.y = -V_KNOCKBACK
 	knockback_timer = KNOCKBACK_DURATION
 	if health <= 0:
 		die()
