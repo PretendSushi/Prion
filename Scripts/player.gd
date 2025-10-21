@@ -20,6 +20,11 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
 var is_walking = false
 var is_attacking = false
+var is_jump_start = false
+var is_jumping = false
+var is_falling = false
+var is_fall = false
+var is_landing = false
 var knockback_timer = 0
 
 var health = 100
@@ -60,13 +65,12 @@ func check_for_inputs():
 func move(delta, action):
 	if not is_on_floor():
 		velocity.y += gravity * delta
-		animated_sprite.play("idle")
 		is_attacking = false #this stops attacking from always being true if player attacks in the air. Will be changed later
 
 	# Handle Jump.
 	if Input.is_action_just_pressed("Jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
-	#var current_speed = is_on_floor() ? GROUND_SPEED : AIR_SPEED
+		is_jump_start = true
 	var current_speed = GROUND_SPEED
 	if !is_on_floor():
 		current_speed = AIR_SPEED
@@ -102,11 +106,31 @@ func move(delta, action):
 func play_animations(direction, attack):
 	if is_attacking:
 		return
+		
+	var target_anim = ""
+	
 	if is_on_floor():
-		if is_walking:
-			animated_sprite.play("walk")
+		if is_jump_start:
+			target_anim = "jump_startup"
+		elif is_landing:
+			target_anim = "jump_land"
+		elif is_walking:
+			target_anim = "walk"
 		else:
-			animated_sprite.play("idle")
+			target_anim = "idle"
+	else:
+		if is_jump_start:
+			target_anim = "jump_startup"
+		elif is_jumping:
+			target_anim = "jump_rise"
+		elif is_fall:
+			target_anim = "jump_fall"
+		elif is_falling:
+			target_anim = "jump_falling"
+			
+	if animated_sprite.animation != target_anim:
+		animated_sprite.play(target_anim)
+		
 
 func _on_enemy_hit_player(damage, knockback):
 	health -= damage
@@ -149,6 +173,25 @@ func attack(down_pressed, up_pressed):
 func _on_animation_finished():
 	if animated_sprite.animation == "attack":
 		is_attacking = false
+	if animated_sprite.animation == "jump_startup":
+		is_jump_start = false
+		is_jumping = true
+	if animated_sprite.animation == "jump_rise":
+		is_jumping = false
+		is_fall = true
+	if animated_sprite.animation == "jump_fall":
+		is_fall = false
+		is_falling = true
+	if animated_sprite.animation == "jump_falling":
+		is_falling = false
+		is_landing = true
+	if animated_sprite.animation == "jump_land":
+		is_landing = false
+		#Reset all jumping flags
+		is_jump_start = false
+		is_jumping = false
+		is_fall = false
+		is_falling = false
 		
 func _on_health_pickup_picked_up():
 	if health + 10 >= MAX_HEALTH:
