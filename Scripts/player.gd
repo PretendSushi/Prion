@@ -25,6 +25,9 @@ var is_jumping = false
 var is_falling = false
 var is_fall = false
 var is_landing = false
+var apex_reached = false
+var jump_proc = false
+
 var knockback_timer = 0
 
 var health = 100
@@ -64,13 +67,16 @@ func check_for_inputs():
 
 func move(delta, action):
 	if not is_on_floor():
+		if !jump_proc:
+			is_fall = true
 		velocity.y += gravity * delta
 		is_attacking = false #this stops attacking from always being true if player attacks in the air. Will be changed later
-
+  
 	# Handle Jump.
 	if Input.is_action_just_pressed("Jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 		is_jump_start = true
+		jump_proc = true
 	var current_speed = GROUND_SPEED
 	if !is_on_floor():
 		current_speed = AIR_SPEED
@@ -177,8 +183,12 @@ func _on_animation_finished():
 		is_jump_start = false
 		is_jumping = true
 	if animated_sprite.animation == "jump_rise":
-		is_jumping = false
-		is_fall = true
+		if velocity.y > 0 and !apex_reached:
+			apex_reached = true
+			is_jumping = false
+			is_fall = true
+		else:
+			animated_sprite.play("jump_rise")
 	if animated_sprite.animation == "jump_fall":
 		is_fall = false
 		is_falling = true
@@ -192,6 +202,8 @@ func _on_animation_finished():
 		is_jumping = false
 		is_fall = false
 		is_falling = false
+		apex_reached = false
+		jump_proc = false
 		
 func _on_health_pickup_picked_up():
 	if health + 10 >= MAX_HEALTH:
