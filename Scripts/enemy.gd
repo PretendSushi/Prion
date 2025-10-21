@@ -30,18 +30,23 @@ func _ready():
 	can_attack = true
 
 func _physics_process(delta):
+	#if the knockback timer isn't 0, that means knockback is still in effect. We don't want the enemy doing anything else
 	if knockback_timer > 0:
 		knockback_timer -= delta
+	#if the knockback isn't in effect, the enemy can act as normal
 	else:
+		#reset the velocity to 0 since it was changed during knockback
 		velocity.x = 0
 		move(delta, direction)
 	
+		#checks if the player is in its detection range, then finds the direction
 		var bodies = detectBox.get_overlapping_bodies()
 		for body in bodies:
 			find_player_direction(body)
 		
+		#handle the delay between attacks
 		if not can_attack:
-			time_since_last_attack += delta
+			time_since_last_attack += delta 
 			if time_since_last_attack >= attack_cooldown:
 				can_attack = true
 				time_since_last_attack = 0.0
@@ -49,7 +54,8 @@ func _physics_process(delta):
 			attempt_hit_player(bodies)
 			time_since_last_attack = 0.0
 			can_attack = false
-			
+	
+	#Move the enemy (will not move if velocity is 0 so this can run each frame)
 	move_and_slide()
 	
 func move(delta, direction):
@@ -60,7 +66,7 @@ func move(delta, direction):
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	if direction:
-		velocity.x = direction.x * SPEED
+		velocity.x = direction * SPEED
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 		
@@ -72,11 +78,14 @@ func _on_detect_box_body_entered(body):
 	find_player_direction(body)
 
 func _on_detect_box_body_exited(body: Node2D) -> void:
-	direction = 0
+	direction = 0 
 	
 func find_player_direction(body):
 	if body.name == "Player":
-		direction = (body.global_position - global_position).normalized()
+		if body.global_position.x - global_position.x < 0:
+			direction = - 1
+		else:
+			direction = 1 
 		player_in_range = true
 		
 func attempt_hit_player(bodies):
@@ -84,13 +93,13 @@ func attempt_hit_player(bodies):
 		for body in bodies:
 			if body.name == "Player":
 				var distance_to_player = global_position.distance_to(body.global_position)
-				if distance_to_player <= 300:
+				if distance_to_player <= 300: #remove this magic number
 					emit_signal("hit_player", damage, KNOCKBACK)
 				break
 				
 func _on_player_attack(damage, knockback):
 	health -= damage
-	velocity.x = knockback * -direction.x
+	velocity.x = knockback * -direction
 	velocity.y = -V_KNOCKBACK
 	knockback_timer = KNOCKBACK_DURATION
 	if health <= 0:

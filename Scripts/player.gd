@@ -13,7 +13,7 @@ const BOUNCE_VELOCITY = -1200.0
 const MAX_HEALTH = 100
 const ATTACK_DAMAGE = 40
 const KNOCKBACK = 1000
-const KNOCKBACK_DURATION = 0.4
+const KNOCKBACK_DURATION = 0.5
 const V_KNOCKBACK = 150
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
@@ -42,6 +42,8 @@ func _ready():
 func _physics_process(delta):
 	if knockback_timer > 0:
 		knockback_timer -= delta
+		if knockback_timer <= KNOCKBACK_DURATION / 2:
+			velocity.y = V_KNOCKBACK
 	else:
 		direction = move(delta,"")
 	play_animations(direction,false)
@@ -59,6 +61,7 @@ func move(delta, action):
 	if not is_on_floor():
 		velocity.y += gravity * delta
 		animated_sprite.play("idle")
+		is_attacking = false #this stops attacking from always being true if player attacks in the air. Will be changed later
 
 	# Handle Jump.
 	if Input.is_action_just_pressed("Jump") and is_on_floor():
@@ -92,7 +95,7 @@ func move(delta, action):
 		animated_sprite.flip_h = false
 	elif direction < 0:
 		animated_sprite.flip_h = true
-
+	
 	#move_and_slide()
 	return direction
 	
@@ -148,5 +151,8 @@ func _on_animation_finished():
 		is_attacking = false
 		
 func _on_health_pickup_picked_up():
-	health += 10
+	if health + 10 >= MAX_HEALTH:
+		health = MAX_HEALTH
+	elif health < MAX_HEALTH:
+		health += 10
 	emit_signal("health_changed", health)
