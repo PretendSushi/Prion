@@ -8,7 +8,7 @@ signal initialize_inventory
 
 const GROUND_SPEED = 700.0
 const AIR_SPEED = 900.0
-const JUMP_VELOCITY = -1000.0
+const JUMP_VELOCITY = -1200.0
 const BOUNCE_VELOCITY = -1200.0
 const MAX_HEALTH = 100
 const ATTACK_DAMAGE = 40
@@ -16,7 +16,7 @@ const KNOCKBACK = 1000
 const KNOCKBACK_DURATION = 0.5
 const V_KNOCKBACK = 150
 # Get the gravity from the project settings to be synced with RigidBody nodes.
-var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
+var gravity = 1800#ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
 var is_walking = false
 var is_attacking = false
@@ -73,7 +73,7 @@ func move(delta, action):
 		is_attacking = false #this stops attacking from always being true if player attacks in the air. Will be changed later
   
 	# Handle Jump.
-	if Input.is_action_just_pressed("Jump") and is_on_floor():
+	if Input.is_action_just_pressed("Jump") and is_on_floor() and !is_landing:
 		velocity.y = JUMP_VELOCITY
 		is_jump_start = true
 		jump_proc = true
@@ -112,7 +112,7 @@ func move(delta, action):
 func play_animations(direction, attack):
 	if is_attacking:
 		return
-		
+	
 	var target_anim = ""
 	
 	if is_on_floor():
@@ -133,7 +133,7 @@ func play_animations(direction, attack):
 			target_anim = "jump_fall"
 		elif is_falling:
 			target_anim = "jump_falling"
-			
+	
 	if animated_sprite.animation != target_anim:
 		animated_sprite.play(target_anim)
 		
@@ -182,6 +182,7 @@ func _on_animation_finished():
 	if animated_sprite.animation == "jump_startup":
 		is_jump_start = false
 		is_jumping = true
+		apex_reached = false
 	if animated_sprite.animation == "jump_rise":
 		if velocity.y > 0 and !apex_reached:
 			apex_reached = true
