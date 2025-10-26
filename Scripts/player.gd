@@ -14,6 +14,7 @@ const JUMP_VELOCITY = -1200.0
 const BOUNCE_VELOCITY = -1200.0
 const MAX_HEALTH = 100
 const ATTACK_DAMAGE = 40
+const RUBBER_BAND_DAMAGE = 80
 const KNOCKBACK = 1000
 const KNOCKBACK_DURATION = 0.5
 const V_KNOCKBACK = 150
@@ -34,13 +35,15 @@ var notes_list = []
 
 #Available states
 enum MovementState { IDLE, WALKING, JUMPING }
-enum ActionState { IDLE, ATTACK }
+enum ActionState { IDLE, ATTACK, RUBBER_BAND }
 enum JumpState { IDLE, JUMP_START, JUMP_RISE, JUMP_FALL_START, JUMP_FALL, LANDING }
+enum RubberBandState { IDLE, START, DURATION, END}
 
 #actual states
 var movement_state = MovementState.IDLE
 var action_state = ActionState.IDLE
 var jump_state = JumpState.IDLE
+var rubber_band_state = RubberBandState.IDLE
 
 #Any children of the player that are needed in the code are here
 @onready var animated_sprite = $AnimatedSprite2D
@@ -48,6 +51,8 @@ var jump_state = JumpState.IDLE
 @onready var back_hitbox = $BackHitbox
 @onready var bottom_hitbox = $BottomCollision
 @onready var top_hitbox = $TopCollision
+@onready var rb_hitbox_right = $RBCollisionRight
+@onready var rb_hitbox_left = $RBCollisionLeft
 
 func _ready():
 	#initialize everything
@@ -82,6 +87,8 @@ func check_for_inputs():
 	#Check for open inventory input, and emit the signal so the inventory code can handle the rest
 	if Input.is_action_just_pressed("Inventory"):
 		emit_signal("show_inventory")
+	if Input.is_action_just_pressed("RubberBand"):
+		rubber_band(direction)
 
 func move(delta, action):
 	var current_speed #it'll get a value, dw
@@ -146,7 +153,12 @@ func play_animations(direction):
 				target_anim = "jump_land"
 		
 		else:
-			if movement_state == MovementState.WALKING:
+			if action_state == ActionState.RUBBER_BAND:
+				if rubber_band_state == RubberBandState.START:
+					target_anim = "rubber_band_ground_startup"
+				elif rubber_band_state == RubberBandState.DURATION:
+					target_anim = "rubber_band_ground"
+			elif movement_state == MovementState.WALKING:
 				target_anim = "walk"
 			else:
 				target_anim = "idle"
@@ -162,6 +174,13 @@ func play_animations(direction):
 			JumpState.JUMP_FALL:
 				target_anim = "jump_falling"
 	
+	if target_anim == "rubber_band_ground_startup" or target_anim == "rubber_band_ground":
+		if direction >= 0:
+			animated_sprite.offset.x = 450
+		else:
+			animated_sprite.offset.x = -450
+	else:
+		animated_sprite.offset.x = 0
 	#this is to avoid animations getting infinitely replayed and never ending
 	if animated_sprite.animation != target_anim:
 		animated_sprite.play(target_anim)
@@ -209,7 +228,23 @@ func attack(down_pressed, up_pressed):
 			emit_signal("player_attack", ATTACK_DAMAGE, KNOCKBACK)
 			if hitbox == bottom_hitbox:
 				bounce()
-				
+	
+func rubber_band(direction):
+	if action_state == ActionState.RUBBER_BAND:
+		return
+	action_state = ActionState.RUBBER_BAND
+	rubber_band_state = RubberBandState.START
+	var hitbox = rb_hitbox_right
+	if direction >= 0: 
+		hitbox = rb_hitbox_right
+	else:
+		hitbox = rb_hitbox_left
+	var bodies = hitbox.get_overlapping_bodies()
+	for body in bodies:
+		if body.name == "Enemy":
+			player_attack.connect(body._on_player_attack.bind())
+			emit_signal("player_attack", RUBBER_BAND_DAMAGE, KNOCKBACK)
+	
 func _on_animation_finished():
 	#changes state at the end of animations. Exists for animation purposes
 	if animated_sprite.animation == "attack":
@@ -232,6 +267,11 @@ func _on_animation_finished():
 		jump_state = JumpState.IDLE
 		movement_state = MovementState.IDLE
 		apex_reached = false
+	if animated_sprite.animation == "rubber_band_ground_startup":
+		rubber_band_state = RubberBandState.DURATION
+	if animated_sprite.animation == "rubber_band_ground":
+		rubber_band_state = RubberBandState.IDLE
+		action_state = ActionState.IDLE
 		
 func _on_health_pickup_picked_up():
 	if health + 10 >= MAX_HEALTH:
