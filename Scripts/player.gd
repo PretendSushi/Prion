@@ -1,11 +1,13 @@
 extends CharacterBody2D
 
+#signals
 signal health_changed
 signal initialize_health
 signal player_attack
 signal show_inventory
 signal initialize_inventory
 
+#constants
 const GROUND_SPEED = 700.0
 const AIR_SPEED = 900.0
 const JUMP_VELOCITY = -1200.0
@@ -19,12 +21,15 @@ const V_KNOCKBACK = 150
 var gravity = 1800#ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
 
+#This fucker has caused me so much fucking grief but needs to exist, unfortunately.
+#It tracks both the amount of pain it has caused me and
+#whether the player has reached the apex of their jump or not
 var apex_reached = false
-
+#Tracks the amount of time the player has been knocked back
 var knockback_timer = 0
-
+#You know what this tracks
 var health = 100
-
+#This is a list of all lists the player has collected
 var notes_list = []
 
 #Available states
@@ -37,6 +42,7 @@ var movement_state = MovementState.IDLE
 var action_state = ActionState.IDLE
 var jump_state = JumpState.IDLE
 
+#Any children of the player that are needed in the code are here
 @onready var animated_sprite = $AnimatedSprite2D
 @onready var front_hitbox = $FrontHitbox
 @onready var back_hitbox = $BackHitbox
@@ -44,46 +50,59 @@ var jump_state = JumpState.IDLE
 @onready var top_hitbox = $TopCollision
 
 func _ready():
+	#initialize everything
 	emit_signal("initialize_health", MAX_HEALTH, health)
 	notes_list.append("Sample1")
 	notes_list.append("Sample2")
 	emit_signal("initialize_inventory", notes_list)
-	animated_sprite.animation_finished.connect(_on_animation_finished)
+	animated_sprite.animation_finished.connect(_on_animation_finished) #calls _on_animation_finished every time an animation ends
 
 func _physics_process(delta):
+	#if the timer is over 0, the player is being knocked back
 	if knockback_timer > 0:
-		knockback_timer -= delta
+		knockback_timer -= delta #Subtract elapsed time from it
+		#once half the time has elapsed, the playaer needs to start falling
 		if knockback_timer <= KNOCKBACK_DURATION / 2:
-			velocity.y = V_KNOCKBACK
+			velocity.y = V_KNOCKBACK 
+	#if the player isn't being knocked back, they can move freely
 	else:
 		direction = move(delta,"")
-	play_animations(direction,false)
+	play_animations(direction)
 	check_for_inputs()
 	move_and_slide()
 
 func check_for_inputs():
+	#Movement inputs are not checked here
+	#Check for attack input 
 	if Input.is_action_just_pressed("Attack"):
+		#This needs to be made more readable. Takes attack takes two arguments, whether up or down are being pressed
 		attack(Input.is_action_pressed("Down"), Input.is_action_pressed("Jump"))
-		play_animations(direction, true)
+		#play animation for it (is this redundant?)
+		play_animations(direction)
+	#Check for open inventory input, and emit the signal so the inventory code can handle the rest
 	if Input.is_action_just_pressed("Inventory"):
 		emit_signal("show_inventory")
 
 func move(delta, action):
+	var current_speed #it'll get a value, dw
 	if not is_on_floor():
-		if !movement_state == MovementState.JUMPING:
+		#if the player didn't jump, but they're not on the floor, they're falling. Set that state for the animation
+		if movement_state != MovementState.JUMPING:
 			jump_state = JumpState.JUMP_FALL_START
+		#boiler plate code. Makes guy fall :3
 		velocity.y += gravity * delta
 		action_state = ActionState.IDLE #this stops attacking from always being true if player attacks in the air. Will be changed later
+		current_speed = AIR_SPEED #Should move faster in the air
+	else:
+		current_speed = GROUND_SPEED
 	# Handle Jump.
 	if Input.is_action_just_pressed("Jump") and is_on_floor() and movement_state != MovementState.JUMPING:
+		#Set states and velocity
 		velocity.y = JUMP_VELOCITY
 		jump_state = JumpState.JUMP_START
 		movement_state = MovementState.JUMPING
-	var current_speed = GROUND_SPEED
-	if !is_on_floor():
-		current_speed = AIR_SPEED
 	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.aaa
+	#set states and speeds for left, right and idle
 	if Input.is_action_pressed("Left"):
 		direction = -1.0
 		if movement_state == MovementState.JUMPING:
@@ -110,11 +129,13 @@ func move(delta, action):
 		animated_sprite.flip_h = true
 	
 	return direction
-	
-func play_animations(direction, attack):
+
+func play_animations(direction):
+	#Attack aniation shouldn't be interruptable
 	if action_state == ActionState.ATTACK:
 		return
-	
+		
+	#this is the animation we will play at the end
 	var target_anim = ""
 	
 	if is_on_floor():
@@ -141,11 +162,13 @@ func play_animations(direction, attack):
 			JumpState.JUMP_FALL:
 				target_anim = "jump_falling"
 	
+	#this is to avoid animations getting infinitely replayed and never ending
 	if animated_sprite.animation != target_anim:
 		animated_sprite.play(target_anim)
 		
 
 func _on_enemy_hit_player(damage, knockback):
+	#TO FIX KNOCKBACK COMPARE ENEMY COORDS TO PLAYER COORDS
 	health -= damage
 	emit_signal("health_changed", health)
 	velocity.x = knockback * -direction
@@ -155,16 +178,20 @@ func _on_enemy_hit_player(damage, knockback):
 		die()
 
 func die():
+	#TODO
 	pass
 
 func bounce():
+	#for pogoing
 	velocity.y = BOUNCE_VELOCITY
 
 func attack(down_pressed, up_pressed):
+	#the player can only attack once, then not again until the end of the animation
 	if action_state == ActionState.ATTACK:
 		return
+	#if it is a legit attack, set the state
 	action_state = ActionState.ATTACK
-	animated_sprite.play("attack")
+	animated_sprite.play("attack") #and play the animation (probably redundant)
 	#Decide which hitbox to use
 	var hitbox = front_hitbox
 	if direction == -1.0:
@@ -184,18 +211,21 @@ func attack(down_pressed, up_pressed):
 				bounce()
 				
 func _on_animation_finished():
+	#changes state at the end of animations. Exists for animation purposes
 	if animated_sprite.animation == "attack":
 		action_state = ActionState.IDLE
 	if animated_sprite.animation == "jump_startup":
 		jump_state = JumpState.JUMP_RISE
 	if animated_sprite.animation == "jump_rise":
+		#Since rising animation may need to be longer, the state doesn't change at the end of the animation
+		#The player should have just started falling
 		if velocity.y > 0 and !apex_reached:
-			apex_reached = true
+			apex_reached = true#set apex_reached so this doesn't fire again
 			jump_state = JumpState.JUMP_FALL_START
 		else:
-			animated_sprite.play("jump_rise")
+			animated_sprite.play("jump_rise") #if the player is still going up, replay the animation
 	if animated_sprite.animation == "jump_fall":
-		jump_state = JumpState.JUMP_FALL
+		jump_state = JumpState.JUMP_FALL 
 	if animated_sprite.animation == "jump_falling":
 		jump_state = JumpState.LANDING
 	if animated_sprite.animation == "jump_land":
