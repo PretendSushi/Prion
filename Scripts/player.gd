@@ -18,21 +18,24 @@ const V_KNOCKBACK = 150
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = 1800#ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
-var is_walking = false
-var is_attacking = false
-var is_jump_start = false
-var is_jumping = false
-var is_falling = false
-var is_fall = false
-var is_landing = false
+
 var apex_reached = false
-var jump_proc = false
 
 var knockback_timer = 0
 
 var health = 100
 
 var notes_list = []
+
+#Available states
+enum MovementState { IDLE, WALKING, JUMPING }
+enum ActionState { IDLE, ATTACK }
+enum JumpState { IDLE, JUMP_START, JUMP_RISE, JUMP_FALL_START, JUMP_FALL, LANDING }
+
+#actual states
+var movement_state = MovementState.IDLE
+var action_state = ActionState.IDLE
+var jump_state = JumpState.IDLE
 
 @onready var animated_sprite = $AnimatedSprite2D
 @onready var front_hitbox = $FrontHitbox
@@ -67,16 +70,15 @@ func check_for_inputs():
 
 func move(delta, action):
 	if not is_on_floor():
-		if !jump_proc:
-			is_fall = true
+		if !movement_state == MovementState.JUMPING:
+			jump_state = JumpState.JUMP_FALL_START
 		velocity.y += gravity * delta
-		is_attacking = false #this stops attacking from always being true if player attacks in the air. Will be changed later
-  
+		action_state = ActionState.IDLE #this stops attacking from always being true if player attacks in the air. Will be changed later
 	# Handle Jump.
-	if Input.is_action_just_pressed("Jump") and is_on_floor() and !is_landing:
+	if Input.is_action_just_pressed("Jump") and is_on_floor() and movement_state != MovementState.JUMPING:
 		velocity.y = JUMP_VELOCITY
-		is_jump_start = true
-		jump_proc = true
+		jump_state = JumpState.JUMP_START
+		movement_state = MovementState.JUMPING
 	var current_speed = GROUND_SPEED
 	if !is_on_floor():
 		current_speed = AIR_SPEED
@@ -84,21 +86,22 @@ func move(delta, action):
 	# As good practice, you should replace UI actions with custom gameplay actions.aaa
 	if Input.is_action_pressed("Left"):
 		direction = -1.0
-		if not is_on_floor():
+		if movement_state == MovementState.JUMPING:
 			velocity.x = direction * AIR_SPEED
 		else:
 			velocity.x = direction * GROUND_SPEED
-		is_walking = true
+			movement_state = MovementState.WALKING
 	elif Input.is_action_pressed("Right"):
 		direction = 1.0
-		if not is_on_floor():
+		if movement_state == MovementState.JUMPING:
 			velocity.x = direction * AIR_SPEED
 		else:
 			velocity.x = direction * GROUND_SPEED
-		is_walking = true
+			movement_state = MovementState.WALKING
 	else:
 		velocity.x = move_toward(velocity.x, 0, GROUND_SPEED)
-		is_walking = false
+		if movement_state != MovementState.JUMPING:
+			movement_state = MovementState.IDLE
 
 	#Flip sprite
 	if direction > 0:
@@ -106,33 +109,37 @@ func move(delta, action):
 	elif direction < 0:
 		animated_sprite.flip_h = true
 	
-	#move_and_slide()
 	return direction
 	
 func play_animations(direction, attack):
-	if is_attacking:
+	if action_state == ActionState.ATTACK:
 		return
 	
 	var target_anim = ""
 	
 	if is_on_floor():
-		if is_jump_start:
-			target_anim = "jump_startup"
-		elif is_landing:
-			target_anim = "jump_land"
-		elif is_walking:
-			target_anim = "walk"
+		if movement_state == MovementState.JUMPING:
+			if jump_state == JumpState.JUMP_START:
+				target_anim = "jump_startup"
+			else:
+				target_anim = "jump_land"
+		
 		else:
-			target_anim = "idle"
+			if movement_state == MovementState.WALKING:
+				target_anim = "walk"
+			else:
+				target_anim = "idle"
+
 	else:
-		if is_jump_start:
-			target_anim = "jump_startup"
-		elif is_jumping:
-			target_anim = "jump_rise"
-		elif is_fall:
-			target_anim = "jump_fall"
-		elif is_falling:
-			target_anim = "jump_falling"
+		match jump_state:
+			JumpState.JUMP_START:
+				target_anim = "jump_startup"
+			JumpState.JUMP_RISE:
+				target_anim = "jump_rise"
+			JumpState.JUMP_FALL_START:
+				target_anim = "jump_fall"
+			JumpState.JUMP_FALL:
+				target_anim = "jump_falling"
 	
 	if animated_sprite.animation != target_anim:
 		animated_sprite.play(target_anim)
@@ -154,9 +161,9 @@ func bounce():
 	velocity.y = BOUNCE_VELOCITY
 
 func attack(down_pressed, up_pressed):
-	if is_attacking:
+	if action_state == ActionState.ATTACK:
 		return
-	is_attacking = true
+	action_state = ActionState.ATTACK
 	animated_sprite.play("attack")
 	#Decide which hitbox to use
 	var hitbox = front_hitbox
@@ -178,33 +185,23 @@ func attack(down_pressed, up_pressed):
 				
 func _on_animation_finished():
 	if animated_sprite.animation == "attack":
-		is_attacking = false
+		action_state = ActionState.IDLE
 	if animated_sprite.animation == "jump_startup":
-		is_jump_start = false
-		is_jumping = true
-		apex_reached = false
+		jump_state = JumpState.JUMP_RISE
 	if animated_sprite.animation == "jump_rise":
 		if velocity.y > 0 and !apex_reached:
 			apex_reached = true
-			is_jumping = false
-			is_fall = true
+			jump_state = JumpState.JUMP_FALL_START
 		else:
 			animated_sprite.play("jump_rise")
 	if animated_sprite.animation == "jump_fall":
-		is_fall = false
-		is_falling = true
+		jump_state = JumpState.JUMP_FALL
 	if animated_sprite.animation == "jump_falling":
-		is_falling = false
-		is_landing = true
+		jump_state = JumpState.LANDING
 	if animated_sprite.animation == "jump_land":
-		is_landing = false
-		#Reset all jumping flags
-		is_jump_start = false
-		is_jumping = false
-		is_fall = false
-		is_falling = false
+		jump_state = JumpState.IDLE
+		movement_state = MovementState.IDLE
 		apex_reached = false
-		jump_proc = false
 		
 func _on_health_pickup_picked_up():
 	if health + 10 >= MAX_HEALTH:
