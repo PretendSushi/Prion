@@ -10,14 +10,17 @@ signal initialize_inventory
 #constants
 const GROUND_SPEED = 700.0
 const AIR_SPEED = 900.0
-const JUMP_VELOCITY = -1200.0
+const JUMP_VELOCITY = -800.0
+const JUMP_FORCE = 2400.0
 const BOUNCE_VELOCITY = -1200.0
 const MAX_HEALTH = 100
 const ATTACK_DAMAGE = 40
 const RUBBER_BAND_DAMAGE = 80
 const KNOCKBACK = 1000
 const KNOCKBACK_DURATION = 0.5
+const JUMP_CAP = 0.45
 const V_KNOCKBACK = 150
+const RB_ANIM_OFFSET = 450
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = 1800#ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
@@ -28,6 +31,7 @@ var direction = 0
 var apex_reached = false
 #Tracks the amount of time the player has been knocked back
 var knockback_timer = 0
+var jump_timer = 0
 #You know what this tracks
 var health = 100
 #This is a list of all lists the player has collected
@@ -88,7 +92,7 @@ func check_for_inputs():
 	if Input.is_action_just_pressed("Inventory"):
 		emit_signal("show_inventory")
 	if Input.is_action_just_pressed("RubberBand"):
-		rubber_band(direction)
+		rubber_band()
 
 func move(delta, action):
 	var current_speed #it'll get a value, dw
@@ -108,16 +112,22 @@ func move(delta, action):
 		velocity.y = JUMP_VELOCITY
 		jump_state = JumpState.JUMP_START
 		movement_state = MovementState.JUMPING
+		jump_timer = JUMP_CAP
+	if Input.is_action_pressed("Jump") and movement_state == MovementState.JUMPING and velocity.y < 0 and jump_timer > 0:
+		velocity.y -= JUMP_FORCE * delta
+		jump_timer -= delta
+	else:
+		velocity.y += gravity * delta
 	# Get the input direction and handle the movement/deceleration.
 	#set states and speeds for left, right and idle
-	if Input.is_action_pressed("Left"):
+	if Input.is_action_pressed("Left") and action_state != ActionState.RUBBER_BAND:
 		direction = -1.0
 		if movement_state == MovementState.JUMPING:
 			velocity.x = direction * AIR_SPEED
 		else:
 			velocity.x = direction * GROUND_SPEED
 			movement_state = MovementState.WALKING
-	elif Input.is_action_pressed("Right"):
+	elif Input.is_action_pressed("Right") and action_state != ActionState.RUBBER_BAND:
 		direction = 1.0
 		if movement_state == MovementState.JUMPING:
 			velocity.x = direction * AIR_SPEED
@@ -176,9 +186,9 @@ func play_animations(direction):
 	
 	if target_anim == "rubber_band_ground_startup" or target_anim == "rubber_band_ground":
 		if direction >= 0:
-			animated_sprite.offset.x = 450
+			animated_sprite.offset.x = RB_ANIM_OFFSET
 		else:
-			animated_sprite.offset.x = -450
+			animated_sprite.offset.x = -RB_ANIM_OFFSET
 	else:
 		animated_sprite.offset.x = 0
 	#this is to avoid animations getting infinitely replayed and never ending
@@ -229,11 +239,13 @@ func attack(down_pressed, up_pressed):
 			if hitbox == bottom_hitbox:
 				bounce()
 	
-func rubber_band(direction):
+func rubber_band():
 	if action_state == ActionState.RUBBER_BAND:
 		return
 	action_state = ActionState.RUBBER_BAND
 	rubber_band_state = RubberBandState.START
+
+func rubber_band_attack(direction):
 	var hitbox = rb_hitbox_right
 	if direction >= 0: 
 		hitbox = rb_hitbox_right
@@ -269,6 +281,7 @@ func _on_animation_finished():
 		apex_reached = false
 	if animated_sprite.animation == "rubber_band_ground_startup":
 		rubber_band_state = RubberBandState.DURATION
+		rubber_band_attack(direction)
 	if animated_sprite.animation == "rubber_band_ground":
 		rubber_band_state = RubberBandState.IDLE
 		action_state = ActionState.IDLE
