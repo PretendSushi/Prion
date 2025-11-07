@@ -86,8 +86,6 @@ func check_for_inputs():
 	if Input.is_action_just_pressed("Attack"):
 		#This needs to be made more readable. Takes attack takes two arguments, whether up or down are being pressed
 		attack(Input.is_action_pressed("Down"), Input.is_action_pressed("Jump"))
-		#play animation for it (is this redundant?)
-		play_animations(direction)
 	#Check for open inventory input, and emit the signal so the inventory code can handle the rest
 	if Input.is_action_just_pressed("Inventory"):
 		emit_signal("show_inventory")
@@ -149,8 +147,8 @@ func move(delta, action):
 
 func play_animations(direction):
 	#Attack aniation shouldn't be interruptable
-	if action_state == ActionState.ATTACK:
-		return
+	#if action_state == ActionState.ATTACK:
+		#return
 		
 	#this is the animation we will play at the end
 	var target_anim = ""
@@ -168,6 +166,8 @@ func play_animations(direction):
 					target_anim = "rubber_band_ground_startup"
 				elif rubber_band_state == RubberBandState.DURATION:
 					target_anim = "rubber_band_ground"
+			elif action_state == ActionState.ATTACK:
+				target_anim = "attack"
 			elif movement_state == MovementState.WALKING:
 				target_anim = "walk"
 			else:
@@ -197,7 +197,6 @@ func play_animations(direction):
 		
 
 func _on_enemy_hit_player(damage, knockback, enemy_pos):
-	#TO FIX KNOCKBACK COMPARE ENEMY COORDS TO PLAYER COORDS
 	health -= damage
 	emit_signal("health_changed", health)
 	var kb_dir = 0
@@ -225,7 +224,6 @@ func attack(down_pressed, up_pressed):
 		return
 	#if it is a legit attack, set the state
 	action_state = ActionState.ATTACK
-	animated_sprite.play("attack") #and play the animation (probably redundant)
 	#Decide which hitbox to use
 	var hitbox = front_hitbox
 	if direction == -1.0:
