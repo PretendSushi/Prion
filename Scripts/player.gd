@@ -196,11 +196,16 @@ func play_animations(direction):
 		animated_sprite.play(target_anim)
 		
 
-func _on_enemy_hit_player(damage, knockback):
+func _on_enemy_hit_player(damage, knockback, enemy_pos):
 	#TO FIX KNOCKBACK COMPARE ENEMY COORDS TO PLAYER COORDS
 	health -= damage
 	emit_signal("health_changed", health)
-	velocity.x = knockback * -direction
+	var kb_dir = 0
+	if enemy_pos.x < global_position.x:
+		kb_dir = 1
+	else:
+		kb_dir = -1
+	velocity.x = knockback * kb_dir
 	velocity.y = -V_KNOCKBACK
 	knockback_timer = KNOCKBACK_DURATION
 	if health <= 0:

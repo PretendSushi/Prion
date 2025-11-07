@@ -94,7 +94,7 @@ func attempt_hit_player(bodies):
 			if body.name == "Player":
 				var distance_to_player = global_position.distance_to(body.global_position)
 				if distance_to_player <= 300: #remove this magic number
-					emit_signal("hit_player", damage, KNOCKBACK)
+					emit_signal("hit_player", damage, KNOCKBACK, global_position)
 				break
 				
 func _on_player_attack(damage, knockback):
