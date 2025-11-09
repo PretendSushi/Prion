@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://tnwyed04r1rv"]
+
+[ext_resource type="Script" uid="uid://4k86tc1boh4q" path="res://Scripts/save_point.gd" id="1_frjpq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2vkud"]
+size = Vector2(100, 100)
+
+[node name="SavePoint" type="Area2D"]
+script = ExtResource("1_frjpq")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_right = 100.0
+offset_bottom = 100.0
+color = Color(1, 0, 1, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(50, 50)
+shape = SubResource("RectangleShape2D_2vkud")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+offset_left = -50.0
+offset_top = -50.0
+offset_right = 150.0
+horizontal_alignment = 1

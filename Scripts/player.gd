@@ -6,6 +6,7 @@ signal initialize_health
 signal player_attack
 signal show_inventory
 signal initialize_inventory
+signal interacted
 
 #constants
 const GROUND_SPEED = 700.0
@@ -36,6 +37,8 @@ var jump_timer = 0
 var health = 100
 #This is a list of all lists the player has collected
 var notes_list = []
+#The current interactable object available to the player
+var current_interactable = null
 
 #Available states
 enum MovementState { IDLE, WALKING, JUMPING }
@@ -91,6 +94,8 @@ func check_for_inputs():
 		emit_signal("show_inventory")
 	if Input.is_action_just_pressed("RubberBand"):
 		rubber_band()
+	if Input.is_action_just_pressed("Interact"):
+		interact()
 
 func move(delta, action):
 	var current_speed #it'll get a value, dw
@@ -146,10 +151,6 @@ func move(delta, action):
 	return direction
 
 func play_animations(direction):
-	#Attack aniation shouldn't be interruptable
-	#if action_state == ActionState.ATTACK:
-		#return
-		
 	#this is the animation we will play at the end
 	var target_anim = ""
 	
@@ -294,4 +295,21 @@ func _on_health_pickup_picked_up():
 		health = MAX_HEALTH
 	elif health < MAX_HEALTH:
 		health += 10
+	emit_signal("health_changed", health)
+
+func _on_interactable_focused(interactable) -> void:
+	current_interactable = interactable
+
+func _on_interactable_unfocused(interactable) -> void:
+	if current_interactable == interactable:
+		current_interactable = null
+
+func interact():
+	if current_interactable == null:
+		return
+	interacted.connect(current_interactable._on_interact.bind())
+	emit_signal("interacted", self)
+
+func restore_max_hp():
+	health = MAX_HEALTH
 	emit_signal("health_changed", health)
