@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://4k86tc1boh4q" path="res://Scripts/save_point.gd" id="1_frjpq"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2vkud"]
-size = Vector2(100, 100)
+size = Vector2(300, 300)
 
 [node name="SavePoint" type="Area2D"]
 script = ExtResource("1_frjpq")

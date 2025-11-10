@@ -12,7 +12,7 @@ signal interacted
 const GROUND_SPEED = 700.0
 const AIR_SPEED = 900.0
 const JUMP_VELOCITY = -800.0
-const JUMP_FORCE = 2400.0
+const JUMP_FORCE = 3000
 const BOUNCE_VELOCITY = -1200.0
 const MAX_HEALTH = 100
 const ATTACK_DAMAGE = 40
