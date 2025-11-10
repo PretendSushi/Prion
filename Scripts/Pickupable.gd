@@ -23,3 +23,9 @@ func _physics_process(delta: float) -> void:
 		velocity.y = gravity * delta
 
 	position += velocity
+	
+func _on_detect_box_body_entered(body: Node2D) -> void:
+	if body.name == "Player":
+		picked_up.connect(body._on_pickupable_picked_up.bind())
+		emit_signal("picked_up", self)
+		queue_free()

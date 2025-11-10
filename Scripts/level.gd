@@ -37,10 +37,16 @@ func spawn_enemy():
 	var enemy_instance = enemy.instantiate()
 	enemy_instance.hit_player.connect(player._on_enemy_hit_player)
 	enemy_instance.drop_health.connect(_on_enemy_drop_health)
+	enemy_instance.drop_protein.connect(_on_enemy_drop_protein)
 	add_child(enemy_instance)
 
 func _on_enemy_drop_health(health_pickup, x, y) -> void:
 	var health_pickup_instance = health_pickup.instantiate()
 	health_pickup_instance.global_position = Vector2(x, y)
-	health_pickup_instance.picked_up.connect(player._on_health_pickup_picked_up)
 	add_child(health_pickup_instance)
+
+
+func _on_enemy_drop_protein(protein_pickup, x, y) -> void:
+	var protein_pickup_instance = protein_pickup.instantiate()
+	protein_pickup_instance.global_position = Vector2(x, y)
+	add_child(protein_pickup_instance)

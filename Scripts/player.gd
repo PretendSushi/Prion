@@ -2,7 +2,9 @@ extends CharacterBody2D
 
 #signals
 signal health_changed
+signal protein_changed
 signal initialize_health
+signal initialize_protein
 signal player_attack
 signal show_inventory
 signal initialize_inventory
@@ -15,8 +17,10 @@ const JUMP_VELOCITY = -800.0
 const JUMP_FORCE = 3000
 const BOUNCE_VELOCITY = -1200.0
 const MAX_HEALTH = 100
+const MAX_PROTEIN = 100
 const ATTACK_DAMAGE = 40
 const RUBBER_BAND_DAMAGE = 80
+const RUBBER_BAND_PROTEIN_COST = 40 
 const KNOCKBACK = 1000
 const KNOCKBACK_DURATION = 0.5
 const JUMP_CAP = 0.45
@@ -35,6 +39,8 @@ var knockback_timer = 0
 var jump_timer = 0
 #You know what this tracks
 var health = 100
+#Basically mana
+var protein = 100
 #This is a list of all lists the player has collected
 var notes_list = []
 #The current interactable object available to the player
@@ -64,12 +70,14 @@ var rubber_band_state = RubberBandState.IDLE
 func _ready():
 	#initialize everything
 	emit_signal("initialize_health", MAX_HEALTH, health)
+	emit_signal("initialize_protein", MAX_PROTEIN, protein)
 	notes_list.append("Sample1")
 	notes_list.append("Sample2")
 	emit_signal("initialize_inventory", notes_list)
 	animated_sprite.animation_finished.connect(_on_animation_finished) #calls _on_animation_finished every time an animation ends
 
 func _physics_process(delta):
+	#KB logic should be decomposed
 	#if the timer is over 0, the player is being knocked back
 	if knockback_timer > 0:
 		knockback_timer -= delta #Subtract elapsed time from it
@@ -244,7 +252,7 @@ func attack(down_pressed, up_pressed):
 				bounce()
 	
 func rubber_band():
-	if action_state == ActionState.RUBBER_BAND:
+	if action_state == ActionState.RUBBER_BAND or protein < RUBBER_BAND_PROTEIN_COST:
 		return
 	action_state = ActionState.RUBBER_BAND
 	rubber_band_state = RubberBandState.START
@@ -260,6 +268,8 @@ func rubber_band_attack(direction):
 		if body.name == "Enemy":
 			player_attack.connect(body._on_player_attack.bind())
 			emit_signal("player_attack", RUBBER_BAND_DAMAGE, KNOCKBACK)
+	protein -= RUBBER_BAND_PROTEIN_COST
+	emit_signal("protein_changed", protein)
 	
 func _on_animation_finished():
 	#changes state at the end of animations. Exists for animation purposes
@@ -289,13 +299,6 @@ func _on_animation_finished():
 	if animated_sprite.animation == "rubber_band_ground":
 		rubber_band_state = RubberBandState.IDLE
 		action_state = ActionState.IDLE
-		
-func _on_health_pickup_picked_up():
-	if health + 10 >= MAX_HEALTH:
-		health = MAX_HEALTH
-	elif health < MAX_HEALTH:
-		health += 10
-	emit_signal("health_changed", health)
 
 func _on_interactable_focused(interactable) -> void:
 	current_interactable = interactable
@@ -303,7 +306,27 @@ func _on_interactable_focused(interactable) -> void:
 func _on_interactable_unfocused(interactable) -> void:
 	if current_interactable == interactable:
 		current_interactable = null
+		
+func _on_pickupable_picked_up(pickupable) -> void:
+	if pickupable.name == "HealthPickup":
+		handle_health_pickup()
+	if pickupable.name == "ProteinPickup":
+		handle_protein_pickup()
 
+func handle_health_pickup():
+	if health + 10 >= MAX_HEALTH: #remove this magic number, stupid
+		health = MAX_HEALTH
+	elif health < MAX_HEALTH:
+		health += 10
+	emit_signal("health_changed", health)
+	
+func handle_protein_pickup():
+	if protein + 10 >= MAX_PROTEIN: #also remove this magic number, stupid
+		protein = MAX_PROTEIN
+	elif protein < MAX_PROTEIN:
+		protein += 10
+	emit_signal("protein_changed", protein)
+	
 func interact():
 	if current_interactable == null:
 		return

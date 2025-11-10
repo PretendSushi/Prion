@@ -2,6 +2,7 @@ extends CharacterBody2D
 
 signal hit_player
 signal drop_health
+signal drop_protein
 
 const SPEED = 400.0
 const JUMP_VELOCITY = -400.0
@@ -19,6 +20,7 @@ var attack_cooldown = 2
 var can_attack
 var health = 100
 var health_pickup = null
+var protein_pickup = null
 var knockback_timer = 0
 
 @onready var detectBox = $DetectBox
@@ -26,6 +28,7 @@ var knockback_timer = 0
 
 func _ready():
 	health_pickup = preload("res://Scenes/HealthPickup.tscn")
+	protein_pickup = preload("res://Scenes/ProteinPickup.tscn")
 	player_in_range = false
 	can_attack = true
 
@@ -107,4 +110,5 @@ func _on_player_attack(damage, knockback):
 			
 func die():
 	emit_signal("drop_health", health_pickup, global_position.x, global_position.y)
+	emit_signal("drop_protein", protein_pickup, global_position.x + 30, global_position.y) #magic number to be removed
 	queue_free()

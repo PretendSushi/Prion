@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://ltsdi67f64wv"]
+[gd_scene load_steps=8 format=3 uid="uid://ltsdi67f64wv"]
 
 [ext_resource type="Script" uid="uid://de2bggo3a6nnf" path="res://Scripts/HUD.gd" id="1_a21xl"]
 
@@ -30,6 +30,30 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sd512"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jo1ms"]
+bg_color = Color(0.644776, 0, 0.0383723, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
 [node name="HUD" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -50,4 +74,20 @@ theme = SubResource("Theme_xqxlx")
 theme_override_styles/background = SubResource("StyleBoxFlat_xn6qu")
 theme_override_styles/fill = SubResource("StyleBoxFlat_ta3dr")
 value = 50.0
+show_percentage = false
+
+[node name="Proteinbar" type="ProgressBar" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -426.0
+offset_top = 18.0
+offset_right = -26.0
+offset_bottom = 38.0
+grow_horizontal = 0
+theme_override_styles/background = SubResource("StyleBoxFlat_sd512")
+theme_override_styles/fill = SubResource("StyleBoxFlat_jo1ms")
+value = 50.0
+fill_mode = 1
 show_percentage = false
