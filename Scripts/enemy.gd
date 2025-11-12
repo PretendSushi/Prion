@@ -9,6 +9,8 @@ const JUMP_VELOCITY = -400.0
 const KNOCKBACK_DURATION = 0.4
 const KNOCKBACK = 700
 const V_KNOCKBACK = 100
+const PROTEIN_PICKUP_OFFSET = 30
+const PLAYER_ATTACK_MAX_DISTANCE = 300
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
@@ -96,7 +98,7 @@ func attempt_hit_player(bodies):
 		for body in bodies:
 			if body.name == "Player":
 				var distance_to_player = global_position.distance_to(body.global_position)
-				if distance_to_player <= 300: #remove this magic number
+				if distance_to_player <= PLAYER_ATTACK_MAX_DISTANCE:
 					emit_signal("hit_player", damage, KNOCKBACK, global_position)
 				break
 				
@@ -110,5 +112,5 @@ func _on_player_attack(damage, knockback):
 			
 func die():
 	emit_signal("drop_health", health_pickup, global_position.x, global_position.y)
-	emit_signal("drop_protein", protein_pickup, global_position.x + 30, global_position.y) #magic number to be removed
+	emit_signal("drop_protein", protein_pickup, global_position.x + PROTEIN_PICKUP_OFFSET, global_position.y)
 	queue_free()

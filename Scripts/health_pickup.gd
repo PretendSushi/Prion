@@ -1,4 +1,6 @@
 extends Pickupable
 
+const HEALTH_VALUE = 10
+
 func _ready():
-	pass
+	value = HEALTH_VALUE

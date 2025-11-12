@@ -3,6 +3,8 @@ extends Control
 @onready var healthbar = $Healthbar
 @onready var proteinbar = $Proteinbar
 
+const BAR_TWEEN_DURATION = 0.2
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
@@ -23,8 +25,8 @@ func _on_player_initialize_protein(max_protein, protein) -> void:
 
 func _on_player_health_changed(health):
 	var healthbar_tween = get_tree().create_tween()
-	healthbar_tween.tween_property(healthbar, "value", health, 0.2)
+	healthbar_tween.tween_property(healthbar, "value", health, BAR_TWEEN_DURATION)
 
 func _on_player_protein_changed(protein) -> void:
 	var protein_tween = get_tree().create_tween()
-	protein_tween.tween_property(proteinbar, "value", protein, 0.2)
+	protein_tween.tween_property(proteinbar, "value", protein, BAR_TWEEN_DURATION)

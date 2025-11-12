@@ -16,7 +16,6 @@ func _process(delta):
 func _on_player_show_inventory() -> void:
 	visible = !visible
 
-
 func _on_player_initialize_inventory(notes_list) -> void:
 	default_note = notes_list[notes_list.size() - 1]
 	for note in notes_list:

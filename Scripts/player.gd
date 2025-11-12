@@ -307,21 +307,21 @@ func _on_interactable_unfocused(interactable) -> void:
 	if current_interactable == interactable:
 		current_interactable = null
 		
-func _on_pickupable_picked_up(pickupable) -> void:
+func _on_pickupable_picked_up(pickupable, value) -> void:
 	if pickupable.name == "HealthPickup":
-		handle_health_pickup()
+		handle_health_pickup(value)
 	if pickupable.name == "ProteinPickup":
-		handle_protein_pickup()
+		handle_protein_pickup(value)
 
-func handle_health_pickup():
-	if health + 10 >= MAX_HEALTH: #remove this magic number, stupid
+func handle_health_pickup(health_gain):
+	if health + health_gain >= MAX_HEALTH:
 		health = MAX_HEALTH
 	elif health < MAX_HEALTH:
 		health += 10
 	emit_signal("health_changed", health)
 	
-func handle_protein_pickup():
-	if protein + 10 >= MAX_PROTEIN: #also remove this magic number, stupid
+func handle_protein_pickup(protein_gain):
+	if protein + protein_gain >= MAX_PROTEIN:
 		protein = MAX_PROTEIN
 	elif protein < MAX_PROTEIN:
 		protein += 10

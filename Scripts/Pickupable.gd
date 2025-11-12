@@ -10,6 +10,7 @@ signal picked_up
 var gravity = 1800
 var velocity := Vector2.ZERO
 var is_on_floor = false
+var value = null
 
 func _ready() -> void:
 	pass
@@ -27,5 +28,5 @@ func _physics_process(delta: float) -> void:
 func _on_detect_box_body_entered(body: Node2D) -> void:
 	if body.name == "Player":
 		picked_up.connect(body._on_pickupable_picked_up.bind())
-		emit_signal("picked_up", self)
+		emit_signal("picked_up", self, value)
 		queue_free()
