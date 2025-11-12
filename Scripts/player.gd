@@ -116,6 +116,8 @@ func move(delta, action):
 		action_state = ActionState.IDLE #this stops attacking from always being true if player attacks in the air. Will be changed later
 		current_speed = AIR_SPEED #Should move faster in the air
 	else:
+		if jump_state != JumpState.IDLE:
+			jump_state = JumpState.IDLE
 		current_speed = GROUND_SPEED
 	# Handle Jump.
 	if Input.is_action_just_pressed("Jump") and is_on_floor() and movement_state != MovementState.JUMPING:
@@ -192,6 +194,8 @@ func play_animations(direction):
 				target_anim = "jump_fall"
 			JumpState.JUMP_FALL:
 				target_anim = "jump_falling"
+			JumpState.IDLE:
+				target_anim = "jump_fall"
 	
 	if target_anim == "rubber_band_ground_startup" or target_anim == "rubber_band_ground":
 		if direction >= 0:
@@ -206,6 +210,7 @@ func play_animations(direction):
 		
 
 func _on_enemy_hit_player(damage, knockback, enemy_pos):
+	print(jump_state)
 	health -= damage
 	emit_signal("health_changed", health)
 	#handle knockback
@@ -293,12 +298,15 @@ func _on_animation_finished():
 			animated_sprite.play("jump_rise") #if the player is still going up, replay the animation
 	if animated_sprite.animation == "jump_fall":
 		jump_state = JumpState.JUMP_FALL 
+		print("hit0")
 	if animated_sprite.animation == "jump_falling":
 		jump_state = JumpState.LANDING
+		print("hit1")
 	if animated_sprite.animation == "jump_land":
 		jump_state = JumpState.IDLE
 		movement_state = MovementState.IDLE
 		apex_reached = false
+		print("hit2")
 	if animated_sprite.animation == "rubber_band_ground_startup":
 		rubber_band_state = RubberBandState.DURATION
 		rubber_band_attack(direction)
