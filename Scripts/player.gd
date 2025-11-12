@@ -208,6 +208,7 @@ func play_animations(direction):
 func _on_enemy_hit_player(damage, knockback, enemy_pos):
 	health -= damage
 	emit_signal("health_changed", health)
+	#handle knockback
 	var kb_dir = 0
 	if enemy_pos.x < global_position.x:
 		kb_dir = 1
@@ -216,6 +217,11 @@ func _on_enemy_hit_player(damage, knockback, enemy_pos):
 	velocity.x = knockback * kb_dir
 	velocity.y = -V_KNOCKBACK
 	knockback_timer = KNOCKBACK_DURATION
+	#handle cancelling rubberband
+	if action_state == ActionState.RUBBER_BAND and rubber_band_state != RubberBandState.IDLE:
+		action_state = ActionState.IDLE
+		rubber_band_state = RubberBandState.IDLE
+	#handle death
 	if health <= 0:
 		die()
 
