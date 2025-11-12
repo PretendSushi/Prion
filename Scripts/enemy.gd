@@ -51,10 +51,11 @@ func _physics_process(delta):
 		
 		#handle the delay between attacks
 		if not can_attack:
-			time_since_last_attack += delta 
-			if time_since_last_attack >= attack_cooldown:
-				can_attack = true
-				time_since_last_attack = 0.0
+			can_attack = true #to be condensed later
+			#time_since_last_attack += delta 
+			#if time_since_last_attack >= attack_cooldown:
+				#can_attack = true
+				#time_since_last_attack = 0.0
 		if can_attack:
 			attempt_hit_player(bodies)
 			time_since_last_attack = 0.0

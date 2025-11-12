@@ -210,7 +210,6 @@ func play_animations(direction):
 		
 
 func _on_enemy_hit_player(damage, knockback, enemy_pos):
-	print(jump_state)
 	health -= damage
 	emit_signal("health_changed", health)
 	#handle knockback
@@ -298,15 +297,12 @@ func _on_animation_finished():
 			animated_sprite.play("jump_rise") #if the player is still going up, replay the animation
 	if animated_sprite.animation == "jump_fall":
 		jump_state = JumpState.JUMP_FALL 
-		print("hit0")
 	if animated_sprite.animation == "jump_falling":
 		jump_state = JumpState.LANDING
-		print("hit1")
 	if animated_sprite.animation == "jump_land":
 		jump_state = JumpState.IDLE
 		movement_state = MovementState.IDLE
 		apex_reached = false
-		print("hit2")
 	if animated_sprite.animation == "rubber_band_ground_startup":
 		rubber_band_state = RubberBandState.DURATION
 		rubber_band_attack(direction)
