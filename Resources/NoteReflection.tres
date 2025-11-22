@@ -4,5 +4,5 @@
 
 [resource]
 script = ExtResource("1_2qfo8")
-note_id = 1
+note_name = "Reflection"
 metadata/_custom_type_script = "uid://dkev8kosonx2h"

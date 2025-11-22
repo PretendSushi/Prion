@@ -17,17 +17,18 @@ func _on_player_show_inventory() -> void:
 	visible = !visible
 
 func _on_player_initialize_inventory(notes_list) -> void:
-	default_note = notes_list[notes_list.size() - 1]
-	for note in notes_list:
-		create_button(note)
-	var content = load_note_content(default_note)
-	var path = "res://Assets/Notes/" + default_note + ".json"
-	var encoded = get_note_encoded(content)
-	var decoded = get_note_decoded(content)
-	var last_scan_percent = get_note_last_scan_percent(content)
-	var decoded_words = get_decoded_words(content)
-	var note = decode_note(encoded,decoded,75,last_scan_percent,decoded_words, path)
-	note_content.append_text(note)
+	if notes_list.size() > 0:
+		default_note = notes_list[notes_list.size() - 1]
+		for note in notes_list:
+			create_button(note)
+		var content = load_note_content(default_note, "res://Assets/Notes/")
+		var path = "res://Assets/Notes/" + default_note + ".json"
+		var encoded = get_note_encoded(content)
+		var decoded = get_note_decoded(content)
+		var last_scan_percent = get_note_last_scan_percent(content)
+		var decoded_words = get_decoded_words(content)
+		var note = decode_note(encoded,decoded,75,last_scan_percent,decoded_words, path)
+		note_content.append_text(note)
 
 func create_button(label):
 	var button = Button.new()
@@ -36,8 +37,8 @@ func create_button(label):
 	button.pressed.connect(Callable(self, "_on_note_changed").bind([button]))
 	button_container.add_child(button)
 	
-func load_note_content(note_name):
-	var path = "res://Assets/Notes/" + note_name + ".json"
+func load_note_content(note_name, path_start):
+	var path = path_start + note_name + ".json"
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
 		return
@@ -64,20 +65,25 @@ func get_note_decoded(note_content):
 	return null
 
 func get_note_last_scan_percent(note_content):
+	if note_content == null:
+		return 0
 	var json = JSON.new()
 	var result = json.parse(note_content)
 	if result == OK:
 		var data = json.get_data()
-		return data["last_precent_decode"]
-	return null
+		if data.has("last_percent_decode"):
+			return data["last_precent_decode"]
+	return 0
 	
 func get_decoded_words(note_content):
+	if note_content == null:
+		return []
 	var json = JSON.new()
 	var result = json.parse(note_content)
 	if result == OK:
 		var data = json.get_data()
 		return data["decoded_words"]
-	return null
+	return []
 	
 func decode_note(note_encoded, note_decoded, scan_percent, last_percent_decode, dec_word_idxs, file_path):
 	#This method needs testing
@@ -107,44 +113,40 @@ func decode_note(note_encoded, note_decoded, scan_percent, last_percent_decode, 
 func _on_note_changed(button):
 	button = button[0]
 	note_content.text = ""
-	var content = load_note_content(button.text)
-	var path = "res://Assets/Notes/" + button.text + ".json"
+	var content = load_note_content(button.text, "res://Assets/Notes/")
+	var meta = load_note_content(button.text, "user://Notes/")
+	
+	var content_path = "res://Assets/Notes/" + button.text + ".json"
+	var meta_path = "user://Notes/" + button.text + ".json"
+	
 	var encoded = get_note_encoded(content)
 	var decoded = get_note_decoded(content)
-	var last_scan_percent = get_note_last_scan_percent(content)
-	var decoded_words = get_decoded_words(content)
-	var note = decode_note(encoded,decoded,75,last_scan_percent,decoded_words, path)	
+	var last_scan_percent = get_note_last_scan_percent(meta)
+	var decoded_words = get_decoded_words(meta)
+	var note = decode_note(encoded,decoded,75,last_scan_percent,decoded_words, meta_path)
 	note_content.append_text(note)
 	
 func update_note_meta(file_path, dec_words, scan_perc):
+	var data = {}
 	var file := FileAccess.open(file_path, FileAccess.READ)
-	if file == null:
-		print("File not found or failed to open")
-		return
-	
-	var json_string = file.get_as_text()
-	file.close()
-	
-	var result = JSON.parse_string(json_string)
-	if result == null:
-		print("Failed to parse JSON.")
-		return
-	
-	var data = result
-	
-	if data.has("decoded_words"):
-		data["decoded_words"] = dec_words
-	else:
-		print("decoded_words not found in JSON")
-		return
+	if file != null:
+		var json_string = file.get_as_text()
+		file.close()
 		
-	if data.has("last_precent_decode"):
-		data["last_precent_decode"] = scan_perc
-	else:
-		print("last_precent_decode not found in JSON")
-		return
+		var result = JSON.parse_string(json_string)
+		if result == null:
+			print("Failed to parse JSON.")
+			return
+		
+		data = result
+		
+	data["decoded_words"] = dec_words
+	data["last_precent_decode"] = scan_perc
 		
 	var file_write := FileAccess.open(file_path, FileAccess.WRITE)
+	if file_write == null:
+		DirAccess.make_dir_absolute("user://Notes")
+		file_write = FileAccess.open(file_path, FileAccess.WRITE)
 	if file_write:
 		var updated_json = JSON.stringify(data, "\t")
 		file_write.store_string(updated_json)
@@ -152,7 +154,7 @@ func update_note_meta(file_path, dec_words, scan_perc):
 		print("JSON file updated successfully")
 	else:
 		print("Failed to open file for writing")
-		
+
 #This method should only be called by decode_note. This method ONLY decodes the words in the note that have already been decoded
 func redecode_note(encoded_note, decoded_note, dec_word_idxs):
 	var enc_words = encoded_note.split(" ") #array of words ENCODED (random ASCII)
@@ -162,4 +164,6 @@ func redecode_note(encoded_note, decoded_note, dec_word_idxs):
 		new_note[dec_word_idxs[i]] = dec_words[dec_word_idxs[i]]
 	new_note = " ".join(new_note) 
 	return new_note 
-	
+
+func _on_player_note_added(note) -> void:
+	create_button(note)

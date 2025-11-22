@@ -9,6 +9,7 @@ signal player_attack
 signal show_inventory
 signal initialize_inventory
 signal interacted
+signal note_added
 
 #constants
 const GROUND_SPEED = 700.0
@@ -71,8 +72,6 @@ func _ready():
 	#initialize everything
 	emit_signal("initialize_health", MAX_HEALTH, health)
 	emit_signal("initialize_protein", MAX_PROTEIN, protein)
-	notes_list.append("Sample1")
-	notes_list.append("Sample2")
 	emit_signal("initialize_inventory", notes_list)
 	animated_sprite.animation_finished.connect(_on_animation_finished) #calls _on_animation_finished every time an animation ends
 
@@ -347,5 +346,6 @@ func restore_max_hp():
 	health = MAX_HEALTH
 	emit_signal("health_changed", health)
 	
-func add_note(note_id):
-	notes_list.append(note_id)
+func add_note(note_name):
+	notes_list.append(note_name)
+	emit_signal("note_added", note_name)

@@ -87,6 +87,7 @@ position = Vector2(161, 351)
 [connection signal="initialize_health" from="Player" to="Player/UICanvas/UI/HUD" method="_on_player_initialize_health"]
 [connection signal="initialize_inventory" from="Player" to="Player/UICanvas/UI/Notes" method="_on_player_initialize_inventory"]
 [connection signal="initialize_protein" from="Player" to="Player/UICanvas/UI/HUD" method="_on_player_initialize_protein"]
+[connection signal="note_added" from="Player" to="Player/UICanvas/UI/Notes" method="_on_player_note_added"]
 [connection signal="protein_changed" from="Player" to="Player/UICanvas/UI/HUD" method="_on_player_protein_changed"]
 [connection signal="show_inventory" from="Player" to="Player/UICanvas/UI/Notes" method="_on_player_show_inventory"]
 [connection signal="drop_health" from="Enemy" to="." method="_on_enemy_drop_health"]
