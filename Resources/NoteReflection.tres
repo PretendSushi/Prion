@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="NoteData" load_steps=2 format=3 uid="uid://covbq8jtvemra"]
+
+[ext_resource type="Script" uid="uid://dkev8kosonx2h" path="res://Scripts/NoteData.gd" id="1_2qfo8"]
+
+[resource]
+script = ExtResource("1_2qfo8")
+note_id = 1
+metadata/_custom_type_script = "uid://dkev8kosonx2h"

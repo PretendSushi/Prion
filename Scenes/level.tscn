@@ -1,11 +1,13 @@
-[gd_scene load_steps=12 format=3 uid="uid://i2khwini8146"]
+[gd_scene load_steps=14 format=3 uid="uid://i2khwini8146"]
 
 [ext_resource type="Script" uid="uid://cob3thhyjfwnv" path="res://Scripts/level.gd" id="1_8c0lf"]
 [ext_resource type="PackedScene" uid="uid://uqe5a2rw7h7h" path="res://Scenes/player.tscn" id="1_ls57i"]
 [ext_resource type="Texture2D" uid="uid://xtkj34vsm70c" path="res://Assets/World/wood1.png" id="2_eva7n"]
 [ext_resource type="PackedScene" uid="uid://ju1nlt54nwfm" path="res://Scenes/Notes.tscn" id="3_0f350"]
+[ext_resource type="PackedScene" uid="uid://cf32yyk7lufyu" path="res://Scenes/Note.tscn" id="3_bvt00"]
 [ext_resource type="PackedScene" uid="uid://c74e7gplr6lsc" path="res://Scenes/enemy.tscn" id="3_xoy22"]
 [ext_resource type="PackedScene" uid="uid://ltsdi67f64wv" path="res://Scenes/HUD.tscn" id="4_70ean"]
+[ext_resource type="Resource" uid="uid://covbq8jtvemra" path="res://Resources/NoteReflection.tres" id="4_oqgf2"]
 [ext_resource type="PackedScene" uid="uid://da7bo8klfo12e" path="res://Scenes/PauseScreen.tscn" id="5_wqkje"]
 [ext_resource type="PackedScene" uid="uid://tnwyed04r1rv" path="res://Scenes/SavePoint.tscn" id="8_754fn"]
 
@@ -26,6 +28,10 @@ script = ExtResource("1_8c0lf")
 
 [node name="SavePoint" parent="." instance=ExtResource("8_754fn")]
 position = Vector2(-1284, 270)
+
+[node name="Note" parent="." instance=ExtResource("3_bvt00")]
+position = Vector2(-600, 470)
+note_data = ExtResource("4_oqgf2")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 visible = false

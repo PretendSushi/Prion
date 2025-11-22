@@ -346,3 +346,6 @@ func interact():
 func restore_max_hp():
 	health = MAX_HEALTH
 	emit_signal("health_changed", health)
+	
+func add_note(note_id):
+	notes_list.append(note_id)
