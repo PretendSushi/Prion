@@ -15,7 +15,7 @@ signal note_added
 const GROUND_SPEED = 700.0
 const AIR_SPEED = 900.0
 const JUMP_VELOCITY = -800.0
-const JUMP_FORCE = 3000
+const JUMP_FORCE = 3500
 const BOUNCE_VELOCITY = -1200.0
 const MAX_HEALTH = 100
 const MAX_PROTEIN = 100
@@ -24,6 +24,7 @@ const RUBBER_BAND_DAMAGE = 80
 const RUBBER_BAND_PROTEIN_COST = 40 
 const KNOCKBACK = 1000
 const KNOCKBACK_DURATION = 0.5
+const INVINCIBLE_DURATION = 2.5
 const JUMP_CAP = 0.45
 const V_KNOCKBACK = 150
 const RB_ANIM_OFFSET = 450
@@ -46,6 +47,10 @@ var protein = 100
 var notes_list = []
 #The current interactable object available to the player
 var current_interactable = null
+#Flag for invincibility
+var invincible = false
+#Timer for invincibility
+var invincible_timer = 0
 
 #Available states
 enum MovementState { IDLE, WALKING, JUMPING }
@@ -86,6 +91,12 @@ func _physics_process(delta):
 	#if the player isn't being knocked back, they can move freely
 	else:
 		direction = move(delta,"")
+		
+	#This should also be decomposed
+	if invincible_timer > 0:
+		invincible_timer -= delta
+	else:
+		invincible = false
 	play_animations(direction)
 	check_for_inputs()
 	move_and_slide()
@@ -209,6 +220,8 @@ func play_animations(direction):
 		
 
 func _on_enemy_hit_player(damage, knockback, enemy_pos):
+	if invincible:
+		return
 	health -= damage
 	emit_signal("health_changed", health)
 	#handle knockback
@@ -220,6 +233,9 @@ func _on_enemy_hit_player(damage, knockback, enemy_pos):
 	velocity.x = knockback * kb_dir
 	velocity.y = -V_KNOCKBACK
 	knockback_timer = KNOCKBACK_DURATION
+	#handle invincibility
+	invincible = true
+	invincible_timer = INVINCIBLE_DURATION
 	#handle cancelling rubberband
 	if action_state == ActionState.RUBBER_BAND and rubber_band_state != RubberBandState.IDLE:
 		action_state = ActionState.IDLE
@@ -254,7 +270,7 @@ func attack(down_pressed, up_pressed):
 	#Find every NPC who should take damage
 	var bodies = hitbox.get_overlapping_bodies()
 	for body in bodies:
-		if body.name == "Enemy":
+		if body.name.contains("Enemy"):
 			player_attack.connect(body._on_player_attack.bind())
 			emit_signal("player_attack", ATTACK_DAMAGE, KNOCKBACK)
 			if hitbox == bottom_hitbox:

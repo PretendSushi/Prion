@@ -33,6 +33,7 @@ func _ready():
 	protein_pickup = preload("res://Scenes/ProteinPickup.tscn")
 	player_in_range = false
 	can_attack = true
+	
 
 func _physics_process(delta):
 	#if the knockback timer isn't 0, that means knockback is still in effect. We don't want the enemy doing anything else

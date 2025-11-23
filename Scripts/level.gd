@@ -3,20 +3,25 @@ extends Node2D
 var enemy = null
 var SPAWN_INTERVAL = 5.0
 var time_passed = 0.0
-
+@onready var enemies = [$Enemy,$Enemy2,$Enemy3,$Enemy4]
 @onready var player = $Player
 
 func _ready():
 	enemy = preload("res://Scenes/enemy.tscn")
+	for enemy_instance in enemies:
+		enemy_instance.hit_player.connect(player._on_enemy_hit_player)
+		enemy_instance.drop_health.connect(_on_enemy_drop_health)
+		enemy_instance.drop_protein.connect(_on_enemy_drop_protein)
 	
 func _physics_process(delta):
-	time_passed += delta
-	if time_passed >= SPAWN_INTERVAL:
-		time_passed = 0.0
-		#CHECK FOR AND SPAWN ENEMIES HERE
-		var is_enemies = check_for_enemies()
-		if !is_enemies:
-			spawn_enemy()
+	pass
+	#time_passed += delta
+	#if time_passed >= SPAWN_INTERVAL:
+		#time_passed = 0.0
+		##CHECK FOR AND SPAWN ENEMIES HERE
+		#var is_enemies = check_for_enemies()
+		#if !is_enemies:
+			#spawn_enemy()
 	
 func check_for_enemies():
 	var children = get_all_nodes(get_children())
