@@ -121,6 +121,7 @@ func move(delta, action):
 		#if the player didn't jump, but they're not on the floor, they're falling. Set that state for the animation
 		if movement_state != MovementState.JUMPING:
 			jump_state = JumpState.JUMP_FALL_START
+			movement_state = MovementState.JUMPING
 		#boiler plate code. Makes guy fall :3
 		velocity.y += gravity * delta
 		action_state = ActionState.IDLE #this stops attacking from always being true if player attacks in the air. Will be changed later
@@ -311,7 +312,7 @@ func _on_animation_finished():
 		else:
 			animated_sprite.play("jump_rise") #if the player is still going up, replay the animation
 	if animated_sprite.animation == "jump_fall":
-		jump_state = JumpState.JUMP_FALL 
+		jump_state = JumpState.JUMP_FALL
 	if animated_sprite.animation == "jump_falling":
 		jump_state = JumpState.LANDING
 	if animated_sprite.animation == "jump_land":
