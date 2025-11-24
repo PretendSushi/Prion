@@ -54,7 +54,7 @@ var invincible_timer = 0
 
 #Available states
 enum MovementState { IDLE, WALKING, JUMPING }
-enum ActionState { IDLE, ATTACK, RUBBER_BAND }
+enum ActionState { IDLE, ATTACK, RUBBER_BAND, DAMAGED }
 enum JumpState { IDLE, JUMP_START, JUMP_RISE, JUMP_FALL_START, JUMP_FALL, LANDING }
 enum RubberBandState { IDLE, START, DURATION, END}
 
@@ -81,25 +81,29 @@ func _ready():
 	animated_sprite.animation_finished.connect(_on_animation_finished) #calls _on_animation_finished every time an animation ends
 
 func _physics_process(delta):
-	#KB logic should be decomposed
+	if !handle_knockback(delta):
+		move(delta, "")
+		
+	handle_knockback(delta)
+	play_animations(direction)
+	check_for_inputs()
+	move_and_slide()
+
+func handle_knockback(delta):
 	#if the timer is over 0, the player is being knocked back
 	if knockback_timer > 0:
 		knockback_timer -= delta #Subtract elapsed time from it
 		#once half the time has elapsed, the playaer needs to start falling
 		if knockback_timer <= KNOCKBACK_DURATION / 2:
 			velocity.y = V_KNOCKBACK 
-	#if the player isn't being knocked back, they can move freely
-	else:
-		direction = move(delta,"")
-		
-	#This should also be decomposed
+		return true
+	return false
+	
+func handle_invincibility(delta):
 	if invincible_timer > 0:
 		invincible_timer -= delta
 	else:
 		invincible = false
-	play_animations(direction)
-	check_for_inputs()
-	move_and_slide()
 
 func check_for_inputs():
 	#Movement inputs are not checked here
@@ -343,14 +347,14 @@ func handle_health_pickup(health_gain):
 	if health + health_gain >= MAX_HEALTH:
 		health = MAX_HEALTH
 	elif health < MAX_HEALTH:
-		health += 10
+		health += health_gain
 	emit_signal("health_changed", health)
 	
 func handle_protein_pickup(protein_gain):
 	if protein + protein_gain >= MAX_PROTEIN:
 		protein = MAX_PROTEIN
 	elif protein < MAX_PROTEIN:
-		protein += 10
+		protein += protein_gain
 	emit_signal("protein_changed", protein)
 	
 func interact():
