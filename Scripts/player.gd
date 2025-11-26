@@ -83,8 +83,8 @@ func _ready():
 func _physics_process(delta):
 	if !handle_knockback(delta):
 		move(delta, "")
-		
 	handle_knockback(delta)
+	handle_invincibility(delta)
 	play_animations(direction)
 	check_for_inputs()
 	move_and_slide()
@@ -100,6 +100,7 @@ func handle_knockback(delta):
 	return false
 	
 func handle_invincibility(delta):
+	print("here")
 	if invincible_timer > 0:
 		invincible_timer -= delta
 	else:
