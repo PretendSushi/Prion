@@ -25,6 +25,7 @@ const RUBBER_BAND_PROTEIN_COST = 40
 const KNOCKBACK = 1000
 const KNOCKBACK_DURATION = 0.5
 const INVINCIBLE_DURATION = 2.5
+const ZERO_GRAV_DURATION = 3
 const JUMP_CAP = 0.45
 const V_KNOCKBACK = 150
 const RB_ANIM_OFFSET = 450
@@ -51,11 +52,16 @@ var current_interactable = null
 var invincible = false
 #Timer for invincibility
 var invincible_timer = 0
+#Timer for zero g
+var zero_grav_timer = 0
+#cooldown check, sets to true when in effect
+var zero_grav_cooldown = false
+
 
 #Available states
 enum MovementState { IDLE, WALKING, JUMPING }
-enum ActionState { IDLE, ATTACK, RUBBER_BAND, DAMAGED }
-enum JumpState { IDLE, JUMP_START, JUMP_RISE, JUMP_FALL_START, JUMP_FALL, LANDING }
+enum ActionState { IDLE, ATTACK, RUBBER_BAND, DAMAGED, ZERO_GRAV }
+enum JumpState { IDLE, JUMP_START, JUMP_RISE, JUMP_FALL_START, JUMP_FALL, LANDING}
 enum RubberBandState { IDLE, START, DURATION, END}
 
 #actual states
@@ -85,6 +91,7 @@ func _physics_process(delta):
 		move(delta, "")
 	handle_knockback(delta)
 	handle_invincibility(delta)
+	handle_zero_grav(delta)
 	play_animations(direction)
 	check_for_inputs()
 	move_and_slide()
@@ -100,11 +107,18 @@ func handle_knockback(delta):
 	return false
 	
 func handle_invincibility(delta):
-	print("here")
 	if invincible_timer > 0:
 		invincible_timer -= delta
 	else:
 		invincible = false
+		
+func handle_zero_grav(delta):
+	if zero_grav_timer > 0:
+		zero_grav_timer -= delta
+	else:
+		if action_state == ActionState.ZERO_GRAV:
+			action_state = ActionState.IDLE
+			zero_grav_cooldown = true
 
 func check_for_inputs():
 	#Movement inputs are not checked here
@@ -119,22 +133,32 @@ func check_for_inputs():
 		rubber_band()
 	if Input.is_action_just_pressed("Interact"):
 		interact()
+	if Input.is_action_just_pressed("ZeroGrav"):
+		zero_grav()
 
 func move(delta, action):
 	var current_speed #it'll get a value, dw
-	if not is_on_floor():
-		#if the player didn't jump, but they're not on the floor, they're falling. Set that state for the animation
-		if movement_state != MovementState.JUMPING:
-			jump_state = JumpState.JUMP_FALL_START
-			movement_state = MovementState.JUMPING
-		#boiler plate code. Makes guy fall :3
-		velocity.y += gravity * delta
-		action_state = ActionState.IDLE #this stops attacking from always being true if player attacks in the air. Will be changed later
-		current_speed = AIR_SPEED #Should move faster in the air
-	else:
-		if jump_state != JumpState.IDLE:
-			jump_state = JumpState.IDLE
-		current_speed = GROUND_SPEED
+	if action_state != ActionState.ZERO_GRAV:
+		if not is_on_floor():
+			#if the player didn't jump, but they're not on the floor, they're falling. Set that state for the animation
+			if movement_state != MovementState.JUMPING:
+				jump_state = JumpState.JUMP_FALL_START
+				movement_state = MovementState.JUMPING
+			#boiler plate code. Makes guy fall :3
+			velocity.y += gravity * delta
+			if action_state != ActionState.ZERO_GRAV:
+				action_state = ActionState.IDLE #this stops attacking from always being true if player attacks in the air. Will be changed later
+			current_speed = AIR_SPEED #Should move faster in the air
+		else:
+			zero_grav_cooldown = false
+			if jump_state != JumpState.IDLE:
+				jump_state = JumpState.IDLE
+			current_speed = GROUND_SPEED
+	if action_state == ActionState.ZERO_GRAV:
+		if not is_on_ceiling():
+			velocity.y -= gravity * delta
+		else:
+			velocity.y = 0
 	# Handle Jump.
 	if Input.is_action_just_pressed("Jump") and is_on_floor() and movement_state != MovementState.JUMPING:
 		#Set states and velocity
@@ -145,10 +169,9 @@ func move(delta, action):
 	if Input.is_action_pressed("Jump") and movement_state == MovementState.JUMPING and velocity.y < 0 and jump_timer > 0:
 		velocity.y -= JUMP_FORCE * delta
 		jump_timer -= delta
-	else:
-		velocity.y += gravity * delta
 	# Get the input direction and handle the movement/deceleration.
 	#set states and speeds for left, right and idle
+	
 	if Input.is_action_pressed("Left") and action_state != ActionState.RUBBER_BAND:
 		direction = -1.0
 		if movement_state == MovementState.JUMPING:
@@ -167,20 +190,27 @@ func move(delta, action):
 		velocity.x = move_toward(velocity.x, 0, GROUND_SPEED)
 		if movement_state != MovementState.JUMPING:
 			movement_state = MovementState.IDLE
+	
 
 	#Flip sprite
 	if direction > 0:
 		animated_sprite.flip_h = false
 	elif direction < 0:
 		animated_sprite.flip_h = true
-	
+	#print(velocity.y)
 	return direction
 
 func play_animations(direction):
 	#this is the animation we will play at the end
 	var target_anim = ""
 	
-	if is_on_floor():
+	var is_on_surface = false
+	if action_state == ActionState.ZERO_GRAV:
+		is_on_surface = is_on_ceiling()
+	else:
+		is_on_surface = is_on_floor()
+	
+	if is_on_surface:
 		if movement_state == MovementState.JUMPING:
 			if jump_state == JumpState.JUMP_START:
 				target_anim = "jump_startup"
@@ -213,6 +243,11 @@ func play_animations(direction):
 			JumpState.IDLE:
 				target_anim = "jump_fall"
 	
+	if action_state == ActionState.ZERO_GRAV:
+		animated_sprite.flip_v = true
+	else:
+		animated_sprite.flip_v = false
+		
 	if target_anim == "rubber_band_ground_startup" or target_anim == "rubber_band_ground":
 		if direction >= 0:
 			animated_sprite.offset.x = RB_ANIM_OFFSET
@@ -260,7 +295,7 @@ func bounce():
 
 func attack(down_pressed, up_pressed):
 	#the player can only attack once, then not again until the end of the animation
-	if action_state == ActionState.ATTACK:
+	if action_state == ActionState.ATTACK or action_state == ActionState.ZERO_GRAV:
 		return
 	#if it is a legit attack, set the state
 	action_state = ActionState.ATTACK
@@ -301,6 +336,12 @@ func rubber_band_attack(direction):
 			emit_signal("player_attack", RUBBER_BAND_DAMAGE, KNOCKBACK)
 	protein -= RUBBER_BAND_PROTEIN_COST
 	emit_signal("protein_changed", protein)
+	
+func zero_grav():
+	if action_state == ActionState.ZERO_GRAV or zero_grav_cooldown:
+		return
+	action_state = ActionState.ZERO_GRAV
+	zero_grav_timer = ZERO_GRAV_DURATION
 	
 func _on_animation_finished():
 	#changes state at the end of animations. Exists for animation purposes
