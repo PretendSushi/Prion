@@ -15,7 +15,7 @@ signal note_added
 const GROUND_SPEED = 700.0
 const AIR_SPEED = 900.0
 const JUMP_VELOCITY = -800.0
-const JUMP_FORCE = 3500
+const JUMP_FORCE = 3000
 const BOUNCE_VELOCITY = -1200.0
 const MAX_HEALTH = 100
 const MAX_PROTEIN = 100
@@ -160,17 +160,25 @@ func move(delta, action):
 		else:
 			velocity.y = 0
 	# Handle Jump.
-	if Input.is_action_just_pressed("Jump") and is_on_floor() and movement_state != MovementState.JUMPING:
+	if Input.is_action_just_pressed("Jump") and movement_state != MovementState.JUMPING:
+		if action_state != ActionState.ZERO_GRAV:
+			if is_on_floor():
+				velocity.y = JUMP_VELOCITY
+		else:
+			if is_on_ceiling():
+				velocity.y = -JUMP_VELOCITY
 		#Set states and velocity
-		velocity.y = JUMP_VELOCITY
 		jump_state = JumpState.JUMP_START
 		movement_state = MovementState.JUMPING
 		jump_timer = JUMP_CAP
-	if Input.is_action_pressed("Jump") and movement_state == MovementState.JUMPING and velocity.y < 0 and jump_timer > 0:
-		velocity.y -= JUMP_FORCE * delta
+	if Input.is_action_pressed("Jump") and movement_state == MovementState.JUMPING and jump_timer > 0:
+		if action_state == ActionState.ZERO_GRAV:
+			velocity.y += JUMP_FORCE * delta
+		else:
+			velocity.y -= JUMP_FORCE * delta
 		jump_timer -= delta
-	# Get the input direction and handle the movement/deceleration.
-	#set states and speeds for left, right and idle
+		# Get the input direction and handle the movement/deceleration.
+		#set states and speeds for left, right and idle
 	
 	if Input.is_action_pressed("Left") and action_state != ActionState.RUBBER_BAND:
 		direction = -1.0
