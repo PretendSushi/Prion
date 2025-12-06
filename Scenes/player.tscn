@@ -1,4 +1,4 @@
-[gd_scene load_steps=51 format=3 uid="uid://uqe5a2rw7h7h"]
+[gd_scene load_steps=59 format=3 uid="uid://uqe5a2rw7h7h"]
 
 [ext_resource type="Script" uid="uid://bb643hqwrxmyd" path="res://Scripts/player.gd" id="1_6ltq4"]
 [ext_resource type="Texture2D" uid="uid://db16l1p7wv2et" path="res://Assets/Sprites/player/idle/still.png" id="2_igrcy"]
@@ -28,17 +28,25 @@
 [ext_resource type="Texture2D" uid="uid://bgieujmxdhw7c" path="res://Assets/Sprites/player/walk/frame_00011.png" id="13_y6uwr"]
 [ext_resource type="Texture2D" uid="uid://dhmxsdshvoksq" path="res://Assets/Sprites/player/walk/frame_00012.png" id="14_83xs0"]
 [ext_resource type="Texture2D" uid="uid://dg3dwuq1rgxbf" path="res://Assets/Sprites/player/walk/frame_00013.png" id="15_ypfnu"]
+[ext_resource type="Texture2D" uid="uid://cu4cbpt5rw11c" path="res://Assets/Sprites/player/leech/leechattack_v001.0001.png" id="16_c1k8q"]
 [ext_resource type="Texture2D" uid="uid://bw6q7xte1qv64" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0001.png" id="16_ph33w"]
 [ext_resource type="Texture2D" uid="uid://chci4b7xs25pm" path="res://Assets/Sprites/player/walk/frame_00014.png" id="16_xuaoq"]
 [ext_resource type="Texture2D" uid="uid://6ogloryp0b4y" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0002.png" id="17_7ldla"]
+[ext_resource type="Texture2D" uid="uid://dghn3i8yw4cht" path="res://Assets/Sprites/player/leech/leechattack_v001.0002.png" id="17_e6mvm"]
 [ext_resource type="Texture2D" uid="uid://bwf6ggpldraeu" path="res://Assets/Sprites/player/walk/frame_00015.png" id="17_wohnl"]
 [ext_resource type="Texture2D" uid="uid://bp3im63akoala" path="res://Assets/Sprites/player/walk/frame_00016.png" id="18_36dho"]
+[ext_resource type="Texture2D" uid="uid://c7vyafc54qopf" path="res://Assets/Sprites/player/leech/leechattack_v001.0003.png" id="18_57lvd"]
 [ext_resource type="Texture2D" uid="uid://cgphugxtaa385" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0003.png" id="18_r7t2e"]
+[ext_resource type="Texture2D" uid="uid://c428c1re4mgwi" path="res://Assets/Sprites/player/leech/leechattack_v001.0005.png" id="19_ie7r7"]
 [ext_resource type="Texture2D" uid="uid://bappv1b26ymgc" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0004.png" id="19_nmr2m"]
 [ext_resource type="Texture2D" uid="uid://ciobqvlpjw138" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0005.png" id="20_ax3m3"]
+[ext_resource type="Texture2D" uid="uid://lf20mk3e6m4e" path="res://Assets/Sprites/player/leech/leechattack_v001.0006.png" id="20_vq3lt"]
 [ext_resource type="Texture2D" uid="uid://dh7vlu20l45qb" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0006.png" id="21_3vlem"]
+[ext_resource type="Texture2D" uid="uid://1lfvcv8ahtg5" path="res://Assets/Sprites/player/leech/leechattack_v001.0007.png" id="21_pukcj"]
+[ext_resource type="Texture2D" uid="uid://boajw0dlhmk4c" path="res://Assets/Sprites/player/leech/leechattack_v001.0008.png" id="22_1htnp"]
 [ext_resource type="Texture2D" uid="uid://s0o7mikmkwp4" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0007.png" id="22_8eeqe"]
 [ext_resource type="Texture2D" uid="uid://h12fifjjomyc" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0008.png" id="23_5x828"]
+[ext_resource type="Texture2D" uid="uid://bpn87eekkveeg" path="res://Assets/Sprites/player/leech/leechattack_v001.0009.png" id="23_m376e"]
 [ext_resource type="Texture2D" uid="uid://bs3h6m6tpkecc" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0009.png" id="24_c1k8q"]
 [ext_resource type="Texture2D" uid="uid://cd4lk7vn2au4u" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0010.png" id="25_e6mvm"]
 [ext_resource type="Texture2D" uid="uid://bt8xcca62p7ht" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0011.png" id="26_57lvd"]
@@ -124,6 +132,35 @@ animations = [{
 "loop": false,
 "name": &"jump_startup",
 "speed": 20.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("16_c1k8q")
+}, {
+"duration": 0.5,
+"texture": ExtResource("17_e6mvm")
+}, {
+"duration": 1.5,
+"texture": ExtResource("18_57lvd")
+}, {
+"duration": 1.5,
+"texture": ExtResource("19_ie7r7")
+}, {
+"duration": 1.5,
+"texture": ExtResource("20_vq3lt")
+}, {
+"duration": 1.5,
+"texture": ExtResource("21_pukcj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_1htnp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_m376e")
+}],
+"loop": true,
+"name": &"leech",
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -249,8 +286,9 @@ script = ExtResource("1_6ltq4")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(15, -213)
 sprite_frames = SubResource("SpriteFrames_gn6c1")
-animation = &"jump_fall"
+animation = &"leech"
 autoplay = "idle"
+frame_progress = 0.730171
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(2, -195)
