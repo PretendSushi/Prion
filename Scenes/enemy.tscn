@@ -19,7 +19,7 @@ animations = [{
 size = Vector2(309, 106)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_30sca"]
-size = Vector2(847, 345)
+size = Vector2(1000, 345)
 
 [node name="Enemy" type="CharacterBody2D"]
 script = ExtResource("1_hhl2t")

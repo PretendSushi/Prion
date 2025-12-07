@@ -7,6 +7,7 @@ signal drop_protein
 const SPEED = 400.0
 const JUMP_VELOCITY = -400.0
 const KNOCKBACK_DURATION = 0.4
+const FREEZE_DURATION = 1.0
 const KNOCKBACK = 700
 const V_KNOCKBACK = 100
 const PROTEIN_PICKUP_OFFSET = 30
@@ -24,6 +25,7 @@ var health = 100
 var health_pickup = null
 var protein_pickup = null
 var knockback_timer = 0
+var freeze_timer = 0
 
 @onready var detectBox = $DetectBox
 @onready var animated_sprite = $AnimatedSprite2D
@@ -40,6 +42,8 @@ func _physics_process(delta):
 	if knockback_timer > 0:
 		knockback_timer -= delta
 	#if the knockback isn't in effect, the enemy can act as normal
+	elif freeze_timer > 0:
+		freeze_timer -= delta
 	else:
 		#reset the velocity to 0 since it was changed during knockback
 		velocity.x = 0
@@ -61,9 +65,8 @@ func _physics_process(delta):
 			attempt_hit_player(bodies)
 			time_since_last_attack = 0.0
 			can_attack = false
-	
-	#Move the enemy (will not move if velocity is 0 so this can run each frame)
-	move_and_slide()
+
+		move_and_slide()
 	
 func move(delta, direction):
 	if not is_on_floor():
@@ -111,7 +114,13 @@ func _on_player_attack(damage, knockback):
 	knockback_timer = KNOCKBACK_DURATION
 	if health <= 0:
 		die()
-			
+
+func _on_player_leech(damage):
+	health -= damage
+	freeze_timer = FREEZE_DURATION
+	if health <= 0:
+		die()
+
 func die():
 	emit_signal("drop_health", health_pickup, global_position.x, global_position.y)
 	emit_signal("drop_protein", protein_pickup, global_position.x + PROTEIN_PICKUP_OFFSET, global_position.y)

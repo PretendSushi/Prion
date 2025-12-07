@@ -6,6 +6,7 @@ signal protein_changed
 signal initialize_health
 signal initialize_protein
 signal player_attack
+signal player_leech
 signal show_inventory
 signal initialize_inventory
 signal interacted
@@ -29,6 +30,8 @@ const ZERO_GRAV_DURATION = 3
 const JUMP_CAP = 0.45
 const V_KNOCKBACK = 150
 const RB_ANIM_OFFSET = 450
+const LEECH_ANIM_OFFSET = 100
+const LEECH_HEALTH_GAIN = 25
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = 1800#ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
@@ -60,15 +63,17 @@ var zero_grav_cooldown = false
 
 #Available states
 enum MovementState { IDLE, WALKING, JUMPING }
-enum ActionState { IDLE, ATTACK, RUBBER_BAND, DAMAGED, ZERO_GRAV }
+enum ActionState { IDLE, ATTACK, RUBBER_BAND, DAMAGED, ZERO_GRAV, LEECH }
 enum JumpState { IDLE, JUMP_START, JUMP_RISE, JUMP_FALL_START, JUMP_FALL, LANDING}
 enum RubberBandState { IDLE, START, DURATION, END}
+enum LeechState { IDLE, START, DURATION, END }
 
 #actual states
 var movement_state = MovementState.IDLE
 var action_state = ActionState.IDLE
 var jump_state = JumpState.IDLE
 var rubber_band_state = RubberBandState.IDLE
+var leech_state = LeechState.IDLE
 
 #Any children of the player that are needed in the code are here
 @onready var animated_sprite = $AnimatedSprite2D
@@ -78,6 +83,8 @@ var rubber_band_state = RubberBandState.IDLE
 @onready var top_hitbox = $TopCollision
 @onready var rb_hitbox_right = $RBCollisionRight
 @onready var rb_hitbox_left = $RBCollisionLeft
+@onready var leech_right = $LeechCollisionRight
+@onready var leech_left = $LeechCollisionLeft
 
 func _ready():
 	#initialize everything
@@ -135,6 +142,8 @@ func check_for_inputs():
 		interact()
 	if Input.is_action_just_pressed("ZeroGrav"):
 		zero_grav()
+	if Input.is_action_just_pressed("Leech"):
+		leech()
 
 func move(delta, action):
 	var current_speed #it'll get a value, dw
@@ -180,25 +189,25 @@ func move(delta, action):
 		# Get the input direction and handle the movement/deceleration.
 		#set states and speeds for left, right and idle
 	
-	if Input.is_action_pressed("Left") and action_state != ActionState.RUBBER_BAND:
-		direction = -1.0
-		if movement_state == MovementState.JUMPING:
-			velocity.x = direction * AIR_SPEED
+	if action_state != ActionState.RUBBER_BAND and action_state != ActionState.LEECH:
+		if Input.is_action_pressed("Left"):
+			direction = -1.0
+			if movement_state == MovementState.JUMPING:
+				velocity.x = direction * AIR_SPEED
+			else:
+				velocity.x = direction * GROUND_SPEED
+				movement_state = MovementState.WALKING
+		elif Input.is_action_pressed("Right"):
+			direction = 1.0
+			if movement_state == MovementState.JUMPING:
+				velocity.x = direction * AIR_SPEED
+			else:
+				velocity.x = direction * GROUND_SPEED
+				movement_state = MovementState.WALKING
 		else:
-			velocity.x = direction * GROUND_SPEED
-			movement_state = MovementState.WALKING
-	elif Input.is_action_pressed("Right") and action_state != ActionState.RUBBER_BAND:
-		direction = 1.0
-		if movement_state == MovementState.JUMPING:
-			velocity.x = direction * AIR_SPEED
-		else:
-			velocity.x = direction * GROUND_SPEED
-			movement_state = MovementState.WALKING
-	else:
-		velocity.x = move_toward(velocity.x, 0, GROUND_SPEED)
-		if movement_state != MovementState.JUMPING:
-			movement_state = MovementState.IDLE
-	
+			velocity.x = move_toward(velocity.x, 0, GROUND_SPEED)
+			if movement_state != MovementState.JUMPING:
+				movement_state = MovementState.IDLE
 
 	#Flip sprite
 	if direction > 0:
@@ -231,6 +240,13 @@ func play_animations(direction):
 					target_anim = "rubber_band_ground_startup"
 				elif rubber_band_state == RubberBandState.DURATION:
 					target_anim = "rubber_band_ground"
+			elif action_state == ActionState.LEECH:
+				if leech_state == LeechState.START:
+					target_anim = "leech_start"
+				elif leech_state == LeechState.DURATION:
+					target_anim = "leech"
+				elif leech_state == LeechState.END:
+					target_anim = "leech_end"
 			elif action_state == ActionState.ATTACK:
 				target_anim = "attack"
 			elif movement_state == MovementState.WALKING:
@@ -261,6 +277,11 @@ func play_animations(direction):
 			animated_sprite.offset.x = RB_ANIM_OFFSET
 		else:
 			animated_sprite.offset.x = -RB_ANIM_OFFSET
+	elif target_anim == "leech_start" or target_anim == "leech" or target_anim == "leech_end":
+		if direction >= 0:
+			animated_sprite.offset.x = LEECH_ANIM_OFFSET
+		else:
+			animated_sprite.offset.x = -LEECH_ANIM_OFFSET
 	else:
 		animated_sprite.offset.x = 0
 	#this is to avoid animations getting infinitely replayed and never ending
@@ -351,6 +372,32 @@ func zero_grav():
 	action_state = ActionState.ZERO_GRAV
 	zero_grav_timer = ZERO_GRAV_DURATION
 	
+func leech():
+	if action_state == ActionState.LEECH:
+		return
+	action_state = ActionState.LEECH
+	leech_state = LeechState.START
+
+func is_leech_successful():
+	var hitbox = leech_right
+	if direction < 0:
+		hitbox = leech_left
+	var bodies = hitbox.get_overlapping_bodies()
+	for body in bodies:
+		if body.name == "Enemy":
+			player_leech.connect(body._on_player_leech.bind())
+			emit_signal("player_leech", ATTACK_DAMAGE)
+			on_leech_successful()
+			return true
+	return false
+
+func on_leech_successful():
+	if health + LEECH_HEALTH_GAIN >= 100:
+		health = 100
+	else:
+		health += LEECH_HEALTH_GAIN
+	emit_signal("health_changed", health)
+
 func _on_animation_finished():
 	#changes state at the end of animations. Exists for animation purposes
 	if animated_sprite.animation == "attack":
@@ -378,6 +425,16 @@ func _on_animation_finished():
 		rubber_band_attack(direction)
 	if animated_sprite.animation == "rubber_band_ground":
 		rubber_band_state = RubberBandState.IDLE
+		action_state = ActionState.IDLE
+	if animated_sprite.animation == "leech_start":
+		if is_leech_successful():
+			leech_state = LeechState.DURATION
+		else:
+			leech_state = LeechState.END
+	if animated_sprite.animation == "leech":
+		leech_state = LeechState.END
+	if animated_sprite.animation == "leech_end":
+		leech_state = LeechState.IDLE
 		action_state = ActionState.IDLE
 
 func _on_interactable_focused(interactable) -> void:

@@ -348,11 +348,11 @@ shape = SubResource("RectangleShape2D_7ldla")
 [node name="LeechCollisionRight" type="Area2D" parent="."]
 
 [node name="HitCollision" type="CollisionShape2D" parent="LeechCollisionRight"]
-position = Vector2(341, -100)
+position = Vector2(341, -214)
 shape = SubResource("RectangleShape2D_c1k8q")
 
 [node name="LeechCollisionLeft" type="Area2D" parent="."]
 
 [node name="HitCollision" type="CollisionShape2D" parent="LeechCollisionLeft"]
-position = Vector2(-325, -214)
+position = Vector2(-341, -214)
 shape = SubResource("RectangleShape2D_e6mvm")
