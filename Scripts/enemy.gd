@@ -26,6 +26,7 @@ var health_pickup = null
 var protein_pickup = null
 var knockback_timer = 0
 var freeze_timer = 0
+var can_move = true
 
 @onready var detectBox = $DetectBox
 @onready var animated_sprite = $AnimatedSprite2D
@@ -38,43 +39,44 @@ func _ready():
 	
 
 func _physics_process(delta):
-	#if the knockback timer isn't 0, that means knockback is still in effect. We don't want the enemy doing anything else
-	if knockback_timer > 0:
-		knockback_timer -= delta
+	can_move = true
+	can_move = handle_knockback(delta)
 	#if the knockback isn't in effect, the enemy can act as normal
-	elif freeze_timer > 0:
-		freeze_timer -= delta
-	else:
+	can_move = handle_freeze(delta)
+	if can_move:
 		#reset the velocity to 0 since it was changed during knockback
 		velocity.x = 0
 		move(delta, direction)
 	
-		#checks if the player is in its detection range, then finds the direction
-		var bodies = detectBox.get_overlapping_bodies()
-		for body in bodies:
-			find_player_direction(body)
-		
+		var player = find_player()
+	
 		#handle the delay between attacks
 		if not can_attack:
 			can_attack = true #to be condensed later
-			#time_since_last_attack += delta 
-			#if time_since_last_attack >= attack_cooldown:
-				#can_attack = true
-				#time_since_last_attack = 0.0
 		if can_attack:
-			attempt_hit_player(bodies)
+			attempt_hit_player(player)
 			time_since_last_attack = 0.0
 			can_attack = false
 
-		move_and_slide()
+	move_and_slide()
+		
+func handle_knockback(delta):
+	#if the knockback timer isn't 0, that means knockback is still in effect. We don't want the enemy doing anything else
+	if knockback_timer > 0:
+		knockback_timer -= delta
+		return false
+	return true
+		
+func handle_freeze(delta):
+	if freeze_timer > 0:
+		freeze_timer -= delta
+		return false
+	return true
 	
 func move(delta, direction):
 	if not is_on_floor():
 		velocity.y += gravity * delta
 
-	# Handle Jump.
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
 	if direction:
 		velocity.x = direction * SPEED
 	else:
@@ -82,7 +84,6 @@ func move(delta, direction):
 		
 	#Flip sprite
 	animated_sprite.flip_h = velocity.x < 0
-
 
 func _on_detect_box_body_entered(body):
 	find_player_direction(body)
@@ -97,15 +98,19 @@ func find_player_direction(body):
 		else:
 			direction = 1 
 		player_in_range = true
-		
-func attempt_hit_player(bodies):
-	if player_in_range:
-		for body in bodies:
-			if body.name == "Player":
-				var distance_to_player = global_position.distance_to(body.global_position)
-				if distance_to_player <= PLAYER_ATTACK_MAX_DISTANCE:
-					emit_signal("hit_player", damage, KNOCKBACK, global_position)
-				break
+
+func find_player():
+	var bodies = detectBox.get_overlapping_bodies()
+	for body in bodies:
+		find_player_direction(body)
+		if body.name == "Player":
+			return body
+			
+func attempt_hit_player(body):
+	if player_in_range and body != null:
+		var distance_to_player = global_position.distance_to(body.global_position)
+		if distance_to_player <= PLAYER_ATTACK_MAX_DISTANCE:
+			emit_signal("hit_player", damage, KNOCKBACK, global_position)
 				
 func _on_player_attack(damage, knockback):
 	health -= damage
@@ -118,6 +123,7 @@ func _on_player_attack(damage, knockback):
 func _on_player_leech(damage):
 	health -= damage
 	freeze_timer = FREEZE_DURATION
+	velocity.x = 0.0
 	if health <= 0:
 		die()
 
