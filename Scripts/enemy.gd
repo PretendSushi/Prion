@@ -27,6 +27,7 @@ var protein_pickup = null
 var knockback_timer = 0
 var freeze_timer = 0
 var can_move = true
+var is_kbd = false
 
 @onready var detectBox = $DetectBox
 @onready var animated_sprite = $AnimatedSprite2D
@@ -40,10 +41,10 @@ func _ready():
 
 func _physics_process(delta):
 	can_move = true
-	can_move = handle_knockback(delta)
+	is_kbd = handle_knockback(delta)
 	#if the knockback isn't in effect, the enemy can act as normal
 	can_move = handle_freeze(delta)
-	if can_move:
+	if can_move and !is_kbd:
 		#reset the velocity to 0 since it was changed during knockback
 		velocity.x = 0
 		move(delta, direction)
@@ -57,15 +58,14 @@ func _physics_process(delta):
 			attempt_hit_player(player)
 			time_since_last_attack = 0.0
 			can_attack = false
-
 	move_and_slide()
 		
 func handle_knockback(delta):
 	#if the knockback timer isn't 0, that means knockback is still in effect. We don't want the enemy doing anything else
 	if knockback_timer > 0:
 		knockback_timer -= delta
-		return false
-	return true
+		return true
+	return false
 		
 func handle_freeze(delta):
 	if freeze_timer > 0:

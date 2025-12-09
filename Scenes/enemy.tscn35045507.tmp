@@ -1,0 +1,45 @@
+[gd_scene load_steps=7 format=3 uid="uid://c74e7gplr6lsc"]
+
+[ext_resource type="Script" uid="uid://clastanvfiu3w" path="res://Scripts/enemy.gd" id="1_hhl2t"]
+[ext_resource type="Texture2D" uid="uid://bncubx0bnppx3" path="res://Assets/Sprites/enemy/enemy resized.png" id="1_lvlir"]
+[ext_resource type="Script" uid="uid://ccofa4d1bsjht" path="res://Scripts/DetectBox.gd" id="3_0vvmu"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xy6cx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_lvlir")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_afiuv"]
+size = Vector2(309, 106)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_30sca"]
+size = Vector2(1000, 345)
+
+[node name="Enemy" type="CharacterBody2D"]
+script = ExtResource("1_hhl2t")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(-10, -6)
+sprite_frames = SubResource("SpriteFrames_xy6cx")
+animation = &"idle"
+
+[node name="Hitbox" type="CollisionShape2D" parent="."]
+position = Vector2(-4.5, 126)
+shape = SubResource("RectangleShape2D_afiuv")
+
+[node name="DetectBox" type="Area2D" parent="."]
+position = Vector2(-1, 52)
+script = ExtResource("3_0vvmu")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectBox"]
+position = Vector2(-1, -43.5)
+shape = SubResource("RectangleShape2D_30sca")
+
+[connection signal="body_entered" from="DetectBox" to="." method="_on_detect_box_body_entered"]
+[connection signal="body_exited" from="DetectBox" to="." method="_on_detect_box_body_exited"]
