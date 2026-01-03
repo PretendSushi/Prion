@@ -72,7 +72,7 @@ func get_note_last_scan_percent(note_content):
 	if result == OK:
 		var data = json.get_data()
 		if data.has("last_percent_decode"):
-			return data["last_precent_decode"]
+			return data["last_percent_decode"]
 	return 0
 	
 func get_decoded_words(note_content):
@@ -96,7 +96,8 @@ func decode_note(note_encoded, note_decoded, scan_percent, last_percent_decode, 
 	
 	#if the note has no new words to decode, then we just need to spit out the version that was already decoded
 	if dec_word_count == 0:
-		return redecode_note(note_encoded, note_decoded, dec_word_idxs)
+		print("hit")
+		return get_part_decoded_note(file_path)
 	
 	#loop for the number of words that need to be decoded
 	for i in dec_word_count: 
@@ -106,8 +107,8 @@ func decode_note(note_encoded, note_decoded, scan_percent, last_percent_decode, 
 		enc_words[idx] = dec_words[idx] #replace the encoded word with the decoded word
 		dec_word_idxs.append(idx) #add the index to the list of indeces of decoded words
 	
-	update_note_meta(file_path, dec_word_idxs, scan_percent) #the note metadata needs to be saved
 	note_encoded = " ".join(enc_words) #replace the original encoded note with the partially decoded one
+	update_note_meta(file_path, dec_word_idxs, scan_percent, note_encoded) #the note metadata needs to be saved
 	return note_encoded
 	
 func _on_note_changed(button):
@@ -126,7 +127,7 @@ func _on_note_changed(button):
 	var note = decode_note(encoded,decoded,75,last_scan_percent,decoded_words, meta_path)
 	note_content.append_text(note)
 	
-func update_note_meta(file_path, dec_words, scan_perc):
+func update_note_meta(file_path, dec_words, scan_perc, note_encoded):
 	var data = {}
 	var file := FileAccess.open(file_path, FileAccess.READ)
 	if file != null:
@@ -141,7 +142,8 @@ func update_note_meta(file_path, dec_words, scan_perc):
 		data = result
 		
 	data["decoded_words"] = dec_words
-	data["last_precent_decode"] = scan_perc
+	data["last_percent_decode"] = scan_perc
+	data["note_encoded"] = note_encoded
 		
 	var file_write := FileAccess.open(file_path, FileAccess.WRITE)
 	if file_write == null:
@@ -156,14 +158,25 @@ func update_note_meta(file_path, dec_words, scan_perc):
 		print("Failed to open file for writing")
 
 #This method should only be called by decode_note. This method ONLY decodes the words in the note that have already been decoded
-func redecode_note(encoded_note, decoded_note, dec_word_idxs):
-	var enc_words = encoded_note.split(" ") #array of words ENCODED (random ASCII)
-	var dec_words = decoded_note.split(" ") #array of words DECODED (real English words)
-	var new_note = enc_words
-	for i in dec_word_idxs.size():
-		new_note[dec_word_idxs[i]] = dec_words[dec_word_idxs[i]]
-	new_note = " ".join(new_note) 
-	return new_note 
+func get_part_decoded_note(file_path):
+	if FileAccess.file_exists(file_path):
+		var file = FileAccess.open(file_path, FileAccess.READ)
+		var content_str = file.get_as_text()
+		var content = JSON.parse_string(content_str)
+		print(content)
+		if content.has("note_encoded"):
+			return content["note_encoded"]
+		else:
+			return null
+	else:
+		return null
+	#var enc_words = encoded_note.split(" ") #array of words ENCODED (random ASCII)
+	#var dec_words = decoded_note.split(" ") #array of words DECODED (real English words)
+	#var new_note = enc_words
+	#for i in dec_word_idxs.size():
+		#new_note[dec_word_idxs[i]] = dec_words[dec_word_idxs[i]]
+	#new_note = " ".join(new_note) 
+	#return new_note 
 
 func _on_player_note_added(note) -> void:
 	create_button(note)
