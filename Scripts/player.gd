@@ -85,6 +85,8 @@ var leech_state = LeechState.IDLE
 @onready var rb_hitbox_left = $RBCollisionLeft
 @onready var leech_right = $LeechCollisionRight
 @onready var leech_left = $LeechCollisionLeft
+@onready var raycast_floor = $RayCastFloor
+@onready var raycast_top = $RayCastTop
 
 func _ready():
 	#initialize everything
@@ -217,17 +219,14 @@ func move(delta, action):
 	#print(velocity.y)
 	return direction
 
+func is_on_surface():
+	return raycast_floor.is_colliding() or raycast_top.is_colliding()
+
 func play_animations(direction):
 	#this is the animation we will play at the end
 	var target_anim = ""
 	
-	var is_on_surface = false
-	if action_state == ActionState.ZERO_GRAV:
-		is_on_surface = is_on_ceiling()
-	else:
-		is_on_surface = is_on_floor()
-	
-	if is_on_surface:
+	if is_on_surface():
 		if movement_state == MovementState.JUMPING:
 			if jump_state == JumpState.JUMP_START:
 				target_anim = "jump_startup"
@@ -255,6 +254,7 @@ func play_animations(direction):
 				target_anim = "idle"
 
 	else:
+
 		match jump_state:
 			JumpState.JUMP_START:
 				target_anim = "jump_startup"

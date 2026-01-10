@@ -356,11 +356,3 @@ shape = SubResource("RectangleShape2D_c1k8q")
 [node name="HitCollision" type="CollisionShape2D" parent="LeechCollisionLeft"]
 position = Vector2(-325, -214)
 shape = SubResource("RectangleShape2D_e6mvm")
-
-[node name="RayCastFloor" type="RayCast2D" parent="."]
-position = Vector2(0, -80)
-
-[node name="RayCastTop" type="RayCast2D" parent="."]
-position = Vector2(0, -308)
-rotation = 3.14159
-target_position = Vector2(4.37114e-06, 50)
