@@ -87,6 +87,7 @@ var leech_state = LeechState.IDLE
 @onready var leech_left = $LeechCollisionLeft
 @onready var raycast_floor = $RayCastFloor
 @onready var raycast_top = $RayCastTop
+@onready var hit_anim = $HitFlashAnim
 
 func _ready():
 	#initialize everything
@@ -292,6 +293,7 @@ func play_animations(direction):
 func _on_enemy_hit_player(damage, knockback, enemy_pos):
 	if invincible:
 		return
+	hit_anim.play("hit")
 	health -= damage
 	emit_signal("health_changed", health)
 	#handle knockback
