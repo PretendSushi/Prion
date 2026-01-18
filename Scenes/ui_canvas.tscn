@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3 uid="uid://b51etxs3frqp5"]
+
+[ext_resource type="PackedScene" uid="uid://ltsdi67f64wv" path="res://Scenes/HUD.tscn" id="1_m0g55"]
+[ext_resource type="PackedScene" uid="uid://ju1nlt54nwfm" path="res://Scenes/Notes.tscn" id="2_0e3mv"]
+[ext_resource type="PackedScene" uid="uid://da7bo8klfo12e" path="res://Scenes/PauseScreen.tscn" id="3_8cclj"]
+
+[node name="UICanvas" type="CanvasLayer"]
+process_mode = 3
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+metadata/_edit_use_anchors_ = true
+
+[node name="HUD" parent="UI" instance=ExtResource("1_m0g55")]
+layout_mode = 1
+
+[node name="Notes" parent="UI" instance=ExtResource("2_0e3mv")]
+visible = false
+layout_mode = 1
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="PauseScreen" parent="UI" instance=ExtResource("3_8cclj")]
+visible = false
+layout_mode = 1

@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://cfiuyeqbaa37f"]
+
+[ext_resource type="Script" uid="uid://dng1yina8gu6a" path="res://Scripts/room_transition.gd" id="1_lgamu"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j6s1e"]
+size = Vector2(50, 500)
+
+[node name="RoomTransition" type="Node2D"]
+script = ExtResource("1_lgamu")
+
+[node name="DetectBox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectBox"]
+shape = SubResource("RectangleShape2D_j6s1e")
+
+[connection signal="body_entered" from="DetectBox" to="." method="_on_detect_box_body_entered"]

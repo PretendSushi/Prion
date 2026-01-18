@@ -15,6 +15,10 @@ run/main_scene="res://Scenes/level.tscn"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+RoomManager="*res://Scripts/RoomManager.gd"
+
 [display]
 
 window/size/viewport_width=1280
@@ -24,6 +28,10 @@ window/stretch/mode="viewport"
 [dotnet]
 
 project/assembly_name="Prion"
+
+[global_group]
+
+Player=""
 
 [input]
 

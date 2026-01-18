@@ -3,18 +3,24 @@
 [ext_resource type="Script" uid="uid://cob3thhyjfwnv" path="res://Scripts/level.gd" id="1_8c0lf"]
 [ext_resource type="PackedScene" uid="uid://uqe5a2rw7h7h" path="res://Scenes/player.tscn" id="1_ls57i"]
 [ext_resource type="Texture2D" uid="uid://5igdb8oyc2f1" path="res://Assets/World/Backgrounds/sketch_apartments_room1.png" id="2_qxfql"]
-[ext_resource type="PackedScene" uid="uid://ju1nlt54nwfm" path="res://Scenes/Notes.tscn" id="3_0f350"]
 [ext_resource type="PackedScene" uid="uid://cf32yyk7lufyu" path="res://Scenes/Note.tscn" id="3_bvt00"]
 [ext_resource type="TileSet" uid="uid://nhgkuh44o1ro" path="res://Resources/Tilesets/level_tileset.tres" id="3_qxfql"]
 [ext_resource type="PackedScene" uid="uid://c74e7gplr6lsc" path="res://Scenes/enemy.tscn" id="3_xoy22"]
-[ext_resource type="PackedScene" uid="uid://ltsdi67f64wv" path="res://Scenes/HUD.tscn" id="4_70ean"]
 [ext_resource type="Resource" uid="uid://covbq8jtvemra" path="res://Resources/NoteReflection.tres" id="4_oqgf2"]
-[ext_resource type="PackedScene" uid="uid://da7bo8klfo12e" path="res://Scenes/PauseScreen.tscn" id="5_wqkje"]
 [ext_resource type="PackedScene" uid="uid://tnwyed04r1rv" path="res://Scenes/SavePoint.tscn" id="8_754fn"]
+[ext_resource type="PackedScene" uid="uid://cfiuyeqbaa37f" path="res://Scenes/RoomTransition.tscn" id="12_ha31o"]
+[ext_resource type="Script" uid="uid://p550xmykutcc" path="res://Scripts/RoomTransData.gd" id="13_pa6b8"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_pa6b8"]
 blend_mode = 3
 light_mode = 1
+
+[sub_resource type="Resource" id="Resource_crh0w"]
+script = ExtResource("13_pa6b8")
+room_id = 1
+player_x = 0.0
+player_y = 500.0
+metadata/_custom_type_script = "uid://p550xmykutcc"
 
 [node name="Level" type="Node2D"]
 script = ExtResource("1_8c0lf")
@@ -42,32 +48,6 @@ position = Vector2(-2417, 1174)
 position = Vector2(774, -259)
 zoom = Vector2(0.5, 0.5)
 
-[node name="UICanvas" type="CanvasLayer" parent="Player"]
-process_mode = 3
-
-[node name="UI" type="Control" parent="Player/UICanvas"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_vertical = 3
-metadata/_edit_use_anchors_ = true
-
-[node name="HUD" parent="Player/UICanvas/UI" instance=ExtResource("4_70ean")]
-layout_mode = 1
-
-[node name="Notes" parent="Player/UICanvas/UI" instance=ExtResource("3_0f350")]
-visible = false
-layout_mode = 1
-size_flags_horizontal = 4
-size_flags_vertical = 4
-
-[node name="PauseScreen" parent="Player/UICanvas/UI" instance=ExtResource("5_wqkje")]
-visible = false
-layout_mode = 1
-
 [node name="Enemy" parent="." instance=ExtResource("3_xoy22")]
 position = Vector2(70, 944)
 
@@ -80,13 +60,10 @@ position = Vector2(-17, -646)
 [node name="Enemy4" parent="." instance=ExtResource("3_xoy22")]
 position = Vector2(-2051, -674)
 
-[connection signal="health_changed" from="Player" to="Player/UICanvas/UI/HUD" method="_on_player_health_changed"]
-[connection signal="initialize_health" from="Player" to="Player/UICanvas/UI/HUD" method="_on_player_initialize_health"]
-[connection signal="initialize_inventory" from="Player" to="Player/UICanvas/UI/Notes" method="_on_player_initialize_inventory"]
-[connection signal="initialize_protein" from="Player" to="Player/UICanvas/UI/HUD" method="_on_player_initialize_protein"]
-[connection signal="note_added" from="Player" to="Player/UICanvas/UI/Notes" method="_on_player_note_added"]
-[connection signal="protein_changed" from="Player" to="Player/UICanvas/UI/HUD" method="_on_player_protein_changed"]
-[connection signal="show_inventory" from="Player" to="Player/UICanvas/UI/Notes" method="_on_player_show_inventory"]
+[node name="RoomTransition" parent="." groups=["RoomTransitionTriggers"] instance=ExtResource("12_ha31o")]
+position = Vector2(2974, 900)
+room_trans_data = SubResource("Resource_crh0w")
+
 [connection signal="drop_health" from="Enemy" to="." method="_on_enemy_drop_health"]
 [connection signal="drop_protein" from="Enemy" to="." method="_on_enemy_drop_protein"]
 [connection signal="hit_player" from="Enemy" to="Player" method="_on_enemy_hit_player"]
