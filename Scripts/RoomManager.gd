@@ -21,7 +21,6 @@ func get_room_path_by_id(room_id):
 	var json = JSON.new()
 	var result = json.parse(content)
 	if result == OK:
-		print("hit")
 		for i in json.data:
 			if str(room_id) == i["id"]:
 				return i["path"]

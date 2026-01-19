@@ -1,12 +1,23 @@
-[gd_scene load_steps=4 format=3 uid="uid://c7ywe072ok7ps"]
+[gd_scene load_steps=8 format=3 uid="uid://c7ywe072ok7ps"]
 
 [ext_resource type="TileSet" uid="uid://nhgkuh44o1ro" path="res://Resources/Tilesets/level_tileset.tres" id="1_3fnks"]
+[ext_resource type="Script" uid="uid://cob3thhyjfwnv" path="res://Scripts/level.gd" id="1_xydm2"]
 [ext_resource type="PackedScene" uid="uid://uqe5a2rw7h7h" path="res://Scenes/player.tscn" id="2_wh2cv"]
+[ext_resource type="PackedScene" uid="uid://cfiuyeqbaa37f" path="res://Scenes/RoomTransition.tscn" id="3_jaldj"]
+[ext_resource type="Script" uid="uid://p550xmykutcc" path="res://Scripts/RoomTransData.gd" id="4_xydm2"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_3fnks"]
 blend_mode = 3
 
+[sub_resource type="Resource" id="Resource_l1sls"]
+script = ExtResource("4_xydm2")
+room_id = 2
+player_x = 2000.0
+player_y = 1145.0
+metadata/_custom_type_script = "uid://p550xmykutcc"
+
 [node name="Level01" type="Node2D"]
+script = ExtResource("1_xydm2")
 
 [node name="TileMap" type="TileMap" parent="."]
 material = SubResource("CanvasItemMaterial_3fnks")
@@ -19,3 +30,7 @@ position = Vector2(255, 662)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 zoom = Vector2(0.5, 0.5)
+
+[node name="RoomTransition" parent="." instance=ExtResource("3_jaldj")]
+position = Vector2(-35, 384)
+room_trans_data = SubResource("Resource_l1sls")

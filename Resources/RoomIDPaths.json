@@ -2,5 +2,9 @@
 	{
 		"id": "1",
 		"path": "res://Scenes/level01.tscn"
+	}, 
+	{
+		"id": "2",
+		"path": "res://Scenes/level.tscn"
 	}
 ]

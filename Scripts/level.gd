@@ -4,14 +4,15 @@ var enemy = null
 var adjacent_rooms = []
 var SPAWN_INTERVAL = 5.0
 var time_passed = 0.0
-@onready var enemies = [$Enemy,$Enemy2,$Enemy3,$Enemy4]
 @onready var player = $Player
 
 
 func _ready():
 	enemy = preload("res://Scenes/enemy.tscn")
 	if RoomManager.player_x != null and RoomManager.player_y != null:
+		print("hit")
 		position_player(RoomManager.player_x, RoomManager.player_y)
+	var enemies = get_tree().get_nodes_in_group("Enemy")
 	for enemy_instance in enemies:
 		enemy_instance.hit_player.connect(player._on_enemy_hit_player)
 		enemy_instance.drop_health.connect(_on_enemy_drop_health)
@@ -28,7 +29,7 @@ func _physics_process(delta):
 			#spawn_enemy()
 			
 func position_player(x, y):
-	var player = get_tree().get_nodes_in_group("Player")
+	var player = get_tree().get_nodes_in_group("Player")[0]
 	player.global_position.x = x
 	player.global_position.y = y
 	

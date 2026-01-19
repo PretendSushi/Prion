@@ -18,7 +18,7 @@ light_mode = 1
 [sub_resource type="Resource" id="Resource_crh0w"]
 script = ExtResource("13_pa6b8")
 room_id = 1
-player_x = 0.0
+player_x = 50.0
 player_y = 500.0
 metadata/_custom_type_script = "uid://p550xmykutcc"
 
@@ -48,16 +48,16 @@ position = Vector2(-2417, 1174)
 position = Vector2(774, -259)
 zoom = Vector2(0.5, 0.5)
 
-[node name="Enemy" parent="." instance=ExtResource("3_xoy22")]
+[node name="Enemy" parent="." groups=["Enemy"] instance=ExtResource("3_xoy22")]
 position = Vector2(70, 944)
 
-[node name="Enemy2" parent="." instance=ExtResource("3_xoy22")]
+[node name="Enemy2" parent="." groups=["Enemy"] instance=ExtResource("3_xoy22")]
 position = Vector2(-1174, 129)
 
-[node name="Enemy3" parent="." instance=ExtResource("3_xoy22")]
+[node name="Enemy3" parent="." groups=["Enemy"] instance=ExtResource("3_xoy22")]
 position = Vector2(-17, -646)
 
-[node name="Enemy4" parent="." instance=ExtResource("3_xoy22")]
+[node name="Enemy4" parent="." groups=["Enemy"] instance=ExtResource("3_xoy22")]
 position = Vector2(-2051, -674)
 
 [node name="RoomTransition" parent="." groups=["RoomTransitionTriggers"] instance=ExtResource("12_ha31o")]
