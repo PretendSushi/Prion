@@ -44,6 +44,7 @@ var apex_reached = false
 var knockback_timer = 0
 #var jump_timer = 0
 var jump_start_y = 0
+var jump_cancelled = false
 #You know what this tracks
 var health = 100
 #Basically mana
@@ -154,9 +155,12 @@ func move(delta, action):
 	if action_state != ActionState.ZERO_GRAV:
 		if not is_on_floor():
 			#if the player didn't jump, but they're not on the floor, they're falling. Set that state for the animation
-			if movement_state != MovementState.JUMPING or (movement_state == MovementState.JUMPING and is_on_surface()):
+			if movement_state != MovementState.JUMPING:
 				jump_state = JumpState.JUMP_FALL_START
 				movement_state = MovementState.JUMPING
+			if movement_state == MovementState.JUMPING and is_top_colliding():
+				jump_cancelled = true
+				jump_state = JumpState.JUMP_FALL_START
 			#boiler plate code. Makes guy fall :3
 			velocity.y += gravity * delta
 			if action_state != ActionState.ZERO_GRAV:
@@ -164,6 +168,7 @@ func move(delta, action):
 			current_speed = AIR_SPEED #Should move faster in the air
 		else:
 			zero_grav_cooldown = false
+			jump_cancelled = false
 			if jump_state != JumpState.IDLE:
 				jump_state = JumpState.IDLE
 			current_speed = GROUND_SPEED
@@ -186,7 +191,9 @@ func move(delta, action):
 		jump_start_y = global_position.y 
 	if Input.is_action_pressed("Jump") \
 	and movement_state == MovementState.JUMPING\
-	and !is_jump_height_reached():
+	and !is_jump_height_reached()\
+	and !jump_cancelled:
+		print("hit")
 		if action_state == ActionState.ZERO_GRAV:
 			velocity.y += JUMP_FORCE * delta
 		else:
@@ -229,6 +236,9 @@ func is_jump_height_reached():
 
 func is_on_surface():
 	return raycast_floor.is_colliding() or raycast_top.is_colliding()
+	
+func is_top_colliding():
+	return raycast_top.is_colliding()
 
 func play_animations(direction):
 	#this is the animation we will play at the end
