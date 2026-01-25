@@ -27,7 +27,7 @@ const KNOCKBACK = 1000
 const KNOCKBACK_DURATION = 0.5
 const INVINCIBLE_DURATION = 2.5
 const ZERO_GRAV_DURATION = 3
-const JUMP_CAP = 0.45
+const JUMP_CAP = 500 #max jump height in pixels
 const V_KNOCKBACK = 150
 const RB_ANIM_OFFSET = 450
 const LEECH_ANIM_OFFSET = 100
@@ -42,7 +42,8 @@ var direction = 0
 var apex_reached = false
 #Tracks the amount of time the player has been knocked back
 var knockback_timer = 0
-var jump_timer = 0
+#var jump_timer = 0
+var jump_start_y = 0
 #You know what this tracks
 var health = 100
 #Basically mana
@@ -153,7 +154,7 @@ func move(delta, action):
 	if action_state != ActionState.ZERO_GRAV:
 		if not is_on_floor():
 			#if the player didn't jump, but they're not on the floor, they're falling. Set that state for the animation
-			if movement_state != MovementState.JUMPING:
+			if movement_state != MovementState.JUMPING or (movement_state == MovementState.JUMPING and is_on_surface()):
 				jump_state = JumpState.JUMP_FALL_START
 				movement_state = MovementState.JUMPING
 			#boiler plate code. Makes guy fall :3
@@ -182,13 +183,14 @@ func move(delta, action):
 		#Set states and velocity
 		jump_state = JumpState.JUMP_START
 		movement_state = MovementState.JUMPING
-		jump_timer = JUMP_CAP
-	if Input.is_action_pressed("Jump") and movement_state == MovementState.JUMPING and jump_timer > 0:
+		jump_start_y = global_position.y 
+	if Input.is_action_pressed("Jump") \
+	and movement_state == MovementState.JUMPING\
+	and !is_jump_height_reached():
 		if action_state == ActionState.ZERO_GRAV:
 			velocity.y += JUMP_FORCE * delta
 		else:
 			velocity.y -= JUMP_FORCE * delta
-		jump_timer -= delta
 		# Get the input direction and handle the movement/deceleration.
 		#set states and speeds for left, right and idle
 	
@@ -219,6 +221,11 @@ func move(delta, action):
 		animated_sprite.flip_h = true
 	#print(velocity.y)
 	return direction
+
+func is_jump_height_reached():
+	if action_state != ActionState.ZERO_GRAV:
+		return global_position.y - jump_start_y <= -JUMP_CAP
+	return global_position.y + jump_start_y >= JUMP_CAP
 
 func is_on_surface():
 	return raycast_floor.is_colliding() or raycast_top.is_colliding()
