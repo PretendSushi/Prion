@@ -193,7 +193,7 @@ func move(delta, action):
 	and movement_state == MovementState.JUMPING\
 	and !is_jump_height_reached()\
 	and !jump_cancelled:
-		print("hit")
+		#print("hit")
 		if action_state == ActionState.ZERO_GRAV:
 			velocity.y += JUMP_FORCE * delta
 		else:
@@ -230,9 +230,11 @@ func move(delta, action):
 	return direction
 
 func is_jump_height_reached():
+	print(global_position.y)
+	print(jump_start_y)
 	if action_state != ActionState.ZERO_GRAV:
 		return global_position.y - jump_start_y <= -JUMP_CAP
-	return global_position.y + jump_start_y >= JUMP_CAP
+	return global_position.y - jump_start_y >= JUMP_CAP
 
 func is_on_surface():
 	return raycast_floor.is_colliding() or raycast_top.is_colliding()
