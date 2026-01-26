@@ -31,12 +31,13 @@ var is_kbd = false
 
 @onready var detectBox = $DetectBox
 @onready var animated_sprite = $AnimatedSprite2D
+@onready var hitbox = $HitboxArea
 
 func _ready():
 	health_pickup = preload("res://Scenes/HealthPickup.tscn")
 	protein_pickup = preload("res://Scenes/ProteinPickup.tscn")
 	player_in_range = false
-	can_attack = true
+	can_attack = false
 	
 
 func _physics_process(delta):
@@ -51,13 +52,8 @@ func _physics_process(delta):
 	
 		var player = find_player()
 	
-		#handle the delay between attacks
-		if not can_attack:
-			can_attack = true #to be condensed later
-		if can_attack:
-			attempt_hit_player(player)
-			time_since_last_attack = 0.0
-			can_attack = false
+		attempt_hit_player(player)
+		time_since_last_attack = 0.0
 	move_and_slide()
 		
 func handle_knockback(delta):
@@ -107,10 +103,8 @@ func find_player():
 			return body
 			
 func attempt_hit_player(body):
-	if player_in_range and body != null:
-		var distance_to_player = global_position.distance_to(body.global_position)
-		if distance_to_player <= PLAYER_ATTACK_MAX_DISTANCE:
-			emit_signal("hit_player", damage, KNOCKBACK, global_position)
+	if can_attack:
+		emit_signal("hit_player", damage, KNOCKBACK, global_position)
 				
 func _on_player_attack(damage, knockback):
 	health -= damage
@@ -131,3 +125,12 @@ func die():
 	emit_signal("drop_health", health_pickup, global_position.x, global_position.y)
 	emit_signal("drop_protein", protein_pickup, global_position.x + PROTEIN_PICKUP_OFFSET, global_position.y)
 	queue_free()
+
+func _on_hurtbox_area_entered(area: Area2D) -> void:
+	if area.is_in_group("PlayerHurtbox"):
+		can_attack = true
+
+
+func _on_hurtbox_area_exited(area: Area2D) -> void:
+	if area.is_in_group("PlayerHurtbox"):
+		can_attack = false

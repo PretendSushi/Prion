@@ -33,6 +33,7 @@ project/assembly_name="Prion"
 
 Player=""
 Enemy=""
+PlayerHurtbox=""
 
 [input]
 

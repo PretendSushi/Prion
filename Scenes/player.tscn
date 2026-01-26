@@ -1,4 +1,4 @@
-[gd_scene load_steps=69 format=3 uid="uid://uqe5a2rw7h7h"]
+[gd_scene load_steps=70 format=3 uid="uid://uqe5a2rw7h7h"]
 
 [ext_resource type="Script" uid="uid://bb643hqwrxmyd" path="res://Scripts/player.gd" id="1_6ltq4"]
 [ext_resource type="Shader" uid="uid://d4fv1pxe8clud" path="res://Scenes/hitflash.gdshader" id="2_e6mvm"]
@@ -279,7 +279,10 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jm6k1"]
-size = Vector2(72, 324)
+size = Vector2(85, 324)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vq3lt"]
+size = Vector2(85, 324)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_igrcy"]
 size = Vector2(268, 273)
@@ -350,12 +353,18 @@ script = ExtResource("1_6ltq4")
 material = SubResource("ShaderMaterial_57lvd")
 position = Vector2(15, -213)
 sprite_frames = SubResource("SpriteFrames_gn6c1")
-animation = &"leech"
+animation = &"idle"
 autoplay = "idle"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(2, -195)
+[node name="Hurtbox" type="CollisionShape2D" parent="."]
+position = Vector2(8.5, -195)
 shape = SubResource("RectangleShape2D_jm6k1")
+
+[node name="HurtboxArea" type="Area2D" parent="." groups=["PlayerHurtbox"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxArea"]
+position = Vector2(8.5, -195)
+shape = SubResource("RectangleShape2D_vq3lt")
 
 [node name="FrontHitbox" type="Area2D" parent="."]
 
