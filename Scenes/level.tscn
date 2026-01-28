@@ -16,10 +16,11 @@ blend_mode = 3
 light_mode = 1
 
 [sub_resource type="Resource" id="Resource_crh0w"]
+resource_local_to_scene = true
 script = ExtResource("13_pa6b8")
 room_id = 1
 player_x = 50.0
-player_y = 500.0
+player_y = 600.0
 metadata/_custom_type_script = "uid://p550xmykutcc"
 
 [node name="Level" type="Node2D"]

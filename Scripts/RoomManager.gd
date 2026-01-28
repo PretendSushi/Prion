@@ -5,7 +5,6 @@ var player_y = null
 
 func change_level(room_data):
 	get_tree().change_scene_to_file(get_room_path_by_id(room_data.room_id))
-	await get_tree().process_frame
 	#this is such a fucking hack...
 	player_x = room_data.player_x
 	player_y = room_data.player_y
@@ -25,3 +24,7 @@ func get_room_path_by_id(room_id):
 			if str(room_id) == i["id"]:
 				return i["path"]
 	return null
+	
+func nullify_player_coords():
+	player_x = null
+	player_y = null

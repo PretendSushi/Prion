@@ -10,8 +10,8 @@ var time_passed = 0.0
 func _ready():
 	enemy = preload("res://Scenes/enemy.tscn")
 	if RoomManager.player_x != null and RoomManager.player_y != null:
-		print("hit")
 		position_player(RoomManager.player_x, RoomManager.player_y)
+		RoomManager.nullify_player_coords()
 	var enemies = get_tree().get_nodes_in_group("Enemy")
 	for enemy_instance in enemies:
 		enemy_instance.hit_player.connect(player._on_enemy_hit_player)
