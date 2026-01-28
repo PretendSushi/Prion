@@ -92,6 +92,8 @@ var leech_state = LeechState.IDLE
 @onready var hit_anim = $HitFlashAnim
 
 func _ready():
+	if RoomManager.player_stats != null:
+		apply_data(RoomManager.player_stats)
 	#initialize everything
 	emit_signal("initialize_health", MAX_HEALTH, health)
 	emit_signal("initialize_protein", MAX_PROTEIN, protein)
@@ -495,3 +497,14 @@ func restore_max_hp():
 func add_note(note_name):
 	notes_list.append(note_name)
 	emit_signal("note_added", note_name)
+	
+func get_data_as_dict():
+	return {
+		"health": health,
+		"protein": protein
+	}
+	
+func apply_data(data):
+	health = data.health
+	protein = data.protein
+	

@@ -15,7 +15,7 @@
 blend_mode = 3
 light_mode = 1
 
-[sub_resource type="Resource" id="Resource_crh0w"]
+[sub_resource type="Resource" id="Resource_oqgf2"]
 resource_local_to_scene = true
 script = ExtResource("13_pa6b8")
 room_id = 1
@@ -26,7 +26,7 @@ metadata/_custom_type_script = "uid://p550xmykutcc"
 [node name="Level" type="Node2D"]
 script = ExtResource("1_8c0lf")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Background" type="Sprite2D" parent="."]
 texture = ExtResource("2_qxfql")
 
 [node name="TileMap" type="TileMap" parent="."]
@@ -63,7 +63,7 @@ position = Vector2(-2051, -674)
 
 [node name="RoomTransition" parent="." groups=["RoomTransitionTriggers"] instance=ExtResource("12_ha31o")]
 position = Vector2(2974, 900)
-room_trans_data = SubResource("Resource_crh0w")
+room_trans_data = SubResource("Resource_oqgf2")
 
 [connection signal="drop_health" from="Enemy" to="." method="_on_enemy_drop_health"]
 [connection signal="drop_protein" from="Enemy" to="." method="_on_enemy_drop_protein"]

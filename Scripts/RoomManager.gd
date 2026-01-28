@@ -2,8 +2,13 @@ extends Node
 
 var player_x = null
 var player_y = null
+var player_stats = null
 
 func change_level(room_data):
+	#get the players stats BEFORE changing the room
+	var player = get_tree().get_nodes_in_group("Player")[0]
+	player_stats = player.get_data_as_dict()
+	#change the room
 	get_tree().change_scene_to_file(get_room_path_by_id(room_data.room_id))
 	#this is such a fucking hack...
 	player_x = room_data.player_x
