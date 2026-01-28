@@ -231,10 +231,18 @@ func move(delta, action):
 	return direction
 
 func is_jump_height_reached():
+	if jump_cancelled:
+		return true
 	if action_state != ActionState.ZERO_GRAV:
-		return global_position.y - jump_start_y <= -JUMP_CAP
-	return global_position.y - jump_start_y >= JUMP_CAP
-
+		if global_position.y - jump_start_y <= -JUMP_CAP:
+			jump_cancelled = true
+			return true
+		return false
+	elif global_position.y - jump_start_y >= JUMP_CAP:
+		jump_cancelled = true
+		return true
+	return false
+	
 func is_on_surface():
 	return raycast_floor.is_colliding() or raycast_top.is_colliding()
 	
