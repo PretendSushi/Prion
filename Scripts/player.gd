@@ -170,10 +170,12 @@ func move(delta, action):
 			current_speed = AIR_SPEED #Should move faster in the air
 		else:
 			zero_grav_cooldown = false
-			jump_cancelled = false
+			#jump_cancelled = false
 			if jump_state != JumpState.IDLE:
 				jump_state = JumpState.IDLE
 			current_speed = GROUND_SPEED
+	if Input.is_action_just_released("Jump") and jump_cancelled:
+		jump_cancelled = false
 	if action_state == ActionState.ZERO_GRAV:
 		if not is_on_ceiling():
 			velocity.y -= gravity * delta
