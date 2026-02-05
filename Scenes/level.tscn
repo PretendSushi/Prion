@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://i2khwini8146"]
+[gd_scene load_steps=14 format=3 uid="uid://i2khwini8146"]
 
 [ext_resource type="Script" uid="uid://cob3thhyjfwnv" path="res://Scripts/level.gd" id="1_8c0lf"]
 [ext_resource type="PackedScene" uid="uid://uqe5a2rw7h7h" path="res://Scenes/player.tscn" id="1_ls57i"]
@@ -7,6 +7,7 @@
 [ext_resource type="TileSet" uid="uid://nhgkuh44o1ro" path="res://Resources/Tilesets/level_tileset.tres" id="3_qxfql"]
 [ext_resource type="PackedScene" uid="uid://c74e7gplr6lsc" path="res://Scenes/enemy.tscn" id="3_xoy22"]
 [ext_resource type="Resource" uid="uid://covbq8jtvemra" path="res://Resources/NoteReflection.tres" id="4_oqgf2"]
+[ext_resource type="Script" uid="uid://dkehqfja5imcv" path="res://Scripts/camera.gd" id="7_qxfql"]
 [ext_resource type="PackedScene" uid="uid://tnwyed04r1rv" path="res://Scenes/SavePoint.tscn" id="8_754fn"]
 [ext_resource type="PackedScene" uid="uid://cfiuyeqbaa37f" path="res://Scenes/RoomTransition.tscn" id="12_ha31o"]
 [ext_resource type="Script" uid="uid://p550xmykutcc" path="res://Scripts/RoomTransData.gd" id="13_pa6b8"]
@@ -15,7 +16,7 @@
 blend_mode = 3
 light_mode = 1
 
-[sub_resource type="Resource" id="Resource_oqgf2"]
+[sub_resource type="Resource" id="Resource_qxfql"]
 resource_local_to_scene = true
 script = ExtResource("13_pa6b8")
 room_id = 1
@@ -42,12 +43,13 @@ position = Vector2(-1995, 64)
 position = Vector2(-1199, 1098)
 note_data = ExtResource("4_oqgf2")
 
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(-1643, 915)
+zoom = Vector2(0.5, 0.5)
+script = ExtResource("7_qxfql")
+
 [node name="Player" parent="." instance=ExtResource("1_ls57i")]
 position = Vector2(-2417, 1174)
-
-[node name="Camera2D" type="Camera2D" parent="Player"]
-position = Vector2(774, -259)
-zoom = Vector2(0.5, 0.5)
 
 [node name="Enemy" parent="." groups=["Enemy"] instance=ExtResource("3_xoy22")]
 position = Vector2(70, 944)
@@ -63,7 +65,7 @@ position = Vector2(-2051, -674)
 
 [node name="RoomTransition" parent="." groups=["RoomTransitionTriggers"] instance=ExtResource("12_ha31o")]
 position = Vector2(2974, 900)
-room_trans_data = SubResource("Resource_oqgf2")
+room_trans_data = SubResource("Resource_qxfql")
 
 [connection signal="drop_health" from="Enemy" to="." method="_on_enemy_drop_health"]
 [connection signal="drop_protein" from="Enemy" to="." method="_on_enemy_drop_protein"]

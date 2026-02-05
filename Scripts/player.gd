@@ -170,7 +170,6 @@ func move(delta, action):
 			current_speed = AIR_SPEED #Should move faster in the air
 		else:
 			zero_grav_cooldown = false
-			#jump_cancelled = false
 			if jump_state != JumpState.IDLE:
 				jump_state = JumpState.IDLE
 			current_speed = GROUND_SPEED
