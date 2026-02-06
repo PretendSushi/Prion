@@ -27,7 +27,7 @@ const KNOCKBACK = 1000
 const KNOCKBACK_DURATION = 0.5
 const INVINCIBLE_DURATION = 2.5
 const ZERO_GRAV_DURATION = 3
-const JUMP_CAP = 500 #max jump height in pixels
+const JUMP_CAP = 400 #max jump height in pixels
 const V_KNOCKBACK = 150
 const RB_ANIM_OFFSET = 450
 const LEECH_ANIM_OFFSET = 100
@@ -62,11 +62,10 @@ var zero_grav_timer = 0
 #cooldown check, sets to true when in effect
 var zero_grav_cooldown = false
 
-
 #Available states
 enum MovementState { IDLE, WALKING, JUMPING }
 enum ActionState { IDLE, ATTACK, RUBBER_BAND, DAMAGED, ZERO_GRAV, LEECH }
-enum JumpState { IDLE, JUMP_START, JUMP_RISE, JUMP_FALL_START, JUMP_FALL, LANDING}
+enum JumpState { IDLE, JUMP_START, JUMP_RISE, JUMP_FALL_START, JUMP_FALL, LANDING }
 enum RubberBandState { IDLE, START, DURATION, END}
 enum LeechState { IDLE, START, DURATION, END }
 
@@ -107,7 +106,9 @@ func _physics_process(delta):
 	handle_invincibility(delta)
 	handle_zero_grav(delta)
 	play_animations(direction)
-	check_for_inputs()
+	check_for_inputs(delta)
+	handle_jump_helper(delta)
+	handle_falling(delta)
 	move_and_slide()
 
 func handle_knockback(delta):
@@ -134,7 +135,7 @@ func handle_zero_grav(delta):
 			action_state = ActionState.IDLE
 			zero_grav_cooldown = true
 
-func check_for_inputs():
+func check_for_inputs(delta):
 	#Movement inputs are not checked here
 	#Check for attack input 
 	if Input.is_action_just_pressed("Attack"):
@@ -151,58 +152,47 @@ func check_for_inputs():
 		zero_grav()
 	if Input.is_action_just_pressed("Leech"):
 		leech()
+	if Input.is_action_just_pressed("Jump"):
+		handle_jump(delta)
+
+func handle_jump(delta):
+	if jump_cancelled:
+		return
+	if movement_state == MovementState.JUMPING and is_top_colliding():
+		jump_cancelled = true
+		return
+	if movement_state != MovementState.JUMPING:
+		movement_state = MovementState.JUMPING
+		jump_state = JumpState.JUMP_START
+		jump_start_y = global_position.y
+		velocity.y = JUMP_VELOCITY
+
+
+func handle_jump_helper(delta):
+	if Input.is_action_pressed("Jump")\
+	and movement_state == MovementState.JUMPING\
+	and !jump_cancelled\
+	and !is_jump_height_reached():
+		velocity.y -= JUMP_FORCE * delta
+	if Input.is_action_just_released("Jump"):
+		jump_cancelled = true
+
+func handle_falling(delta):
+	if not is_on_floor():
+		if movement_state != MovementState.JUMPING and !jump_cancelled:
+			#This means the player is falling without having jumped.
+			jump_state = JumpState.JUMP_FALL_START
+			movement_state = MovementState.JUMPING
+		velocity.y += gravity * delta
+		if movement_state == MovementState.JUMPING and is_top_colliding():
+			jump_cancelled = true
+	else:
+		if movement_state != MovementState.JUMPING:
+			zero_grav_cooldown = false
+			jump_state = JumpState.IDLE
+			jump_cancelled = false
 
 func move(delta, action):
-	var current_speed #it'll get a value, dw
-	if action_state != ActionState.ZERO_GRAV:
-		if not is_on_floor():
-			#if the player didn't jump, but they're not on the floor, they're falling. Set that state for the animation
-			if movement_state != MovementState.JUMPING:
-				jump_state = JumpState.JUMP_FALL_START
-				movement_state = MovementState.JUMPING
-			if movement_state == MovementState.JUMPING and is_top_colliding():
-				jump_cancelled = true
-				jump_state = JumpState.JUMP_FALL_START
-			#boiler plate code. Makes guy fall :3
-			velocity.y += gravity * delta
-			if action_state != ActionState.ZERO_GRAV:
-				action_state = ActionState.IDLE #this stops attacking from always being true if player attacks in the air. Will be changed later
-			current_speed = AIR_SPEED #Should move faster in the air
-		else:
-			zero_grav_cooldown = false
-			if jump_state != JumpState.IDLE:
-				jump_state = JumpState.IDLE
-			current_speed = GROUND_SPEED
-	if Input.is_action_just_released("Jump") and jump_cancelled:
-		jump_cancelled = false
-	if action_state == ActionState.ZERO_GRAV:
-		if not is_on_ceiling():
-			velocity.y -= gravity * delta
-		else:
-			velocity.y = 0
-	# Handle Jump.
-	if Input.is_action_just_pressed("Jump") and movement_state != MovementState.JUMPING:
-		if action_state != ActionState.ZERO_GRAV:
-			if is_on_floor():
-				velocity.y = JUMP_VELOCITY
-		else:
-			if is_on_ceiling():
-				velocity.y = -JUMP_VELOCITY
-		#Set states and velocity
-		jump_state = JumpState.JUMP_START
-		movement_state = MovementState.JUMPING
-		jump_start_y = global_position.y 
-	if Input.is_action_pressed("Jump") \
-	and movement_state == MovementState.JUMPING\
-	and !is_jump_height_reached()\
-	and !jump_cancelled:
-		if action_state == ActionState.ZERO_GRAV:
-			velocity.y += JUMP_FORCE * delta
-		else:
-			velocity.y -= JUMP_FORCE * delta
-		# Get the input direction and handle the movement/deceleration.
-		#set states and speeds for left, right and idle
-	
 	if action_state != ActionState.RUBBER_BAND and action_state != ActionState.LEECH:
 		if Input.is_action_pressed("Left"):
 			direction = -1.0
@@ -228,7 +218,6 @@ func move(delta, action):
 		animated_sprite.flip_h = false
 	elif direction < 0:
 		animated_sprite.flip_h = true
-	#print(velocity.y)
 	return direction
 
 func is_jump_height_reached():
@@ -253,7 +242,7 @@ func is_top_colliding():
 func play_animations(direction):
 	#this is the animation we will play at the end
 	var target_anim = ""
-	
+
 	if is_on_surface():
 		if movement_state == MovementState.JUMPING:
 			if jump_state == JumpState.JUMP_START:
@@ -280,9 +269,7 @@ func play_animations(direction):
 				target_anim = "walk"
 			else:
 				target_anim = "idle"
-
 	else:
-
 		match jump_state:
 			JumpState.JUMP_START:
 				target_anim = "jump_startup"
