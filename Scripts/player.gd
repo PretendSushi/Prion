@@ -11,6 +11,7 @@ signal show_inventory
 signal initialize_inventory
 signal interacted
 signal note_added
+signal update_camera
 
 #constants
 const GROUND_SPEED = 700.0

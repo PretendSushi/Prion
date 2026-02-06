@@ -6,12 +6,13 @@ var SPAWN_INTERVAL = 5.0
 var time_passed = 0.0
 @onready var player = $Player
 
-
 func _ready():
 	enemy = preload("res://Scenes/enemy.tscn")
 	if RoomManager.player_x != null and RoomManager.player_y != null:
 		position_player(RoomManager.player_x, RoomManager.player_y)
+		position_camera(RoomManager.player_x, RoomManager.player_y)
 		RoomManager.nullify_player_coords()
+		
 	var enemies = get_tree().get_nodes_in_group("Enemy")
 	for enemy_instance in enemies:
 		enemy_instance.hit_player.connect(player._on_enemy_hit_player)
@@ -32,6 +33,11 @@ func position_player(x, y):
 	var player = get_tree().get_nodes_in_group("Player")[0]
 	player.global_position.x = x
 	player.global_position.y = y
+	
+func position_camera(x, y):
+	var camera = get_tree().get_nodes_in_group("Camera")[0]
+	camera.global_position.x = x
+	camera.global_position.y = y
 	
 
 func check_for_enemies():

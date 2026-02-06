@@ -43,7 +43,7 @@ position = Vector2(-1995, 64)
 position = Vector2(-1199, 1098)
 note_data = ExtResource("4_oqgf2")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera" type="Camera2D" parent="." groups=["Camera"]]
 position = Vector2(-1643, 915)
 zoom = Vector2(0.5, 0.5)
 script = ExtResource("7_qxfql")

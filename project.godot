@@ -34,6 +34,7 @@ project/assembly_name="Prion"
 Player=""
 Enemy=""
 PlayerHurtbox=""
+Camera=""
 
 [input]
 
