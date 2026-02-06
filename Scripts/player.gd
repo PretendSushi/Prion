@@ -165,7 +165,10 @@ func handle_jump(delta):
 		movement_state = MovementState.JUMPING
 		jump_state = JumpState.JUMP_START
 		jump_start_y = global_position.y
-		velocity.y = JUMP_VELOCITY
+		if action_state == ActionState.ZERO_GRAV:
+			velocity.y = -JUMP_VELOCITY
+		else:
+			velocity.y = JUMP_VELOCITY
 
 
 func handle_jump_helper(delta):
@@ -173,12 +176,15 @@ func handle_jump_helper(delta):
 	and movement_state == MovementState.JUMPING\
 	and !jump_cancelled\
 	and !is_jump_height_reached():
-		velocity.y -= JUMP_FORCE * delta
+		if action_state == ActionState.ZERO_GRAV:
+			velocity.y += JUMP_FORCE * delta
+		else:
+			velocity.y -= JUMP_FORCE * delta
 	if Input.is_action_just_released("Jump"):
 		jump_cancelled = true
 
 func handle_falling(delta):
-	if not is_on_floor():
+	if not is_on_floor() and action_state != ActionState.ZERO_GRAV:
 		if movement_state != MovementState.JUMPING and !jump_cancelled:
 			#This means the player is falling without having jumped.
 			jump_state = JumpState.JUMP_FALL_START
@@ -186,6 +192,18 @@ func handle_falling(delta):
 		velocity.y += gravity * delta
 		if movement_state == MovementState.JUMPING and is_top_colliding():
 			jump_cancelled = true
+	elif action_state == ActionState.ZERO_GRAV:
+		if not is_top_colliding():
+			if movement_state != MovementState.JUMPING and !jump_cancelled:
+				jump_state = JumpState.JUMP_FALL_START
+				movement_state = MovementState.JUMPING
+			velocity.y -= gravity * delta
+			if movement_state == MovementState.JUMPING and is_bottom_colliding():
+				jump_cancelled = true
+		else:
+			if movement_state != MovementState.JUMPING:
+				jump_state = JumpState.IDLE
+				jump_cancelled = false
 	else:
 		if movement_state != MovementState.JUMPING:
 			zero_grav_cooldown = false
@@ -238,6 +256,9 @@ func is_on_surface():
 	
 func is_top_colliding():
 	return raycast_top.is_colliding()
+	
+func is_bottom_colliding():
+	return raycast_floor.is_colliding()
 
 func play_animations(direction):
 	#this is the animation we will play at the end
