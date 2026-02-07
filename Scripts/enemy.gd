@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+class_name Enemy
+
 signal hit_player
 signal drop_health
 signal drop_protein
@@ -38,29 +40,29 @@ func _ready():
 	protein_pickup = preload("res://Scenes/ProteinPickup.tscn")
 	player_in_range = false
 	can_attack = false
-	
 
 func _physics_process(delta):
 	can_move = true
 	is_kbd = handle_knockback(delta)
 	#if the knockback isn't in effect, the enemy can act as normal
 	can_move = handle_freeze(delta)
+	
+	if not is_on_floor():
+		velocity.y += gravity * delta
 	if can_move and !is_kbd:
-		#reset the velocity to 0 since it was changed during knockback
-		velocity.x = 0
-		move(delta, direction)
-	
 		var player = find_player()
-	
 		attempt_hit_player(player)
 		time_since_last_attack = 0.0
 	move_and_slide()
-		
+
+	
 func handle_knockback(delta):
 	#if the knockback timer isn't 0, that means knockback is still in effect. We don't want the enemy doing anything else
 	if knockback_timer > 0:
 		knockback_timer -= delta
 		return true
+	if is_kbd:
+		velocity.x = 0
 	return false
 		
 func handle_freeze(delta):
@@ -70,22 +72,15 @@ func handle_freeze(delta):
 	return true
 	
 func move(delta, direction):
-	if not is_on_floor():
-		velocity.y += gravity * delta
+	#reset the velocity to 0 since it was changed during knockback
+	velocity.x = 0
 
 	if direction:
 		velocity.x = direction * SPEED
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
-		
 	#Flip sprite
 	animated_sprite.flip_h = velocity.x < 0
-
-func _on_detect_box_body_entered(body):
-	find_player_direction(body)
-
-func _on_detect_box_body_exited(body: Node2D) -> void:
-	direction = 0 
 	
 func find_player_direction(body):
 	if body.name == "Player":
