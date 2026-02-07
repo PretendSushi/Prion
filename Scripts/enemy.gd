@@ -6,7 +6,6 @@ signal hit_player
 signal drop_health
 signal drop_protein
 
-const SPEED = 400.0
 const JUMP_VELOCITY = -400.0
 const KNOCKBACK_DURATION = 0.4
 const FREEZE_DURATION = 1.0
@@ -30,6 +29,7 @@ var knockback_timer = 0
 var freeze_timer = 0
 var can_move = true
 var is_kbd = false
+var speed = 400.0
 
 @onready var detectBox = $DetectBox
 @onready var animated_sprite = $AnimatedSprite2D
@@ -76,9 +76,9 @@ func move(delta, direction):
 	velocity.x = 0
 
 	if direction:
-		velocity.x = direction * SPEED
+		velocity.x = direction * speed
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
+		velocity.x = move_toward(velocity.x, 0, speed)
 	#Flip sprite
 	animated_sprite.flip_h = velocity.x < 0
 	
@@ -88,7 +88,6 @@ func find_player_direction(body):
 			direction = - 1
 		else:
 			direction = 1 
-		player_in_range = true
 
 func find_player():
 	var bodies = detectBox.get_overlapping_bodies()
@@ -129,3 +128,7 @@ func _on_hurtbox_area_entered(area: Area2D) -> void:
 func _on_hurtbox_area_exited(area: Area2D) -> void:
 	if area.is_in_group("PlayerHurtbox"):
 		can_attack = false
+		
+func is_body_player(body):
+	return body.is_in_group("Player")
+		

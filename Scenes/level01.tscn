@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://c7ywe072ok7ps"]
+[gd_scene load_steps=10 format=3 uid="uid://c7ywe072ok7ps"]
 
 [ext_resource type="TileSet" uid="uid://nhgkuh44o1ro" path="res://Resources/Tilesets/level_tileset.tres" id="1_3fnks"]
 [ext_resource type="Script" uid="uid://cob3thhyjfwnv" path="res://Scripts/level.gd" id="1_xydm2"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://cfiuyeqbaa37f" path="res://Scenes/RoomTransition.tscn" id="3_jaldj"]
 [ext_resource type="Script" uid="uid://dkehqfja5imcv" path="res://Scripts/camera.gd" id="3_l1sls"]
 [ext_resource type="Script" uid="uid://p550xmykutcc" path="res://Scripts/RoomTransData.gd" id="4_xydm2"]
+[ext_resource type="PackedScene" uid="uid://b80emgxonf1s8" path="res://Scenes/Enemy_Shreiker.tscn" id="7_p20kn"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_3fnks"]
 blend_mode = 3
@@ -38,3 +39,6 @@ position = Vector2(255, 662)
 position = Vector2(-35, 384)
 scale = Vector2(0.998623, 1)
 room_trans_data = SubResource("Resource_l1sls")
+
+[node name="EnemyShreiker" parent="." instance=ExtResource("7_p20kn")]
+position = Vector2(2328, 558)
