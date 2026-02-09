@@ -1,6 +1,7 @@
 extends Enemy
 
 const OVERSHOT_MOD = 0.05
+const VELOCITY_CAP = 1000
 
 var player
 var overshot
@@ -24,10 +25,19 @@ func _physics_process(delta: float) -> void:
 func move(delta, direction):
 	if global_position.x != (player_last_x + overshot):
 		if direction:
-			velocity.x += direction * speed
+			calculate_speed()
 		else:
 			velocity.x = move_toward(velocity.x, 0, speed)
-	
+
+func calculate_speed():
+	if abs(velocity.x) + speed > VELOCITY_CAP:
+		if abs(velocity.x) < VELOCITY_CAP:
+			velocity.x = VELOCITY_CAP * direction
+	else:
+		print("hit")
+		velocity.x += speed * direction 
+		
+
 func _on_detect_box_body_entered(body):
 	if is_body_player(body):
 		player_in_range = true
