@@ -60,7 +60,6 @@ shape = SubResource("RectangleShape2D_1tntk")
 position = Vector2(3, -174)
 sprite_frames = SubResource("SpriteFrames_vfsjs")
 animation = &"move"
-frame_progress = 0.578637
 
 [node name="Hitbox" type="CollisionShape2D" parent="."]
 position = Vector2(5.5, -175)

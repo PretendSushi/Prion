@@ -6,14 +6,20 @@ var player
 var overshot
 var player_last_x
 
+enum MovementState { IDLE, MOVING }
+
+var movement_state : MovementState
+
 func _ready() -> void:
 	speed = 400.0
+	movement_state = MovementState.IDLE
 
 func _physics_process(delta: float) -> void:
 	super(delta)
-	print(player_in_range)
 	if player_in_range and is_player_moving() and player and overshot:
 		move(delta, direction)
+	handle_states()
+	play_animations(direction)
 		
 func move(delta, direction):
 	if global_position.x != (player_last_x + overshot):
@@ -21,7 +27,6 @@ func move(delta, direction):
 			velocity.x += direction * speed
 		else:
 			velocity.x = move_toward(velocity.x, 0, speed)
-	animated_sprite.play("move")
 	
 func _on_detect_box_body_entered(body):
 	if is_body_player(body):
@@ -52,4 +57,27 @@ func get_overshot(player):
 	
 func get_player_last_x(body):
 	player_last_x = get_player_coords(body).x
+	
+func play_animations(direction):
+	var target_anim = ""
+	
+	if movement_state == MovementState.MOVING:
+		target_anim = "move"
+	else:
+		target_anim = "idle"
+	
+	if direction > 0:
+		animated_sprite.flip_h = true
+	else:
+		animated_sprite.flip_h = false
+		
+	if animated_sprite.animation != target_anim:
+		animated_sprite.play(target_anim)
+	
+func handle_states():
+	if velocity.x != 0:
+		movement_state = MovementState.MOVING
+	else:
+		movement_state = MovementState.IDLE
+	
 	
