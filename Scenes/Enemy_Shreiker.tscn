@@ -42,7 +42,7 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yrvrx"]
-size = Vector2(303, 350)
+size = Vector2(253, 340)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3e56u"]
 size = Vector2(2000, 500)
@@ -62,7 +62,7 @@ sprite_frames = SubResource("SpriteFrames_vfsjs")
 animation = &"move"
 
 [node name="Hitbox" type="CollisionShape2D" parent="."]
-position = Vector2(5.5, -175)
+position = Vector2(26.5, -170)
 shape = SubResource("RectangleShape2D_yrvrx")
 
 [node name="DetectBox" type="Area2D" parent="."]
