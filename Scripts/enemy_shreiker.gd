@@ -1,11 +1,12 @@
 extends Enemy
 
-const OVERSHOT_MOD = 0.05
+const OVERSHOT_MOD = 0.5
 const VELOCITY_CAP = 1000
 
 var player
 var overshot
 var player_last_x
+var target_loc
 
 enum MovementState { IDLE, MOVING }
 
@@ -17,33 +18,44 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	super(delta)
-	if player_in_range and is_player_moving() and player and overshot:
+	if player and overshot:
 		move(delta, direction)
+	#if player_in_range and is_player_moving() and player:
+		#get_overshot(player)
+		#get_player_last_x(player)
+	if player:
+		get_target_loc(player)
 	handle_states()
 	play_animations(direction)
 		
 func move(delta, direction):
-	if global_position.x != (player_last_x + overshot):
-		if direction:
-			calculate_speed()
+	if target_loc:
+		if direction > 0:
+			if global_position.x < (target_loc):
+				calculate_speed()
+			else:
+				velocity.x = 0
+		elif direction < 0:
+			if global_position.x > (target_loc):
+				calculate_speed()
+			else:
+				velocity.x = 0 
 		else:
-			velocity.x = move_toward(velocity.x, 0, speed)
+			velocity.x = 0
+	else:
+		velocity.x = 0
 
 func calculate_speed():
 	if abs(velocity.x) + speed > VELOCITY_CAP:
 		if abs(velocity.x) < VELOCITY_CAP:
 			velocity.x = VELOCITY_CAP * direction
 	else:
-		print("hit")
 		velocity.x += speed * direction 
 		
-
 func _on_detect_box_body_entered(body):
 	if is_body_player(body):
 		player_in_range = true
 		player = body
-		get_overshot(body)
-		get_player_last_x(body)
 	find_player_direction(body)
 
 func _on_detect_box_body_exited(body: Node2D) -> void:
@@ -89,5 +101,12 @@ func handle_states():
 		movement_state = MovementState.MOVING
 	else:
 		movement_state = MovementState.IDLE
-	
-	
+
+func get_target_loc(body):
+	if player_in_range and is_player_moving() and is_body_player(body):
+		get_player_last_x(body)
+		get_overshot(body)
+		if direction > 0:
+			target_loc = player_last_x - overshot
+		elif direction < 0:
+			target_loc = player_last_x - overshot
