@@ -11,8 +11,11 @@ const KNOCKBACK_DURATION = 0.4
 const FREEZE_DURATION = 1.0
 const KNOCKBACK = 700
 const V_KNOCKBACK = 100
-const PROTEIN_PICKUP_OFFSET = 30
+const PROTEIN_PICKUP_OFFSET_X = 30
+const PROTEIN_PICKUP_OFFSET_Y = 100
 const PLAYER_ATTACK_MAX_DISTANCE = 300
+
+
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
@@ -116,8 +119,8 @@ func _on_player_leech(damage):
 		die()
 
 func die():
-	emit_signal("drop_health", health_pickup, global_position.x, global_position.y)
-	emit_signal("drop_protein", protein_pickup, global_position.x + PROTEIN_PICKUP_OFFSET, global_position.y)
+	emit_signal("drop_health", health_pickup, global_position.x, global_position.y - PROTEIN_PICKUP_OFFSET_Y)
+	emit_signal("drop_protein", protein_pickup, global_position.x + PROTEIN_PICKUP_OFFSET_X, global_position.y - PROTEIN_PICKUP_OFFSET_Y)
 	queue_free()
 
 func _on_hurtbox_area_entered(area: Area2D) -> void:

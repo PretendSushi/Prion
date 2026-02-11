@@ -13,6 +13,7 @@ enum MovementState { IDLE, MOVING }
 var movement_state : MovementState
 
 func _ready() -> void:
+	super()
 	speed = 400.0
 	movement_state = MovementState.IDLE
 
