@@ -110,3 +110,4 @@ func get_target_loc(body):
 			target_loc = player_last_x - overshot
 		elif direction < 0:
 			target_loc = player_last_x - overshot
+	

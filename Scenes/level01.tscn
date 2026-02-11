@@ -40,5 +40,5 @@ position = Vector2(-35, 384)
 scale = Vector2(0.998623, 1)
 room_trans_data = SubResource("Resource_l1sls")
 
-[node name="EnemyShreiker" parent="." groups=["Enemy"] instance=ExtResource("7_p20kn")]
+[node name="EnemyShreiker" parent="." instance=ExtResource("7_p20kn")]
 position = Vector2(2328, 558)
