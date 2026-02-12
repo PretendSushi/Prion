@@ -422,7 +422,7 @@ func is_leech_successful():
 		hitbox = leech_left
 	var bodies = hitbox.get_overlapping_bodies()
 	for body in bodies:
-		if body.name == "Enemy":
+		if body.is_in_group("Enemy"):
 			player_leech.connect(body._on_player_leech.bind())
 			emit_signal("player_leech", ATTACK_DAMAGE)
 			on_leech_successful()
