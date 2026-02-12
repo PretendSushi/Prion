@@ -110,7 +110,7 @@ animations = [{
 "speed": 5.0
 }, {
 "frames": [{
-"duration": 2.0,
+"duration": 1.0,
 "texture": ExtResource("11_nv4vc")
 }, {
 "duration": 1.0,
@@ -118,7 +118,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"jump_land",
-"speed": 15.0
+"speed": 20.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -353,8 +353,10 @@ script = ExtResource("1_6ltq4")
 material = SubResource("ShaderMaterial_57lvd")
 position = Vector2(15, -213)
 sprite_frames = SubResource("SpriteFrames_gn6c1")
-animation = &"idle"
+animation = &"jump_land"
 autoplay = "idle"
+frame = 1
+frame_progress = 1.0
 
 [node name="Hurtbox" type="CollisionShape2D" parent="."]
 position = Vector2(8.5, -195)
