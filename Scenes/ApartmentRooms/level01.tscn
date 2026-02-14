@@ -1,11 +1,20 @@
-[gd_scene load_steps=5 format=3 uid="uid://cvpccn1r2dreu"]
+[gd_scene load_steps=8 format=3 uid="uid://cvpccn1r2dreu"]
 
 [ext_resource type="TileSet" uid="uid://nhgkuh44o1ro" path="res://Resources/Tilesets/level_tileset.tres" id="1_kddij"]
 [ext_resource type="PackedScene" uid="uid://uqe5a2rw7h7h" path="res://Scenes/player.tscn" id="2_cenj1"]
 [ext_resource type="Script" uid="uid://dkehqfja5imcv" path="res://Scripts/camera.gd" id="3_75474"]
+[ext_resource type="PackedScene" uid="uid://cfiuyeqbaa37f" path="res://Scenes/RoomTransition.tscn" id="4_t0w2h"]
+[ext_resource type="Script" uid="uid://p550xmykutcc" path="res://Scripts/RoomTransData.gd" id="5_r8d3k"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_kddij"]
 blend_mode = 3
+
+[sub_resource type="Resource" id="Resource_ybg3k"]
+script = ExtResource("5_r8d3k")
+room_id = 2
+player_x = -1200.0
+player_y = -650.0
+metadata/_custom_type_script = "uid://p550xmykutcc"
 
 [node name="Level01" type="Node2D"]
 
@@ -21,3 +30,8 @@ position = Vector2(476, -46)
 [node name="Camera" type="Camera2D" parent="." groups=["Camera"]]
 zoom = Vector2(0.5, 0.5)
 script = ExtResource("3_75474")
+
+[node name="RoomTransition" parent="." instance=ExtResource("4_t0w2h")]
+position = Vector2(1730, -29)
+rotation = 1.5708
+room_trans_data = SubResource("Resource_ybg3k")
