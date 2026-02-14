@@ -226,6 +226,20 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": ExtResource("21_3vlem")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_ax3m3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_57lvd")
+}],
+"loop": false,
+"name": &"sticky_band",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": ExtResource("3_igrcy")
 }, {
 "duration": 1.0,
@@ -353,10 +367,8 @@ script = ExtResource("1_6ltq4")
 material = SubResource("ShaderMaterial_57lvd")
 position = Vector2(15, -213)
 sprite_frames = SubResource("SpriteFrames_gn6c1")
-animation = &"jump_land"
+animation = &"sticky_band"
 autoplay = "idle"
-frame = 1
-frame_progress = 1.0
 
 [node name="Hurtbox" type="CollisionShape2D" parent="."]
 position = Vector2(8.5, -195)
@@ -423,6 +435,16 @@ position = Vector2(0, -80)
 position = Vector2(0, -308)
 rotation = 3.14159
 target_position = Vector2(4.37114e-06, 50)
+
+[node name="RayCastLeft" type="RayCast2D" parent="."]
+position = Vector2(8, -196)
+rotation = 1.5708
+target_position = Vector2(0, 45)
+
+[node name="RayCastRight" type="RayCast2D" parent="."]
+position = Vector2(8, -196)
+rotation = -1.5708
+target_position = Vector2(0, 45)
 
 [node name="HitFlashAnim" type="AnimationPlayer" parent="."]
 libraries = {

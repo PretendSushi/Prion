@@ -27,12 +27,15 @@ const RUBBER_BAND_PROTEIN_COST = 40
 const KNOCKBACK = 1000
 const KNOCKBACK_DURATION = 0.5
 const INVINCIBLE_DURATION = 2.5
+const JUMP_OFF_DURATION = 0.5
 const ZERO_GRAV_DURATION = 3
 const JUMP_CAP = 400 #max jump height in pixels
 const V_KNOCKBACK = 150
 const RB_ANIM_OFFSET = 450
 const LEECH_ANIM_OFFSET = 100
 const LEECH_HEALTH_GAIN = 25
+const STICKY_BAND_SPEED = 1800
+const JUMP_FORCE_FROM_WALL = 300
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = 1800#ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
@@ -62,12 +65,18 @@ var invincible_timer = 0
 var zero_grav_timer = 0
 #cooldown check, sets to true when in effect
 var zero_grav_cooldown = false
+#flag to track if the player is trying to jump from a wall cling
+var jump_from_wall_cling = false
+#the player needs to jump off from the wall before being allowed to move freely
+var jump_off_timer = 0
+#this flag just tracks if the jump off is currently happening
+var jump_off = false
 
 #Available states
 enum MovementState { IDLE, WALKING, JUMPING }
-enum ActionState { IDLE, ATTACK, RUBBER_BAND, DAMAGED, ZERO_GRAV, LEECH }
+enum ActionState { IDLE, ATTACK, RUBBER_BAND, DAMAGED, ZERO_GRAV, LEECH, WALL_CLING }
 enum JumpState { IDLE, JUMP_START, JUMP_RISE, JUMP_FALL_START, JUMP_FALL, LANDING }
-enum RubberBandState { IDLE, START, DURATION, END}
+enum RubberBandState { IDLE, START, DURATION, STICKY_BAND, END}
 enum LeechState { IDLE, START, DURATION, END }
 
 #actual states
@@ -89,6 +98,8 @@ var leech_state = LeechState.IDLE
 @onready var leech_left = $LeechCollisionLeft
 @onready var raycast_floor = $RayCastFloor
 @onready var raycast_top = $RayCastTop
+@onready var raycast_left = $RayCastLeft
+@onready var raycast_right = $RayCastRight
 @onready var hit_anim = $HitFlashAnim
 
 func _ready():
@@ -110,6 +121,8 @@ func _physics_process(delta):
 	check_for_inputs(delta)
 	handle_jump_helper(delta)
 	handle_falling(delta)
+	handle_jump_off(delta)
+	check_wall_cling()
 	move_and_slide()
 
 func handle_knockback(delta):
@@ -127,6 +140,12 @@ func handle_invincibility(delta):
 		invincible_timer -= delta
 	else:
 		invincible = false
+
+func handle_jump_off(delta):
+	if jump_off_timer > 0:
+		jump_off_timer -= delta
+	else:
+		jump_off = false
 		
 func handle_zero_grav(delta):
 	if zero_grav_timer > 0:
@@ -157,12 +176,20 @@ func check_for_inputs(delta):
 		handle_jump(delta)
 
 func handle_jump(delta):
+	if action_state == ActionState.WALL_CLING:
+		jump_cancelled = false
+		jump_from_wall_cling = true
 	if jump_cancelled:
 		return
 	if movement_state == MovementState.JUMPING and is_top_colliding():
 		jump_cancelled = true
 		return
-	if movement_state != MovementState.JUMPING:
+	if movement_state != MovementState.JUMPING or action_state == ActionState.WALL_CLING:
+		if jump_from_wall_cling and !jump_off:
+			velocity.x = JUMP_FORCE_FROM_WALL * -direction
+			jump_off_timer = JUMP_OFF_DURATION
+			jump_off = true
+			animated_sprite.flip_h = !animated_sprite.flip_h
 		movement_state = MovementState.JUMPING
 		jump_state = JumpState.JUMP_START
 		jump_start_y = global_position.y
@@ -185,6 +212,8 @@ func handle_jump_helper(delta):
 		jump_cancelled = true
 
 func handle_falling(delta):
+	if rubber_band_state == RubberBandState.STICKY_BAND:
+		return
 	if not is_on_floor() and action_state != ActionState.ZERO_GRAV:
 		if movement_state != MovementState.JUMPING and !jump_cancelled:
 			#This means the player is falling without having jumped.
@@ -210,8 +239,11 @@ func handle_falling(delta):
 			zero_grav_cooldown = false
 			jump_state = JumpState.IDLE
 			jump_cancelled = false
+			jump_from_wall_cling = false
 
 func move(delta, action):
+	if rubber_band_state == RubberBandState.STICKY_BAND or jump_off:
+		return
 	if action_state != ActionState.RUBBER_BAND and action_state != ActionState.LEECH:
 		if Input.is_action_pressed("Left"):
 			direction = -1.0
@@ -264,21 +296,24 @@ func is_bottom_colliding():
 func play_animations(direction):
 	#this is the animation we will play at the end
 	var target_anim = ""
-
+	
 	if is_on_surface():
-		if movement_state == MovementState.JUMPING:
+		if action_state == ActionState.RUBBER_BAND:
+			if rubber_band_state == RubberBandState.START:
+				target_anim = "rubber_band_ground_startup"
+			elif rubber_band_state == RubberBandState.DURATION:
+				target_anim = "rubber_band_ground"
+			elif rubber_band_state == RubberBandState.STICKY_BAND:
+				target_anim = "sticky_band"
+			else:
+				target_anim = "idle"
+		elif movement_state == MovementState.JUMPING:
 			if jump_state == JumpState.JUMP_START:
 				target_anim = "jump_startup"
 			else:
 				target_anim = "jump_land"
-		
 		else:
-			if action_state == ActionState.RUBBER_BAND:
-				if rubber_band_state == RubberBandState.START:
-					target_anim = "rubber_band_ground_startup"
-				elif rubber_band_state == RubberBandState.DURATION:
-					target_anim = "rubber_band_ground"
-			elif action_state == ActionState.LEECH:
+			if action_state == ActionState.LEECH:
 				if leech_state == LeechState.START:
 					target_anim = "leech_start"
 				elif leech_state == LeechState.DURATION:
@@ -292,24 +327,34 @@ func play_animations(direction):
 			else:
 				target_anim = "idle"
 	else:
-		match jump_state:
-			JumpState.JUMP_START:
-				target_anim = "jump_startup"
-			JumpState.JUMP_RISE:
-				target_anim = "jump_rise"
-			JumpState.JUMP_FALL_START:
-				target_anim = "jump_fall"
-			JumpState.JUMP_FALL:
-				target_anim = "jump_falling"
-			JumpState.IDLE:
-				target_anim = "jump_fall"
+		if action_state == ActionState.RUBBER_BAND:
+			if rubber_band_state == RubberBandState.START:
+				target_anim = "rubber_band_ground_startup"
+			elif rubber_band_state == RubberBandState.DURATION:
+				target_anim = "rubber_band_ground"
+			elif rubber_band_state == RubberBandState.STICKY_BAND:
+				target_anim = "sticky_band"
+		elif action_state == ActionState.WALL_CLING and !jump_from_wall_cling:
+			target_anim = "idle"
+		else:
+			match jump_state:
+				JumpState.JUMP_START:
+					target_anim = "jump_startup"
+				JumpState.JUMP_RISE:
+					target_anim = "jump_rise"
+				JumpState.JUMP_FALL_START:
+					target_anim = "jump_fall"
+				JumpState.JUMP_FALL:
+					target_anim = "jump_falling"
+				JumpState.IDLE:
+					target_anim = "jump_fall"
 	
 	if action_state == ActionState.ZERO_GRAV:
 		animated_sprite.flip_v = true
 	else:
 		animated_sprite.flip_v = false
 		
-	if target_anim == "rubber_band_ground_startup" or target_anim == "rubber_band_ground":
+	if target_anim == "rubber_band_ground_startup" or target_anim == "rubber_band_ground" or target_anim == "sticky_band":
 		if direction >= 0:
 			animated_sprite.offset.x = RB_ANIM_OFFSET
 		else:
@@ -325,7 +370,6 @@ func play_animations(direction):
 	if animated_sprite.animation != target_anim:
 		animated_sprite.play(target_anim)
 		
-
 func _on_enemy_hit_player(damage, knockback, enemy_pos):
 	if invincible:
 		return
@@ -401,9 +445,32 @@ func rubber_band_attack(direction):
 		if body.name == "Enemy":
 			player_attack.connect(body._on_player_attack.bind())
 			emit_signal("player_attack", RUBBER_BAND_DAMAGE, KNOCKBACK)
+		if body.name == "TileMap":
+			sticky_band(hitbox, body)
 	protein -= RUBBER_BAND_PROTEIN_COST
 	emit_signal("protein_changed", protein)
 	
+func sticky_band(hitbox, body):
+	rubber_band_state = RubberBandState.STICKY_BAND
+	velocity.y = 0
+	velocity.x = STICKY_BAND_SPEED * direction
+	
+func check_wall_cling():
+	if is_on_wall():
+		if rubber_band_state == RubberBandState.STICKY_BAND:
+			rubber_band_state = RubberBandState.IDLE
+		if action_state == ActionState.RUBBER_BAND:
+			action_state = ActionState.IDLE
+	else:
+		jump_from_wall_cling = false
+	if action_state == ActionState.WALL_CLING:
+		action_state = ActionState.IDLE
+		
+	if (raycast_left.is_colliding() and Input.is_action_pressed("Left") and !jump_from_wall_cling)\
+	or (raycast_right.is_colliding() and Input.is_action_pressed("Right") and !jump_from_wall_cling):
+		action_state = ActionState.WALL_CLING
+		velocity.y = 0
+
 func zero_grav():
 	if action_state == ActionState.ZERO_GRAV or zero_grav_cooldown:
 		return
