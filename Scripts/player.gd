@@ -12,10 +12,12 @@ signal initialize_inventory
 signal interacted
 signal note_added
 signal update_camera
+signal update_camera_follow_speed
 
 #constants
 const GROUND_SPEED = 700.0
 const AIR_SPEED = 900.0
+const SPRINT_SPEED = 1400.0
 const JUMP_VELOCITY = -800.0
 const JUMP_FORCE = 3000
 const BOUNCE_VELOCITY = -1200.0
@@ -73,7 +75,7 @@ var jump_off_timer = 0
 var jump_off = false
 
 #Available states
-enum MovementState { IDLE, WALKING, JUMPING }
+enum MovementState { IDLE, WALKING, SPRINTING, JUMPING }
 enum ActionState { IDLE, ATTACK, RUBBER_BAND, DAMAGED, ZERO_GRAV, LEECH, WALL_CLING }
 enum JumpState { IDLE, JUMP_START, JUMP_RISE, JUMP_FALL_START, JUMP_FALL, LANDING }
 enum RubberBandState { IDLE, START, DURATION, STICKY_BAND, END}
@@ -113,7 +115,7 @@ func _ready():
 
 func _physics_process(delta):
 	if !handle_knockback(delta):
-		move(delta, "")
+		move(delta)
 	handle_knockback(delta)
 	handle_invincibility(delta)
 	handle_zero_grav(delta)
@@ -174,6 +176,10 @@ func check_for_inputs(delta):
 		leech()
 	if Input.is_action_just_pressed("Jump"):
 		handle_jump(delta)
+	if Input.is_action_pressed("Sprint"):
+		handle_sprint()
+	if Input.is_action_just_released("Sprint"):
+		handle_stop_sprint()
 
 func handle_jump(delta):
 	if action_state == ActionState.WALL_CLING:
@@ -197,7 +203,6 @@ func handle_jump(delta):
 			velocity.y = -JUMP_VELOCITY
 		else:
 			velocity.y = JUMP_VELOCITY
-
 
 func handle_jump_helper(delta):
 	if Input.is_action_pressed("Jump")\
@@ -241,7 +246,20 @@ func handle_falling(delta):
 			jump_cancelled = false
 			jump_from_wall_cling = false
 
-func move(delta, action):
+func handle_sprint():
+	if movement_state != MovementState.JUMPING and is_bottom_colliding():
+		movement_state = MovementState.SPRINTING
+		emit_signal("update_camera_follow_speed", SPRINT_SPEED)
+		
+func handle_stop_sprint():
+	if movement_state == MovementState.SPRINTING:
+		if is_bottom_colliding():
+			movement_state = MovementState.IDLE
+		else:
+			movement_state = MovementState.JUMPING
+		emit_signal("update_camera_follow_speed", GROUND_SPEED)
+
+func move(delta):
 	if rubber_band_state == RubberBandState.STICKY_BAND or jump_off:
 		return
 	if action_state != ActionState.RUBBER_BAND and action_state != ActionState.LEECH:
@@ -249,6 +267,8 @@ func move(delta, action):
 			direction = -1.0
 			if movement_state == MovementState.JUMPING:
 				velocity.x = direction * AIR_SPEED
+			elif movement_state == MovementState.SPRINTING:
+				velocity.x = direction * SPRINT_SPEED
 			else:
 				velocity.x = direction * GROUND_SPEED
 				movement_state = MovementState.WALKING
@@ -256,6 +276,8 @@ func move(delta, action):
 			direction = 1.0
 			if movement_state == MovementState.JUMPING:
 				velocity.x = direction * AIR_SPEED
+			elif movement_state == MovementState.SPRINTING:
+				velocity.x = direction * SPRINT_SPEED
 			else:
 				velocity.x = direction * GROUND_SPEED
 				movement_state = MovementState.WALKING
@@ -324,6 +346,8 @@ func play_animations(direction):
 				target_anim = "attack"
 			elif movement_state == MovementState.WALKING:
 				target_anim = "walk"
+			elif movement_state == MovementState.SPRINTING:
+				target_anim = "sprint"
 			else:
 				target_anim = "idle"
 	else:

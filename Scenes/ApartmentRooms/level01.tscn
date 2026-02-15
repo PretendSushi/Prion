@@ -35,3 +35,5 @@ script = ExtResource("3_75474")
 position = Vector2(1730, -29)
 rotation = 1.5708
 room_trans_data = SubResource("Resource_ybg3k")
+
+[connection signal="update_camera_follow_speed" from="Player" to="Camera" method="_on_player_update_camera_follow_speed"]

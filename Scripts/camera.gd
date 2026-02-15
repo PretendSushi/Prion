@@ -48,3 +48,7 @@ func update_camera_position(delta):
 		position.y = move_toward(position.y, target_pos.y, player.velocity.y * delta)
 	else:
 		position.y = move_toward(position.y, target_pos.y, follow_speed * delta)
+
+
+func _on_player_update_camera_follow_speed(speed) -> void:
+	follow_speed = speed

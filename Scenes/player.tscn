@@ -226,6 +226,59 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": ExtResource("3_igrcy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_fs7ks")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_l6n3p")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_olqyp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_wpjfl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_bi64h")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_2ijsl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_p1odr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_0gysh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_vfarp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_y6uwr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_83xs0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_ypfnu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_xuaoq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_wohnl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_36dho")
+}],
+"loop": true,
+"name": &"sprint",
+"speed": 48.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": ExtResource("21_3vlem")
 }, {
 "duration": 1.0,
@@ -367,8 +420,10 @@ script = ExtResource("1_6ltq4")
 material = SubResource("ShaderMaterial_57lvd")
 position = Vector2(15, -213)
 sprite_frames = SubResource("SpriteFrames_gn6c1")
-animation = &"sticky_band"
+animation = &"sprint"
 autoplay = "idle"
+frame = 8
+frame_progress = 0.184426
 
 [node name="Hurtbox" type="CollisionShape2D" parent="."]
 position = Vector2(8.5, -195)
