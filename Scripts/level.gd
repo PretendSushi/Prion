@@ -19,6 +19,10 @@ func _ready():
 		enemy_instance.drop_health.connect(_on_enemy_drop_health)
 		enemy_instance.drop_protein.connect(_on_enemy_drop_protein)
 	
+	var room_data = RoomManager.get_room_data()
+	if room_data:
+		player.auto_move_on_room_change(room_data.entrance_way)
+	
 func _physics_process(delta):
 	pass
 	#time_passed += delta
@@ -66,7 +70,6 @@ func _on_enemy_drop_health(health_pickup, x, y) -> void:
 	var health_pickup_instance = health_pickup.instantiate()
 	health_pickup_instance.global_position = Vector2(x, y)
 	add_child(health_pickup_instance)
-
 
 func _on_enemy_drop_protein(protein_pickup, x, y) -> void:
 	var protein_pickup_instance = protein_pickup.instantiate()

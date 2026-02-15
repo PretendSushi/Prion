@@ -31,6 +31,8 @@ const KNOCKBACK_DURATION = 0.5
 const INVINCIBLE_DURATION = 2.5
 const JUMP_OFF_DURATION = 0.5
 const ZERO_GRAV_DURATION = 3
+const ROOM_ENTRANCE_AIR_TIME = 0.05
+const ROOM_ENTRANCE_HORIZONTAL_TIME = 0.2
 const JUMP_CAP = 400 #max jump height in pixels
 const V_KNOCKBACK = 150
 const RB_ANIM_OFFSET = 450
@@ -75,6 +77,7 @@ var jump_off_timer = 0
 var jump_off = false
 
 #Available states
+enum TransitionState { IDLE, TRANSITIONING }
 enum MovementState { IDLE, WALKING, SPRINTING, JUMPING }
 enum ActionState { IDLE, ATTACK, RUBBER_BAND, DAMAGED, ZERO_GRAV, LEECH, WALL_CLING }
 enum JumpState { IDLE, JUMP_START, JUMP_RISE, JUMP_FALL_START, JUMP_FALL, LANDING }
@@ -82,6 +85,7 @@ enum RubberBandState { IDLE, START, DURATION, STICKY_BAND, END}
 enum LeechState { IDLE, START, DURATION, END }
 
 #actual states
+var transition_state = TransitionState.IDLE
 var movement_state = MovementState.IDLE
 var action_state = ActionState.IDLE
 var jump_state = JumpState.IDLE
@@ -217,7 +221,7 @@ func handle_jump_helper(delta):
 		jump_cancelled = true
 
 func handle_falling(delta):
-	if rubber_band_state == RubberBandState.STICKY_BAND:
+	if rubber_band_state == RubberBandState.STICKY_BAND or transition_state == TransitionState.TRANSITIONING:
 		return
 	if not is_on_floor() and action_state != ActionState.ZERO_GRAV:
 		if movement_state != MovementState.JUMPING and !jump_cancelled:
@@ -260,7 +264,7 @@ func handle_stop_sprint():
 		emit_signal("update_camera_follow_speed", GROUND_SPEED)
 
 func move(delta):
-	if rubber_band_state == RubberBandState.STICKY_BAND or jump_off:
+	if rubber_band_state == RubberBandState.STICKY_BAND or jump_off or transition_state == TransitionState.TRANSITIONING:
 		return
 	if action_state != ActionState.RUBBER_BAND and action_state != ActionState.LEECH:
 		if Input.is_action_pressed("Left"):
@@ -610,10 +614,49 @@ func add_note(note_name):
 func get_data_as_dict():
 	return {
 		"health": health,
-		"protein": protein
+		"protein": protein,
+		"direction": direction,
 	}
 	
 func apply_data(data):
 	health = data.health
 	protein = data.protein
+	direction = data.direction
 	
+func auto_move_on_room_change(entrance_way):
+	transition_state = TransitionState.TRANSITIONING
+	match entrance_way:
+		RoomTransData.EntranceWay.TOP:
+			transition_state = TransitionState.IDLE
+		RoomTransData.EntranceWay.BOTTOM:
+			velocity.y = -JUMP_FORCE
+			velocity.x = (GROUND_SPEED) * direction
+			await get_tree().create_timer(ROOM_ENTRANCE_AIR_TIME).timeout
+			var timer = Timer.new()
+			add_child(timer)
+			timer.wait_time = ROOM_ENTRANCE_HORIZONTAL_TIME
+			timer.one_shot = true
+			timer.timeout.connect(_auto_move_helper)
+			timer.start()
+			velocity.y = 0
+		RoomTransData.EntranceWay.LEFT:
+			velocity.x = (GROUND_SPEED) * direction
+			movement_state = MovementState.WALKING
+			await get_tree().create_timer(ROOM_ENTRANCE_HORIZONTAL_TIME).timeout
+			velocity.x = 0
+			transition_state = TransitionState.IDLE
+		RoomTransData.EntranceWay.RIGHT:
+			velocity.x = (GROUND_SPEED) * direction
+			movement_state = MovementState.WALKING
+			await get_tree().create_timer(ROOM_ENTRANCE_HORIZONTAL_TIME).timeout
+			velocity.x = 0
+			transition_state = TransitionState.IDLE
+		_:
+			#"Why isn't this just outside the switch case so you don't have to repeat it for each case?"
+			#Because the bottom case will switch the state too soon
+			transition_state = TransitionState.IDLE
+			
+	
+func _auto_move_helper():
+	velocity.x = 0
+	transition_state = TransitionState.IDLE

@@ -16,6 +16,7 @@ script = ExtResource("4_xydm2")
 room_id = 2
 player_x = 2850.0
 player_y = 1145.0
+entrance_way = 0
 metadata/_custom_type_script = "uid://p550xmykutcc"
 
 [node name="Level01" type="Node2D"]

@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://cvpccn1r2dreu"]
+[gd_scene load_steps=9 format=3 uid="uid://cvpccn1r2dreu"]
 
 [ext_resource type="TileSet" uid="uid://nhgkuh44o1ro" path="res://Resources/Tilesets/level_tileset.tres" id="1_kddij"]
+[ext_resource type="Script" uid="uid://cob3thhyjfwnv" path="res://Scripts/level.gd" id="1_r8d3k"]
 [ext_resource type="PackedScene" uid="uid://uqe5a2rw7h7h" path="res://Scenes/player.tscn" id="2_cenj1"]
 [ext_resource type="Script" uid="uid://dkehqfja5imcv" path="res://Scripts/camera.gd" id="3_75474"]
 [ext_resource type="PackedScene" uid="uid://cfiuyeqbaa37f" path="res://Scenes/RoomTransition.tscn" id="4_t0w2h"]
@@ -14,9 +15,11 @@ script = ExtResource("5_r8d3k")
 room_id = 2
 player_x = -1200.0
 player_y = -650.0
+entrance_way = 0
 metadata/_custom_type_script = "uid://p550xmykutcc"
 
 [node name="Level01" type="Node2D"]
+script = ExtResource("1_r8d3k")
 
 [node name="TileMap" type="TileMap" parent="."]
 material = SubResource("CanvasItemMaterial_kddij")
