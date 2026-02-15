@@ -1,4 +1,4 @@
-[gd_scene load_steps=70 format=3 uid="uid://uqe5a2rw7h7h"]
+[gd_scene load_steps=82 format=3 uid="uid://uqe5a2rw7h7h"]
 
 [ext_resource type="Script" uid="uid://bb643hqwrxmyd" path="res://Scripts/player.gd" id="1_6ltq4"]
 [ext_resource type="Shader" uid="uid://d4fv1pxe8clud" path="res://Scenes/hitflash.gdshader" id="2_e6mvm"]
@@ -51,6 +51,18 @@
 [ext_resource type="Texture2D" uid="uid://bs3h6m6tpkecc" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0009.png" id="24_c1k8q"]
 [ext_resource type="Texture2D" uid="uid://cd4lk7vn2au4u" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0010.png" id="25_e6mvm"]
 [ext_resource type="Texture2D" uid="uid://bt8xcca62p7ht" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0011.png" id="26_57lvd"]
+[ext_resource type="Texture2D" uid="uid://boto1vns7nqdi" path="res://Assets/Sprites/player/sprint/frame0000.png" id="36_bqbau"]
+[ext_resource type="Texture2D" uid="uid://cetu3ft8ipwoc" path="res://Assets/Sprites/player/sprint/frame0001.png" id="37_f5f5t"]
+[ext_resource type="Texture2D" uid="uid://bsrws0lia01r3" path="res://Assets/Sprites/player/sprint/frame0002.png" id="38_qvbpb"]
+[ext_resource type="Texture2D" uid="uid://clmut0hjgv2gm" path="res://Assets/Sprites/player/sprint/frame0003.png" id="39_sscpr"]
+[ext_resource type="Texture2D" uid="uid://drt6h0d633sgk" path="res://Assets/Sprites/player/sprint/frame0004.png" id="40_by7i4"]
+[ext_resource type="Texture2D" uid="uid://bmu0slbjh0opg" path="res://Assets/Sprites/player/sprint/frame0005.png" id="41_3uvy8"]
+[ext_resource type="Texture2D" uid="uid://qt80ndsrlr3q" path="res://Assets/Sprites/player/sprint/frame0006.png" id="42_ss172"]
+[ext_resource type="Texture2D" uid="uid://c2of6pdc7qmjy" path="res://Assets/Sprites/player/sprint/frame0007.png" id="43_jmelf"]
+[ext_resource type="Texture2D" uid="uid://drf6un4v03jqe" path="res://Assets/Sprites/player/sprint/frame0008.png" id="44_bjdqd"]
+[ext_resource type="Texture2D" uid="uid://dtrdwfua3i1y8" path="res://Assets/Sprites/player/sprint/frame0009.png" id="45_feq18"]
+[ext_resource type="Texture2D" uid="uid://c7li2rq6g8k46" path="res://Assets/Sprites/player/sprint/frame0010.png" id="46_wcnj3"]
+[ext_resource type="Texture2D" uid="uid://cte4vhemhnikp" path="res://Assets/Sprites/player/sprint/frame0011.png" id="47_jsob3"]
 [ext_resource type="PackedScene" uid="uid://ltsdi67f64wv" path="res://Scenes/HUD.tscn" id="52_vq3lt"]
 [ext_resource type="PackedScene" uid="uid://ju1nlt54nwfm" path="res://Scenes/Notes.tscn" id="53_pukcj"]
 [ext_resource type="PackedScene" uid="uid://da7bo8klfo12e" path="res://Scenes/PauseScreen.tscn" id="54_1htnp"]
@@ -226,56 +238,44 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("3_igrcy")
+"texture": ExtResource("36_bqbau")
 }, {
 "duration": 1.0,
-"texture": ExtResource("4_fs7ks")
+"texture": ExtResource("37_f5f5t")
 }, {
 "duration": 1.0,
-"texture": ExtResource("5_l6n3p")
+"texture": ExtResource("38_qvbpb")
 }, {
 "duration": 1.0,
-"texture": ExtResource("6_olqyp")
+"texture": ExtResource("39_sscpr")
 }, {
 "duration": 1.0,
-"texture": ExtResource("7_wpjfl")
+"texture": ExtResource("40_by7i4")
 }, {
 "duration": 1.0,
-"texture": ExtResource("8_bi64h")
+"texture": ExtResource("41_3uvy8")
 }, {
 "duration": 1.0,
-"texture": ExtResource("9_2ijsl")
+"texture": ExtResource("42_ss172")
 }, {
 "duration": 1.0,
-"texture": ExtResource("10_p1odr")
+"texture": ExtResource("43_jmelf")
 }, {
 "duration": 1.0,
-"texture": ExtResource("11_0gysh")
+"texture": ExtResource("44_bjdqd")
 }, {
 "duration": 1.0,
-"texture": ExtResource("12_vfarp")
+"texture": ExtResource("45_feq18")
 }, {
 "duration": 1.0,
-"texture": ExtResource("13_y6uwr")
+"texture": ExtResource("46_wcnj3")
 }, {
 "duration": 1.0,
-"texture": ExtResource("14_83xs0")
-}, {
-"duration": 1.0,
-"texture": ExtResource("15_ypfnu")
-}, {
-"duration": 1.0,
-"texture": ExtResource("16_xuaoq")
-}, {
-"duration": 1.0,
-"texture": ExtResource("17_wohnl")
-}, {
-"duration": 1.0,
-"texture": ExtResource("18_36dho")
+"texture": ExtResource("47_jsob3")
 }],
 "loop": true,
 "name": &"sprint",
-"speed": 48.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -422,8 +422,7 @@ position = Vector2(15, -213)
 sprite_frames = SubResource("SpriteFrames_gn6c1")
 animation = &"sprint"
 autoplay = "idle"
-frame = 8
-frame_progress = 0.184426
+frame_progress = 0.301956
 
 [node name="Hurtbox" type="CollisionShape2D" parent="."]
 position = Vector2(8.5, -195)
