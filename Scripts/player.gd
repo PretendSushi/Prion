@@ -53,6 +53,7 @@ var knockback_timer = 0
 #var jump_timer = 0
 var jump_start_y = 0
 var jump_cancelled = false
+var double_jump_cancelled = false
 #You know what this tracks
 var health = 100
 #Basically mana
@@ -80,7 +81,7 @@ var jump_off = false
 enum TransitionState { IDLE, TRANSITIONING }
 enum MovementState { IDLE, WALKING, SPRINTING, JUMPING }
 enum ActionState { IDLE, ATTACK, RUBBER_BAND, DAMAGED, ZERO_GRAV, LEECH, WALL_CLING }
-enum JumpState { IDLE, JUMP_START, JUMP_RISE, JUMP_FALL_START, JUMP_FALL, LANDING }
+enum JumpState { IDLE, JUMP_START, JUMP_RISE, DOUBLE_JUMP, JUMP_FALL_START, JUMP_FALL, LANDING }
 enum RubberBandState { IDLE, START, DURATION, STICKY_BAND, END}
 enum LeechState { IDLE, START, DURATION, END }
 
@@ -190,18 +191,27 @@ func handle_jump(delta):
 		jump_cancelled = false
 		jump_from_wall_cling = true
 	if jump_cancelled:
-		return
+		if jump_state != JumpState.DOUBLE_JUMP and !double_jump_cancelled:
+			jump_state = JumpState.DOUBLE_JUMP
+		else:
+			return
 	if movement_state == MovementState.JUMPING and is_top_colliding():
 		jump_cancelled = true
 		return
-	if movement_state != MovementState.JUMPING or action_state == ActionState.WALL_CLING:
+	if jump_state == JumpState.DOUBLE_JUMP and is_top_colliding():
+		double_jump_cancelled = true
+		return
+	if movement_state != MovementState.JUMPING\
+	or action_state == ActionState.WALL_CLING\
+	or jump_state == JumpState.DOUBLE_JUMP:
 		if jump_from_wall_cling and !jump_off:
 			velocity.x = JUMP_FORCE_FROM_WALL * -direction
 			jump_off_timer = JUMP_OFF_DURATION
 			jump_off = true
 			animated_sprite.flip_h = !animated_sprite.flip_h
 		movement_state = MovementState.JUMPING
-		jump_state = JumpState.JUMP_START
+		if jump_state != JumpState.DOUBLE_JUMP:
+			jump_state = JumpState.JUMP_START
 		jump_start_y = global_position.y
 		if action_state == ActionState.ZERO_GRAV:
 			velocity.y = -JUMP_VELOCITY
@@ -211,7 +221,7 @@ func handle_jump(delta):
 func handle_jump_helper(delta):
 	if Input.is_action_pressed("Jump")\
 	and movement_state == MovementState.JUMPING\
-	and !jump_cancelled\
+	and (!jump_cancelled or !double_jump_cancelled) \
 	and !is_jump_height_reached():
 		if action_state == ActionState.ZERO_GRAV:
 			velocity.y += JUMP_FORCE * delta
@@ -219,6 +229,8 @@ func handle_jump_helper(delta):
 			velocity.y -= JUMP_FORCE * delta
 	if Input.is_action_just_released("Jump"):
 		jump_cancelled = true
+		if jump_state == JumpState.DOUBLE_JUMP:
+			double_jump_cancelled = true
 
 func handle_falling(delta):
 	if rubber_band_state == RubberBandState.STICKY_BAND or transition_state == TransitionState.TRANSITIONING:
@@ -231,9 +243,14 @@ func handle_falling(delta):
 		velocity.y += gravity * delta
 		if movement_state == MovementState.JUMPING and is_top_colliding():
 			jump_cancelled = true
+			if jump_state == JumpState.DOUBLE_JUMP:
+				double_jump_cancelled = true
+			jump_state = JumpState.JUMP_FALL_START
+		if jump_cancelled and double_jump_cancelled and jump_state < JumpState.JUMP_FALL_START:
+			jump_state = JumpState.JUMP_FALL_START
 	elif action_state == ActionState.ZERO_GRAV:
 		if not is_top_colliding():
-			if movement_state != MovementState.JUMPING and !jump_cancelled:
+			if movement_state != MovementState.JUMPING and !jump_cancelled :
 				jump_state = JumpState.JUMP_FALL_START
 				movement_state = MovementState.JUMPING
 			velocity.y -= gravity * delta
@@ -248,6 +265,7 @@ func handle_falling(delta):
 			zero_grav_cooldown = false
 			jump_state = JumpState.IDLE
 			jump_cancelled = false
+			double_jump_cancelled = false
 			jump_from_wall_cling = false
 
 func handle_sprint():
@@ -298,7 +316,7 @@ func move(delta):
 	return direction
 
 func is_jump_height_reached():
-	if jump_cancelled:
+	if jump_cancelled and double_jump_cancelled:
 		return true
 	if action_state != ActionState.ZERO_GRAV:
 		if global_position.y - jump_start_y <= -JUMP_CAP:
@@ -370,6 +388,8 @@ func play_animations(direction):
 					target_anim = "jump_startup"
 				JumpState.JUMP_RISE:
 					target_anim = "jump_rise"
+				JumpState.DOUBLE_JUMP:
+					target_anim = "double_jump"
 				JumpState.JUMP_FALL_START:
 					target_anim = "jump_fall"
 				JumpState.JUMP_FALL:
@@ -537,7 +557,7 @@ func _on_animation_finished():
 		action_state = ActionState.IDLE
 	if animated_sprite.animation == "jump_startup":
 		jump_state = JumpState.JUMP_RISE
-	if animated_sprite.animation == "jump_rise":
+	if animated_sprite.animation == "jump_rise" or animated_sprite.animation == "double_jump":
 		#Since rising animation may need to be longer, the state doesn't change at the end of the animation
 		#The player should have just started falling
 		if velocity.y > 0 and !apex_reached:
@@ -656,7 +676,6 @@ func auto_move_on_room_change(entrance_way):
 			#Because the bottom case will switch the state too soon
 			transition_state = TransitionState.IDLE
 			
-	
 func _auto_move_helper():
 	velocity.x = 0
 	transition_state = TransitionState.IDLE
