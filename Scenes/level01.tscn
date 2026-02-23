@@ -43,3 +43,5 @@ room_trans_data = SubResource("Resource_l1sls")
 
 [node name="EnemyShreiker" parent="." instance=ExtResource("7_p20kn")]
 position = Vector2(2328, 558)
+
+[connection signal="update_camera_follow_speed" from="Player" to="Camera" method="_on_player_update_camera_follow_speed"]
