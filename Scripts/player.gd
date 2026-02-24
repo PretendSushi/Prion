@@ -56,6 +56,8 @@ var health = 100
 var protein = 100
 #This is a list of all lists the player has collected
 var notes_list = []
+#A list of abilities the player has unlocked
+var unlocked_standard_abilities = []
 #The current interactable object available to the player
 var current_interactable = null
 #Flag for invincibility
@@ -72,6 +74,9 @@ var jump_from_wall_cling = false
 var jump_off_timer = 0
 #this flag just tracks if the jump off is currently happening
 var jump_off = false
+
+#Available abilities
+enum StandardAbilities { LIQUIFY, RUBBER_BAND, STICKY_BAND, HELICOPTER, ZERO_GRAV }
 
 #Available states
 enum TransitionState { IDLE, TRANSITIONING }
@@ -113,6 +118,10 @@ func _ready():
 	emit_signal("initialize_protein", MAX_PROTEIN, protein)
 	emit_signal("initialize_inventory", notes_list)
 	animated_sprite.animation_finished.connect(_on_animation_finished) #calls _on_animation_finished every time an animation ends
+	unlocked_standard_abilities.append(StandardAbilities.HELICOPTER)
+	unlocked_standard_abilities.append(StandardAbilities.RUBBER_BAND)
+	unlocked_standard_abilities.append(StandardAbilities.STICKY_BAND)
+	unlocked_standard_abilities.append(StandardAbilities.ZERO_GRAV)
 
 func _physics_process(delta):
 	if !handle_knockback(delta):
@@ -187,7 +196,9 @@ func handle_jump(delta):
 		jump_cancelled = false
 		jump_from_wall_cling = true
 	if jump_cancelled:
-		if jump_state != JumpState.DOUBLE_JUMP and !double_jump_cancelled:
+		if jump_state != JumpState.DOUBLE_JUMP\
+		and !double_jump_cancelled\
+		and is_standard_ability_unlocked(StandardAbilities.HELICOPTER):
 			jump_state = JumpState.DOUBLE_JUMP
 		else:
 			return
@@ -469,7 +480,9 @@ func attack(down_pressed, up_pressed):
 				bounce()
 	
 func rubber_band():
-	if action_state == ActionState.RUBBER_BAND or protein < RUBBER_BAND_PROTEIN_COST:
+	if action_state == ActionState.RUBBER_BAND\
+	or protein < RUBBER_BAND_PROTEIN_COST\
+	or !is_standard_ability_unlocked(StandardAbilities.RUBBER_BAND):
 		return
 	action_state = ActionState.RUBBER_BAND
 	rubber_band_state = RubberBandState.START
@@ -491,6 +504,8 @@ func rubber_band_attack(direction):
 	emit_signal("protein_changed", protein)
 	
 func sticky_band(hitbox, body):
+	if !is_standard_ability_unlocked(StandardAbilities.STICKY_BAND):
+		return
 	rubber_band_state = RubberBandState.STICKY_BAND
 	velocity.y = 0
 	velocity.x = STICKY_BAND_SPEED * direction
@@ -512,7 +527,9 @@ func check_wall_cling():
 		velocity.y = 0
 
 func zero_grav():
-	if action_state == ActionState.ZERO_GRAV or zero_grav_cooldown:
+	if action_state == ActionState.ZERO_GRAV\
+	or zero_grav_cooldown\
+	or !is_standard_ability_unlocked(StandardAbilities.ZERO_GRAV):
 		return
 	action_state = ActionState.ZERO_GRAV
 	zero_grav_timer = ZERO_GRAV_DURATION
@@ -669,3 +686,9 @@ func auto_move_on_room_change(entrance_way):
 func _auto_move_helper():
 	velocity.x = 0
 	transition_state = TransitionState.IDLE
+
+func is_standard_ability_unlocked(target_ability: StandardAbilities):
+	for ability in unlocked_standard_abilities:
+		if ability == target_ability:
+			return true
+	return false
