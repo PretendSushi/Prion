@@ -292,7 +292,6 @@ func move(delta):
 	if rubber_band_state == RubberBandState.STICKY_BAND or jump_off or transition_state == TransitionState.TRANSITIONING:
 		return
 	if action_state != ActionState.RUBBER_BAND and action_state != ActionState.LEECH:
-		direction = 0
 		if Input.is_action_pressed("Left"):
 			direction = -1.0
 		elif Input.is_action_pressed("Right"):
@@ -306,7 +305,7 @@ func move(delta):
 			velocity.x = direction * GROUND_SPEED
 			movement_state = MovementState.WALKING
 		
-		if direction == 0:
+		if !Input.is_action_pressed("Left") and !Input.is_action_pressed("Right"):
 			velocity.x = move_toward(velocity.x, 0, GROUND_SPEED)
 			if movement_state != MovementState.JUMPING:
 				movement_state = MovementState.IDLE
@@ -405,6 +404,7 @@ func play_animations(direction):
 	else:
 		animated_sprite.flip_v = false
 		
+	print(direction)
 	if target_anim == "rubber_band_ground_startup" or target_anim == "rubber_band_ground" or target_anim == "sticky_band":
 		if direction >= 0:
 			animated_sprite.offset.x = RB_ANIM_OFFSET
