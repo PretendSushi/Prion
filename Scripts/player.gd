@@ -279,7 +279,7 @@ func handle_stop_sprint():
 			movement_state = MovementState.IDLE
 		else:
 			movement_state = MovementState.JUMPING
-		emit_signal("update_camera_follow_speed", GROUND_SPEED)
+	emit_signal("update_camera_follow_speed", GROUND_SPEED)
 
 func move(delta):
 	if rubber_band_state == RubberBandState.STICKY_BAND or jump_off or transition_state == TransitionState.TRANSITIONING:
