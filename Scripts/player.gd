@@ -44,10 +44,6 @@ const JUMP_FORCE_FROM_WALL = 300
 var gravity = 1800#ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
 
-#This fucker has caused me so much fucking grief but needs to exist, unfortunately.
-#It tracks both the amount of pain it has caused me and
-#whether the player has reached the apex of their jump or not
-var apex_reached = false
 #Tracks the amount of time the player has been knocked back
 var knockback_timer = 0
 #var jump_timer = 0
@@ -556,8 +552,7 @@ func _on_animation_finished():
 	if animated_sprite.animation == "jump_rise" or animated_sprite.animation == "double_jump":
 		#Since rising animation may need to be longer, the state doesn't change at the end of the animation
 		#The player should have just started falling
-		if velocity.y > 0 and !apex_reached:
-			apex_reached = true#set apex_reached so this doesn't fire again
+		if velocity.y > 0:
 			jump_state = JumpState.JUMP_FALL_START
 		else:
 			animated_sprite.play("jump_rise") #if the player is still going up, replay the animation
@@ -568,7 +563,6 @@ func _on_animation_finished():
 	if animated_sprite.animation == "jump_land":
 		jump_state = JumpState.IDLE
 		movement_state = MovementState.IDLE
-		apex_reached = false
 	if animated_sprite.animation == "rubber_band_ground_startup":
 		rubber_band_state = RubberBandState.DURATION
 		rubber_band_attack(direction)
