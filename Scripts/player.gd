@@ -285,25 +285,21 @@ func move(delta):
 	if rubber_band_state == RubberBandState.STICKY_BAND or jump_off or transition_state == TransitionState.TRANSITIONING:
 		return
 	if action_state != ActionState.RUBBER_BAND and action_state != ActionState.LEECH:
+		direction = 0
 		if Input.is_action_pressed("Left"):
 			direction = -1.0
-			if movement_state == MovementState.JUMPING:
-				velocity.x = direction * AIR_SPEED
-			elif movement_state == MovementState.SPRINTING:
-				velocity.x = direction * SPRINT_SPEED
-			else:
-				velocity.x = direction * GROUND_SPEED
-				movement_state = MovementState.WALKING
 		elif Input.is_action_pressed("Right"):
 			direction = 1.0
-			if movement_state == MovementState.JUMPING:
-				velocity.x = direction * AIR_SPEED
-			elif movement_state == MovementState.SPRINTING:
-				velocity.x = direction * SPRINT_SPEED
-			else:
-				velocity.x = direction * GROUND_SPEED
-				movement_state = MovementState.WALKING
+			
+		if movement_state == MovementState.JUMPING:
+			velocity.x = direction * AIR_SPEED
+		elif movement_state == MovementState.SPRINTING:
+			velocity.x = direction * SPRINT_SPEED
 		else:
+			velocity.x = direction * GROUND_SPEED
+			movement_state = MovementState.WALKING
+		
+		if direction == 0:
 			velocity.x = move_toward(velocity.x, 0, GROUND_SPEED)
 			if movement_state != MovementState.JUMPING:
 				movement_state = MovementState.IDLE
