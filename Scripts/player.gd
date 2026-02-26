@@ -404,7 +404,6 @@ func play_animations(direction):
 	else:
 		animated_sprite.flip_v = false
 		
-	print(direction)
 	if target_anim == "rubber_band_ground_startup" or target_anim == "rubber_band_ground" or target_anim == "sticky_band":
 		if direction >= 0:
 			animated_sprite.offset.x = RB_ANIM_OFFSET
