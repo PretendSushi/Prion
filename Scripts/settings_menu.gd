@@ -27,6 +27,7 @@ func _ready():
 					break
 				button.text = "Undefined"
 			button.pressed.connect(_on_button_pressed.bind(action, button, inst_label))
+			button.focus_mode = Control.FOCUS_NONE
 			
 			hbox.add_child(label)
 			hbox.add_child(button)
