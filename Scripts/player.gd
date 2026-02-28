@@ -309,6 +309,7 @@ func move(delta):
 		
 		if !Input.is_action_pressed("Left") and !Input.is_action_pressed("Right"):
 			velocity.x = move_toward(velocity.x, 0, GROUND_SPEED)
+			direction = 0
 			if movement_state != MovementState.JUMPING:
 				movement_state = MovementState.IDLE
 
