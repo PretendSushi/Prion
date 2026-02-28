@@ -254,8 +254,9 @@ func handle_falling(delta):
 			if jump_state == JumpState.DOUBLE_JUMP:
 				double_jump_cancelled = true
 			jump_state = JumpState.JUMP_FALL_START
-		if jump_cancelled and double_jump_cancelled and jump_state < JumpState.JUMP_FALL_START:
-			jump_state = JumpState.JUMP_FALL_START
+		#print(jump_state)
+		#if jump_cancelled and double_jump_cancelled and jump_state < JumpState.JUMP_FALL_START:
+			#jump_state = JumpState.JUMP_FALL_START
 	elif action_state == ActionState.ZERO_GRAV:
 		if not is_top_colliding():
 			if movement_state != MovementState.JUMPING and !jump_cancelled :
@@ -580,7 +581,10 @@ func _on_animation_finished():
 		if velocity.y > 0:
 			jump_state = JumpState.JUMP_FALL_START
 		else:
-			animated_sprite.play("jump_rise") #if the player is still going up, replay the animation
+			if animated_sprite.animation == "jump_rise":
+				animated_sprite.play("jump_rise") #if the player is still going up, replay the animation
+			else:
+				animated_sprite.play("double_jump")
 	if animated_sprite.animation == "jump_fall":
 		jump_state = JumpState.JUMP_FALL
 	if animated_sprite.animation == "jump_falling":
