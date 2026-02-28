@@ -8,6 +8,9 @@ var current_label = null
 var current_button = null
 var config = ConfigFile.new()
 
+const DEFAULT_MSG = "Press any key to change binding..."
+const UNAVAIL_MSG = "Key is already being used by another action"
+
 func _ready():
 	for action: String in InputMap.get_actions():
 		if not action.contains("ui"):
@@ -17,7 +20,7 @@ func _ready():
 			var button = Button.new()
 			
 			label.text = action
-			inst_label.text = "Press any key to change binding..."
+			inst_label.text = DEFAULT_MSG
 			inst_label.visible = false
 			
 			var events = InputMap.action_get_events(action)
@@ -53,11 +56,15 @@ func _input(event):
 		if event.is_echo():
 			return  # Ignore repeated events
 		
-		rebind_action(action_to_rebind, event.keycode)
-		waiting_for_input = false
-		current_label.visible = false
-		update_button(current_button, event.as_text())
-		save_input_settings()
+		if check_if_key_available(event):
+			rebind_action(action_to_rebind, event.keycode)
+			update_button(current_button, event.as_text())
+			waiting_for_input = false
+			current_label.visible = false
+			save_input_settings()
+			reset_label_message()
+		else:
+			show_key_unavailable_msg()
 	
 func rebind_action(action, new_key):
 	for event in InputMap.action_get_events(action):
@@ -71,6 +78,22 @@ func rebind_action(action, new_key):
 	
 func update_button(button, keycode):
 	button.text = str(keycode)
+	
+func check_if_key_available(key):
+	for action in InputMap.get_actions():
+		if action == action_to_rebind:
+			continue
+		for event in InputMap.action_get_events(action):
+			if event is InputEventKey:
+				if event.keycode == key.keycode:
+					return false
+	return true
+
+func show_key_unavailable_msg():
+	current_label.text = UNAVAIL_MSG
+
+func reset_label_message():
+	current_label.text = DEFAULT_MSG
 
 func save_input_settings():
 	for action in InputMap.get_actions():
