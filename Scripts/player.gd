@@ -226,6 +226,7 @@ func handle_jump(delta):
 			velocity.y = JUMP_VELOCITY
 
 func handle_jump_helper(delta):
+	#print(is_jump_height_reached())
 	if Input.is_action_pressed("Jump")\
 	and movement_state == MovementState.JUMPING\
 	and (!jump_cancelled or !double_jump_cancelled) \
@@ -318,14 +319,22 @@ func move(delta):
 	return direction
 
 func is_jump_height_reached():
-	if jump_cancelled and double_jump_cancelled:
-		return true
+	if jump_cancelled:
+		if jump_state == JumpState.DOUBLE_JUMP:
+			if double_jump_cancelled:
+				return true
+		else:
+			return true
 	if action_state != ActionState.ZERO_GRAV:
 		if global_position.y - jump_start_y <= -JUMP_CAP:
+			if jump_state == JumpState.DOUBLE_JUMP:
+				double_jump_cancelled = true
 			jump_cancelled = true
 			return true
 		return false
 	elif global_position.y - jump_start_y >= JUMP_CAP:
+		if jump_state == JumpState.DOUBLE_JUMP:
+			double_jump_cancelled = true
 		jump_cancelled = true
 		return true
 	return false
