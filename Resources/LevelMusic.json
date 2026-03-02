@@ -7,5 +7,10 @@
 	{
 		"levelName": "Monorail",
 		"musicPath": "res://Assets/Music/Monorail.wav"
+	},
+	
+	{
+		"levelName": "Subway",
+		"musicPath": "res://Assets/Music/Subway.wav"
 	}
 ]
