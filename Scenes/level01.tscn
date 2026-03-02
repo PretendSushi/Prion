@@ -19,7 +19,7 @@ player_y = 1145.0
 entrance_way = 0
 metadata/_custom_type_script = "uid://p550xmykutcc"
 
-[node name="Level01" type="Node2D"]
+[node name="Level01" type="Node2D" groups=["Monorail"]]
 script = ExtResource("1_xydm2")
 
 [node name="TileMap" type="TileMap" parent="."]

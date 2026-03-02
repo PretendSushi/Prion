@@ -33,7 +33,7 @@ player_y = 0.0
 entrance_way = 1
 metadata/_custom_type_script = "uid://p550xmykutcc"
 
-[node name="Level" type="Node2D"]
+[node name="Level" type="Node2D" groups=["Apartment"]]
 script = ExtResource("1_qcfsa")
 
 [node name="Background" type="Sprite2D" parent="."]

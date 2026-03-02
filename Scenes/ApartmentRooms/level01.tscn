@@ -18,7 +18,7 @@ player_y = -650.0
 entrance_way = 0
 metadata/_custom_type_script = "uid://p550xmykutcc"
 
-[node name="Level01" type="Node2D"]
+[node name="Level01" type="Node2D" groups=["Apartment"]]
 script = ExtResource("1_r8d3k")
 
 [node name="TileMap" type="TileMap" parent="."]

@@ -1,0 +1,11 @@
+[
+	{
+		"levelName": "Apartment",
+		"musicPath": "res://Assets/Music/Apartments.wav"
+	},
+	
+	{
+		"levelName": "Monorail",
+		"musicPath": "res://Assets/Music/Monorail.wav"
+	}
+]

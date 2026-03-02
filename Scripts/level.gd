@@ -1,12 +1,15 @@
 extends Node2D
 
 var enemy = null
-var adjacent_rooms = []
 var SPAWN_INTERVAL = 5.0
 var time_passed = 0.0
 @onready var player = $Player
 
 func _ready():
+	var music = MusicPlayer.get_track_for_level(get_groups()[0])
+	if music:
+		MusicPlayer.play_music(music)
+	
 	enemy = preload("res://Scenes/enemy.tscn")
 	if RoomManager.player_x != null and RoomManager.player_y != null:
 		position_player(RoomManager.player_x, RoomManager.player_y)
