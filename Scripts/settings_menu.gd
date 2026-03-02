@@ -88,6 +88,8 @@ func check_if_key_available(key):
 	for action in InputMap.get_actions():
 		if action == action_to_rebind:
 			continue
+		if action.contains("ui"):
+			continue
 		for event in InputMap.action_get_events(action):
 			if event is InputEventKey:
 				if event.keycode == key.keycode:
