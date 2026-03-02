@@ -6,6 +6,7 @@ var waiting_for_input = false
 var action_to_rebind = null
 var current_label = null
 var current_button = null
+var buttons = []
 var config = ConfigFile.new()
 
 const DEFAULT_MSG = "Press any key to change binding..."
@@ -32,6 +33,8 @@ func _ready():
 			button.pressed.connect(_on_button_pressed.bind(action, button, inst_label))
 			button.focus_mode = Control.FOCUS_NONE
 			
+			buttons.append(button)
+			
 			hbox.add_child(label)
 			hbox.add_child(button)
 			hbox.add_child(inst_label)
@@ -48,6 +51,7 @@ func _on_button_pressed(action, button, label):
 	
 	waiting_for_input = true
 	action_to_rebind = action
+	disable_unfocused_buttons()
 	
 func _input(event):
 	if waiting_for_input and event is InputEventKey and event.pressed:
@@ -63,6 +67,7 @@ func _input(event):
 			current_label.visible = false
 			save_input_settings()
 			reset_label_message()
+			reenable_buttons()
 		else:
 			show_key_unavailable_msg()
 	
@@ -101,3 +106,13 @@ func save_input_settings():
 		config.set_value("input", action, events)
 		
 	config.save("user://input.cfg")
+	
+func disable_unfocused_buttons():
+	for button in buttons:
+		if button == current_button:
+			continue
+		button.disabled = true
+
+func reenable_buttons():
+	for button in buttons:
+		button.disabled = false
