@@ -15,10 +15,10 @@ func play_music(track_path):
 	
 	current_track = track
 	stream = track
+	volume_db = -10
 	play()
 
 func get_track_for_level(level):
-	print(level)
 	var file := FileAccess.open("res://Resources/LevelMusic.json", FileAccess.READ)
 	if file == null:
 		return

@@ -40,6 +40,16 @@ const LEECH_ANIM_OFFSET = 100
 const LEECH_HEALTH_GAIN = 25
 const STICKY_BAND_SPEED = 1800
 const JUMP_FORCE_FROM_WALL = 300
+const STEP_PITCH_LOW = 0.80
+const STEP_PITCH_HIGH = 1.20
+const WALK_SFX_TIME = 0.3
+const SPRINT_SFX_TIME = 0.1
+#Paths for sound effects
+const STEP_SFX_PATH = "res://Assets/Sounds/Player/Step.wav"
+
+#variables for sound effects
+var step_sfx
+
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = 1800#ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
@@ -75,8 +85,12 @@ var jump_off_timer = 0
 #this flag just tracks if the jump off is currently happening
 var jump_off = false
 
+var walk_sfx_timer = 0
+
 #Available abilities
 enum StandardAbilities { LIQUIFY, RUBBER_BAND, STICKY_BAND, HELICOPTER, ZERO_GRAV }
+#Sound effects
+enum SoundEffects { WALK }
 
 #Available states
 enum TransitionState { IDLE, TRANSITIONING }
@@ -109,6 +123,8 @@ var leech_state = LeechState.IDLE
 @onready var raycast_left = $RayCastLeft
 @onready var raycast_right = $RayCastRight
 @onready var hit_anim = $HitFlashAnim
+@onready var audio_player = $AudioPlayer
+
 
 func _ready():
 	if RoomManager.player_stats != null:
@@ -122,6 +138,10 @@ func _ready():
 	unlocked_standard_abilities.append(StandardAbilities.RUBBER_BAND)
 	unlocked_standard_abilities.append(StandardAbilities.STICKY_BAND)
 	unlocked_standard_abilities.append(StandardAbilities.ZERO_GRAV)
+	
+	step_sfx = load(STEP_SFX_PATH)
+	audio_player.stream = step_sfx
+	audio_player.max_distance = 5000
 
 func _physics_process(delta):
 	if !handle_knockback(delta):
@@ -290,14 +310,28 @@ func handle_stop_sprint():
 			movement_state = MovementState.JUMPING
 	emit_signal("update_camera_follow_speed", GROUND_SPEED)
 
+func handle_step_sfx_timer(delta):
+	if walk_sfx_timer > 0:
+		walk_sfx_timer -= delta
+		return false
+	if movement_state == MovementState.WALKING:
+		walk_sfx_timer = WALK_SFX_TIME
+	elif movement_state == MovementState.SPRINTING:
+		walk_sfx_timer = SPRINT_SFX_TIME
+	return true
+
 func move(delta):
 	if rubber_band_state == RubberBandState.STICKY_BAND or jump_off or transition_state == TransitionState.TRANSITIONING:
 		return
 	if action_state != ActionState.RUBBER_BAND and action_state != ActionState.LEECH:
 		if Input.is_action_pressed("Left"):
 			direction = -1.0
+			if movement_state != MovementState.JUMPING and handle_step_sfx_timer(delta):
+				play_sounds(SoundEffects.WALK)
 		elif Input.is_action_pressed("Right"):
 			direction = 1.0
+			if movement_state != MovementState.JUMPING and handle_step_sfx_timer(delta):
+				play_sounds(SoundEffects.WALK)
 			
 		if movement_state == MovementState.JUMPING:
 			velocity.x = direction * AIR_SPEED
@@ -590,6 +624,7 @@ func _on_animation_finished():
 	if animated_sprite.animation == "jump_falling":
 		jump_state = JumpState.LANDING
 	if animated_sprite.animation == "jump_land":
+		play_sounds(SoundEffects.WALK)
 		jump_state = JumpState.IDLE
 		movement_state = MovementState.IDLE
 	if animated_sprite.animation == "rubber_band_ground_startup":
@@ -704,3 +739,9 @@ func is_standard_ability_unlocked(target_ability: StandardAbilities):
 		if ability == target_ability:
 			return true
 	return false
+
+func play_sounds(sound_effect: SoundEffects):
+	if sound_effect == SoundEffects.WALK:
+		if !audio_player.playing:
+			audio_player.pitch_scale = randf_range(STEP_PITCH_LOW, STEP_PITCH_HIGH) 
+			audio_player.play()
