@@ -5,6 +5,8 @@ var player_y = null
 var player_stats = null
 var room_data = null 
 
+var last_save_point = null
+
 func change_level(data):
 	#get the players stats BEFORE changing the room
 	var player = get_tree().get_nodes_in_group("Player")[0]
@@ -41,3 +43,6 @@ func get_room_data():
 	
 func set_room_data(data):
 	room_data = data
+	
+func set_last_save_point(save_point):
+	last_save_point = save_point

@@ -86,7 +86,6 @@ var jump_off_timer = 0
 var jump_off = false
 
 var walk_sfx_timer = 0
-
 #Available abilities
 enum StandardAbilities { LIQUIFY, RUBBER_BAND, STICKY_BAND, HELICOPTER, ZERO_GRAV }
 #Sound effects
@@ -129,6 +128,11 @@ var leech_state = LeechState.IDLE
 func _ready():
 	if RoomManager.player_stats != null:
 		apply_data(RoomManager.player_stats)
+	if health <= 0:
+		restore_max_hp()
+		hit_anim.stop()
+		hit_anim.seek(0, true)
+		animated_sprite.material.set_shader_parameter("hit_flash_on", 0.0)
 	#initialize everything
 	emit_signal("initialize_health", MAX_HEALTH, health)
 	emit_signal("initialize_protein", MAX_PROTEIN, protein)
@@ -491,8 +495,15 @@ func _on_enemy_hit_player(damage, knockback, enemy_pos):
 		die()
 
 func die():
-	#TODO
-	pass
+	if !RoomManager.last_save_point:
+		print("Error, no save point found")
+		return
+	if RoomManager.last_save_point.room_id != RoomManager.get_room_data().room_id:
+		#RoomManager.get_room_path_by_id(RoomManager.last_save_point.room_id)
+		RoomManager.change_level(RoomManager.last_save_point)
+	else:
+		global_position.x = RoomManager.last_save_point.player_x
+		global_position.y = RoomManager.last_save_point.player_y
 
 func bounce():
 	#for pogoing
@@ -745,3 +756,9 @@ func play_sounds(sound_effect: SoundEffects):
 		if !audio_player.playing:
 			audio_player.pitch_scale = randf_range(STEP_PITCH_LOW, STEP_PITCH_HIGH) 
 			audio_player.play()
+
+func set_last_save_point(save_dict: Dictionary):
+	if not save_dict:
+		print("Error. No data")
+		return
+	RoomManager.set_last_save_point(save_dict)

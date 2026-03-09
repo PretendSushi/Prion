@@ -23,8 +23,10 @@ func _ready():
 		enemy_instance.drop_protein.connect(_on_enemy_drop_protein)
 	
 	var room_data = RoomManager.get_room_data()
-	if room_data:
+	if room_data and "entrance_way" in room_data:
 		player.auto_move_on_room_change(room_data.entrance_way)
+	else:
+		RoomManager.set_room_data({"room_id": 1, "player_x": player.global_position.x, "player_y": player.global_position.y})
 	
 func _physics_process(delta):
 	pass

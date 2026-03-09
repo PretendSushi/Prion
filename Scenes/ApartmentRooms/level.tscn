@@ -47,6 +47,7 @@ layer_0/tile_data = PackedInt32Array(327692, 65538, 1, 327693, 65538, 1, 327694,
 
 [node name="SavePoint" parent="." instance=ExtResource("4_5csn7")]
 position = Vector2(-1995, 64)
+room_id = 2
 
 [node name="Note" parent="." instance=ExtResource("5_vqbjw")]
 position = Vector2(-1199, 1098)
