@@ -21,11 +21,13 @@ const SPRINT_SPEED = 1400.0
 const JUMP_VELOCITY = -800.0
 const JUMP_FORCE = 3000
 const BOUNCE_VELOCITY = -1200.0
+const DASH_VELOCITY = 1500
 const MAX_HEALTH = 100
 const MAX_PROTEIN = 100
 const ATTACK_DAMAGE = 40
 const RUBBER_BAND_DAMAGE = 80
 const RUBBER_BAND_PROTEIN_COST = 40 
+const DASH_PROTEIN_COST = 5
 const KNOCKBACK = 1000
 const KNOCKBACK_DURATION = 0.5
 const INVINCIBLE_DURATION = 2.5
@@ -93,7 +95,7 @@ enum SoundEffects { WALK }
 
 #Available states
 enum TransitionState { IDLE, TRANSITIONING }
-enum MovementState { IDLE, WALKING, SPRINTING, JUMPING }
+enum MovementState { IDLE, WALKING, DASH, SPRINTING, JUMPING }
 enum ActionState { IDLE, ATTACK, RUBBER_BAND, DAMAGED, ZERO_GRAV, LEECH, WALL_CLING }
 enum JumpState { IDLE, JUMP_START, JUMP_RISE, DOUBLE_JUMP, JUMP_FALL_START, JUMP_FALL, LANDING }
 enum RubberBandState { IDLE, START, DURATION, STICKY_BAND, END}
@@ -213,6 +215,8 @@ func check_for_inputs(delta):
 		handle_sprint()
 	if Input.is_action_just_released("Sprint"):
 		handle_stop_sprint()
+	if Input.is_action_just_pressed("Dash"):
+		dash()
 
 func handle_jump(delta):
 	if action_state == ActionState.WALL_CLING:
@@ -264,7 +268,9 @@ func handle_jump_helper(delta):
 			double_jump_cancelled = true
 
 func handle_falling(delta):
-	if rubber_band_state == RubberBandState.STICKY_BAND or transition_state == TransitionState.TRANSITIONING:
+	if rubber_band_state == RubberBandState.STICKY_BAND\
+	or transition_state == TransitionState.TRANSITIONING\
+	or movement_state == MovementState.DASH:
 		return
 	if not is_on_floor() and action_state != ActionState.ZERO_GRAV:
 		if movement_state != MovementState.JUMPING and !jump_cancelled:
@@ -300,6 +306,21 @@ func handle_falling(delta):
 			double_jump_cancelled = false
 			jump_from_wall_cling = false
 
+func dash():
+	if movement_state == MovementState.DASH or protein < DASH_PROTEIN_COST:
+		return
+	movement_state = MovementState.DASH
+	if direction:
+		velocity.x = DASH_VELOCITY * direction
+	else:
+		if !animated_sprite.flip_h:
+			velocity.x = DASH_VELOCITY
+		else:
+			velocity.x = -DASH_VELOCITY
+	velocity.y = 0
+	protein -= DASH_PROTEIN_COST
+	emit_signal("protein_changed", protein)
+
 func handle_sprint():
 	if movement_state != MovementState.JUMPING and is_bottom_colliding():
 		movement_state = MovementState.SPRINTING
@@ -324,7 +345,10 @@ func handle_step_sfx_timer(delta):
 	return true
 
 func move(delta):
-	if rubber_band_state == RubberBandState.STICKY_BAND or jump_off or transition_state == TransitionState.TRANSITIONING:
+	if rubber_band_state == RubberBandState.STICKY_BAND\
+	or jump_off\
+	or transition_state == TransitionState.TRANSITIONING\
+	or movement_state == MovementState.DASH:
 		return
 	if action_state != ActionState.RUBBER_BAND and action_state != ActionState.LEECH:
 		if Input.is_action_pressed("Left"):
@@ -405,6 +429,8 @@ func play_animations(direction):
 				target_anim = "jump_startup"
 			else:
 				target_anim = "jump_land"
+		elif movement_state == MovementState.DASH:
+			target_anim = "dash"
 		else:
 			if action_state == ActionState.LEECH:
 				if leech_state == LeechState.START:
@@ -431,6 +457,8 @@ func play_animations(direction):
 				target_anim = "sticky_band"
 		elif action_state == ActionState.WALL_CLING and !jump_from_wall_cling:
 			target_anim = "idle"
+		elif movement_state == MovementState.DASH:
+			target_anim = "dash"
 		else:
 			match jump_state:
 				JumpState.JUMP_START:
@@ -653,6 +681,11 @@ func _on_animation_finished():
 	if animated_sprite.animation == "leech_end":
 		leech_state = LeechState.IDLE
 		action_state = ActionState.IDLE
+	if animated_sprite.animation == "dash":
+		movement_state = MovementState.JUMPING
+		jump_state = JumpState.JUMP_FALL_START
+		jump_cancelled = true
+		velocity.x = 0
 
 func _on_interactable_focused(interactable) -> void:
 	current_interactable = interactable

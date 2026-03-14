@@ -103,6 +103,26 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": ExtResource("3_igrcy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_olqyp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_2ijsl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_83xs0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_36dho")
+}],
+"loop": false,
+"name": &"dash",
+"speed": 15.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": ExtResource("12_8gxox")
 }],
 "loop": false,
@@ -456,9 +476,10 @@ script = ExtResource("1_6ltq4")
 material = SubResource("ShaderMaterial_57lvd")
 position = Vector2(15, -213)
 sprite_frames = SubResource("SpriteFrames_gn6c1")
-animation = &"idle"
+animation = &"dash"
 autoplay = "idle"
-frame_progress = 0.222823
+frame = 4
+frame_progress = 1.0
 
 [node name="Hurtbox" type="CollisionShape2D" parent="."]
 position = Vector2(8.5, -195)
