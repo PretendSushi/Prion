@@ -12,7 +12,7 @@ blend_mode = 3
 
 [sub_resource type="Resource" id="Resource_ybg3k"]
 script = ExtResource("5_r8d3k")
-room_id = 2
+room_id = 0
 player_x = -1200.0
 player_y = -650.0
 entrance_way = 0

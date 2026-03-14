@@ -124,7 +124,6 @@ var leech_state = LeechState.IDLE
 @onready var hit_anim = $HitFlashAnim
 @onready var audio_player = $AudioPlayer
 
-
 func _ready():
 	if RoomManager.player_stats != null:
 		apply_data(RoomManager.player_stats)
