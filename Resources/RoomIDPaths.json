@@ -12,6 +12,14 @@
 		"path": "res://Scenes/ApartmentRooms/level02.tscn"
 	},
 	{
+		"id": "3",
+		"path": "res://Scenes/ApartmentRooms/level03.tscn"
+	},
+	{
+		"id": "4",
+		"path": "res://Scenes/ApartmentRooms/level04.tscn"
+	},
+	{
 		"id": "10",
 		"path": "res://Scenes/level01.tscn"
 	}
