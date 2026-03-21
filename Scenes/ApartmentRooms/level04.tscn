@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dl06bc82xfm2i"]
+[gd_scene load_steps=12 format=3 uid="uid://dl06bc82xfm2i"]
 
 [ext_resource type="TileSet" uid="uid://nhgkuh44o1ro" path="res://Resources/Tilesets/level_tileset.tres" id="1_3vlp4"]
 [ext_resource type="Script" uid="uid://cob3thhyjfwnv" path="res://Scripts/level.gd" id="1_if213"]
@@ -6,6 +6,8 @@
 [ext_resource type="Script" uid="uid://dkehqfja5imcv" path="res://Scripts/camera.gd" id="3_if213"]
 [ext_resource type="PackedScene" uid="uid://cfiuyeqbaa37f" path="res://Scenes/RoomTransition.tscn" id="4_hs1v1"]
 [ext_resource type="Script" uid="uid://p550xmykutcc" path="res://Scripts/RoomTransData.gd" id="6_m1alw"]
+[ext_resource type="PackedScene" uid="uid://b81mxy3nse00a" path="res://Scenes/BossTrigger.tscn" id="7_fhjua"]
+[ext_resource type="PackedScene" uid="uid://05mkxdcuslwo" path="res://Scenes/BossDetrigger.tscn" id="8_7ro2w"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_m1alw"]
 blend_mode = 3
@@ -52,4 +54,19 @@ position = Vector2(1918, 38)
 rotation = 1.5708
 room_trans_data = SubResource("Resource_fhjua")
 
+[node name="BossTrigger" parent="." instance=ExtResource("7_fhjua")]
+position = Vector2(4729, -502)
+scale = Vector2(3, 3)
+left_bound = 3000
+right_bound = 8950
+
+[node name="BossDetrigger" parent="." instance=ExtResource("8_7ro2w")]
+position = Vector2(3038, -251)
+
+[node name="BossDetrigger2" parent="." instance=ExtResource("8_7ro2w")]
+position = Vector2(8921, -240)
+
 [connection signal="update_camera_follow_speed" from="Player" to="Camera2D" method="_on_player_update_camera_follow_speed"]
+[connection signal="boss_camera" from="BossTrigger" to="Camera2D" method="_on_boss_trigger_boss_camera"]
+[connection signal="deboss_camera" from="BossDetrigger" to="Camera2D" method="_on_boss_detrigger_deboss_camera"]
+[connection signal="deboss_camera" from="BossDetrigger2" to="Camera2D" method="_on_boss_detrigger_deboss_camera"]

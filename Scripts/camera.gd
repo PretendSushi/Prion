@@ -7,11 +7,17 @@ extends Camera2D
 @export var vertical_deadzone = 30
 @export var follow_speed = 700.0
 
+var boss_trigger_entered = false
+var zoom_speed = 2.0
+var target_zoom = Vector2(0.5, 0.5)
+
 func _ready():
 	setup_camera_limits()
 	
 func _physics_process(delta: float) -> void:
 	update_camera_position(delta)
+	if zoom != target_zoom:
+		zoom = zoom.lerp(target_zoom, zoom_speed * delta)
 
 func setup_camera_limits():
 	global_position = player.global_position
@@ -52,3 +58,25 @@ func update_camera_position(delta):
 
 func _on_player_update_camera_follow_speed(speed) -> void:
 	follow_speed = speed
+
+
+func _on_boss_trigger_boss_camera(left_bound, right_bound) -> void:
+	if boss_trigger_entered:
+		return
+	
+	boss_trigger_entered = true
+	limit_left = left_bound
+	limit_right = right_bound
+	
+	var bound_width = (right_bound - left_bound) / get_viewport_rect().size.x
+	
+	target_zoom = zoom / (bound_width/ 2)
+	
+
+
+func _on_boss_detrigger_deboss_camera() -> void:
+	if !boss_trigger_entered:
+		return
+	boss_trigger_entered = false
+	target_zoom = Vector2(0.5, 0.5) #remove magic number
+	setup_camera_limits()
