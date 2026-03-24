@@ -66,7 +66,7 @@ var double_jump_cancelled = false
 var health = 100
 #Basically mana
 var protein = 100
-#This is a list of all lists the player has collected
+#This is a list of all notes the player has collected
 var notes_list = []
 #A list of abilities the player has unlocked
 var unlocked_standard_abilities = []
@@ -88,6 +88,10 @@ var jump_off_timer = 0
 var jump_off = false
 
 var walk_sfx_timer = 0
+
+#debug tool
+var god_mode = false
+
 #Available abilities
 enum StandardAbilities { LIQUIFY, RUBBER_BAND, STICKY_BAND, HELICOPTER, ZERO_GRAV }
 #Sound effects
@@ -147,6 +151,8 @@ func _ready():
 	step_sfx = load(STEP_SFX_PATH)
 	audio_player.stream = step_sfx
 	audio_player.max_distance = 5000
+	
+	activate_god_mode()
 
 func _physics_process(delta):
 	if !handle_knockback(delta):
@@ -307,7 +313,7 @@ func handle_falling(delta):
 			jump_from_wall_cling = false
 
 func dash():
-	if movement_state == MovementState.DASH or protein < DASH_PROTEIN_COST:
+	if (movement_state == MovementState.DASH or protein < DASH_PROTEIN_COST) and !god_mode:
 		return
 	movement_state = MovementState.DASH
 	if direction:
@@ -318,7 +324,8 @@ func dash():
 		else:
 			velocity.x = -DASH_VELOCITY
 	velocity.y = 0
-	protein -= DASH_PROTEIN_COST
+	if !god_mode:
+		protein -= DASH_PROTEIN_COST
 	emit_signal("protein_changed", protein)
 
 func handle_sprint():
@@ -496,7 +503,7 @@ func play_animations(direction):
 		animated_sprite.play(target_anim)
 		
 func _on_enemy_hit_player(damage, knockback, enemy_pos):
-	if invincible:
+	if invincible or god_mode:
 		return
 	hit_anim.play("hit")
 	health -= damage
@@ -522,6 +529,8 @@ func _on_enemy_hit_player(damage, knockback, enemy_pos):
 		die()
 
 func die():
+	if god_mode:
+		return
 	if !RoomManager.last_save_point:
 		print("Error, no save point found")
 		return
@@ -581,11 +590,12 @@ func rubber_band_attack(direction):
 			emit_signal("player_attack", RUBBER_BAND_DAMAGE, KNOCKBACK)
 		if body.name == "TileMap":
 			sticky_band(hitbox, body)
-	protein -= RUBBER_BAND_PROTEIN_COST
-	emit_signal("protein_changed", protein)
+	if !god_mode:
+		protein -= RUBBER_BAND_PROTEIN_COST
+		emit_signal("protein_changed", protein)
 	
 func sticky_band(hitbox, body):
-	if !is_standard_ability_unlocked(StandardAbilities.STICKY_BAND):
+	if !is_standard_ability_unlocked(StandardAbilities.STICKY_BAND) and !god_mode:
 		return
 	rubber_band_state = RubberBandState.STICKY_BAND
 	velocity.y = 0
@@ -778,6 +788,8 @@ func _auto_move_helper():
 	transition_state = TransitionState.IDLE
 
 func is_standard_ability_unlocked(target_ability: StandardAbilities):
+	if god_mode:
+		return true
 	for ability in unlocked_standard_abilities:
 		if ability == target_ability:
 			return true
@@ -794,3 +806,9 @@ func set_last_save_point(save_dict: Dictionary):
 		print("Error. No data")
 		return
 	RoomManager.set_last_save_point(save_dict)
+
+func activate_god_mode():
+	god_mode = true
+	
+func deactivate_god_mode():
+	god_mode = false
