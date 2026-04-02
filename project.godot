@@ -20,6 +20,8 @@ config/icon="res://icon.svg"
 RoomManager="*res://Scripts/RoomManager.gd"
 InputManager="*res://Scripts/InputManager.gd"
 MusicPlayer="*res://Scenes/MusicPlayer.tscn"
+CustomStatTracker="*res://Scripts/StatTracker.gd"
+ExitManager="*res://Scripts/ExitManager.gd"
 
 [display]
 

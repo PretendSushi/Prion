@@ -151,8 +151,6 @@ func _ready():
 	step_sfx = load(STEP_SFX_PATH)
 	audio_player.stream = step_sfx
 	audio_player.max_distance = 5000
-	
-	activate_god_mode()
 
 func _physics_process(delta):
 	if !handle_knockback(delta):
@@ -540,6 +538,7 @@ func die():
 	else:
 		global_position.x = RoomManager.last_save_point.player_x
 		global_position.y = RoomManager.last_save_point.player_y
+	CustomStatTracker.add_death()
 
 func bounce():
 	#for pogoing

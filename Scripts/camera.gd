@@ -71,8 +71,6 @@ func _on_boss_trigger_boss_camera(left_bound, right_bound) -> void:
 	var bound_width = (right_bound - left_bound) / get_viewport_rect().size.x
 	
 	target_zoom = zoom / (bound_width/ 2)
-	
-
 
 func _on_boss_detrigger_deboss_camera() -> void:
 	if !boss_trigger_entered:

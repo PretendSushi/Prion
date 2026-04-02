@@ -15,8 +15,6 @@ const PROTEIN_PICKUP_OFFSET_X = 30
 const PROTEIN_PICKUP_OFFSET_Y = 100
 const PLAYER_ATTACK_MAX_DISTANCE = 300
 
-
-
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
@@ -122,6 +120,7 @@ func die():
 	emit_signal("drop_health", health_pickup, global_position.x, global_position.y - PROTEIN_PICKUP_OFFSET_Y)
 	emit_signal("drop_protein", protein_pickup, global_position.x + PROTEIN_PICKUP_OFFSET_X, global_position.y - PROTEIN_PICKUP_OFFSET_Y)
 	queue_free()
+	CustomStatTracker.add_kill()
 
 func _on_hurtbox_area_entered(area: Area2D) -> void:
 	if area.is_in_group("PlayerHurtbox"):

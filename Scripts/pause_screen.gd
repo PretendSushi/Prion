@@ -13,6 +13,7 @@ func _on_continue_btn_pressed() -> void:
 	visible = false
 
 func _on_exit_btn_pressed() -> void:
+	CustomStatTracker.save()
 	get_tree().quit()
 
 

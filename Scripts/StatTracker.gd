@@ -5,7 +5,10 @@ const FILEPATH = "user://Stats.json"
 var deaths = 0
 var kills = 0
 var last_save_time
-var time_played
+var time_played = 0
+
+func _ready():
+	last_save_time = Time.get_unix_time_from_system()
 
 func add_death():
 	deaths += 1
@@ -17,10 +20,9 @@ func add_time_played():
 	if !last_save_time:
 		last_save_time = Time.get_unix_time_from_system()
 		return
-	time_played += last_save_time - Time.get_unix_time_from_system()
+	time_played += Time.get_unix_time_from_system() - last_save_time
 	
 func save():
-		
 	var data = {}
 	var file := FileAccess.open(FILEPATH, FileAccess.READ)
 	

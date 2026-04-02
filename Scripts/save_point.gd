@@ -19,6 +19,7 @@ func _remove_text():
 func _on_interact(player):
 	player.restore_max_hp()
 	player.set_last_save_point(build_dict())
+	CustomStatTracker.add_time_played()
 	
 func build_dict():
 	return { "room_id": room_id, "player_x": global_position.x, "player_y": global_position.y}
