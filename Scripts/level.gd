@@ -26,7 +26,7 @@ func _ready():
 	if room_data and "entrance_way" in room_data:
 		player.auto_move_on_room_change(room_data.entrance_way)
 	else:
-		RoomManager.set_room_data({"room_id": 1, "player_x": player.global_position.x, "player_y": player.global_position.y})
+		RoomManager.set_room_data({"room_id": 0, "player_x": player.global_position.x, "player_y": player.global_position.y})
 	
 func _physics_process(delta):
 	pass
