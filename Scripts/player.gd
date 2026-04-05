@@ -137,6 +137,7 @@ var leech_state = LeechState.IDLE
 func _ready():
 	if RoomManager.player_stats != null:
 		apply_data(RoomManager.player_stats)
+		flip_for_direction()
 	if health <= 0:
 		restore_max_hp()
 		hit_anim.stop()
@@ -673,8 +674,6 @@ func _on_animation_finished():
 				animated_sprite.play("double_jump")
 	if animated_sprite.animation == "jump_fall":
 		jump_state = JumpState.JUMP_FALL
-	if animated_sprite.animation == "jump_falling":
-		jump_state = JumpState.LANDING
 	if animated_sprite.animation == "jump_land":
 		play_sounds(SoundEffects.WALK)
 		jump_state = JumpState.IDLE
