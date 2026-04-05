@@ -97,7 +97,7 @@ enum StandardAbilities { LIQUIFY, RUBBER_BAND, STICKY_BAND, HELICOPTER, ZERO_GRA
 #Sound effects
 enum SoundEffects { WALK }
 #Direction
-enum Directions { LEFT, RIGHT}
+enum Directions { LEFT, RIGHT }
 #Available states
 enum TransitionState { IDLE, TRANSITIONING }
 enum MovementState { IDLE, WALKING, DASH, SPRINTING, JUMPING }
@@ -107,7 +107,7 @@ enum RubberBandState { IDLE, START, DURATION, STICKY_BAND, END}
 enum LeechState { IDLE, START, DURATION, END }
 
 #actual direction
-var direction_lit = Directions.LEFT
+var direction_lit = Directions.RIGHT
 
 #actual states
 var transition_state = TransitionState.IDLE
@@ -747,12 +747,14 @@ func get_data_as_dict():
 		"health": health,
 		"protein": protein,
 		"direction": direction,
+		"direction_lit": direction_lit
 	}
 	
 func apply_data(data):
 	health = data.health
 	protein = data.protein
 	direction = data.direction
+	direction_lit = data.direction_lit
 	
 func auto_move_on_room_change(entrance_way):
 	transition_state = TransitionState.TRANSITIONING
@@ -761,7 +763,7 @@ func auto_move_on_room_change(entrance_way):
 			transition_state = TransitionState.IDLE
 		RoomTransData.EntranceWay.BOTTOM:
 			velocity.y = -JUMP_FORCE
-			velocity.x = (GROUND_SPEED) * direction
+			velocity.x = (SPRINT_SPEED) * direction
 			await get_tree().create_timer(ROOM_ENTRANCE_AIR_TIME).timeout
 			var timer = Timer.new()
 			add_child(timer)
@@ -816,3 +818,11 @@ func activate_god_mode():
 	
 func deactivate_god_mode():
 	god_mode = false
+
+func flip_for_direction():
+	if direction_lit == Directions.LEFT:
+		direction = -1.0
+		animated_sprite.flip_h = true
+	elif direction_lit == Directions.RIGHT:
+		direction = 1.0
+		animated_sprite.flip_h = false
