@@ -5,6 +5,8 @@ var SPAWN_INTERVAL = 5.0
 var time_passed = 0.0
 @onready var player = $Player
 
+@export var room_id: int
+
 func _ready():
 	var music = MusicPlayer.get_track_for_level(get_groups()[0])
 	if music:
@@ -26,17 +28,10 @@ func _ready():
 	if room_data and "entrance_way" in room_data:
 		player.auto_move_on_room_change(room_data.entrance_way)
 	else:
-		RoomManager.set_room_data({"room_id": 0, "player_x": player.global_position.x, "player_y": player.global_position.y})
+		RoomManager.set_room_data({"room_id": room_id, "player_x": player.global_position.x, "player_y": player.global_position.y})
 	
 func _physics_process(delta):
 	pass
-	#time_passed += delta
-	#if time_passed >= SPAWN_INTERVAL:
-		#time_passed = 0.0
-		##CHECK FOR AND SPAWN ENEMIES HERE
-		#var is_enemies = check_for_enemies()
-		#if !is_enemies:
-			#spawn_enemy()
 			
 func position_player(x, y):
 	var player = get_tree().get_nodes_in_group("Player")[0]
