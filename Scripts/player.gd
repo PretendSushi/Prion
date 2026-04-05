@@ -96,7 +96,8 @@ var god_mode = false
 enum StandardAbilities { LIQUIFY, RUBBER_BAND, STICKY_BAND, HELICOPTER, ZERO_GRAV }
 #Sound effects
 enum SoundEffects { WALK }
-
+#Direction
+enum Directions { LEFT, RIGHT}
 #Available states
 enum TransitionState { IDLE, TRANSITIONING }
 enum MovementState { IDLE, WALKING, DASH, SPRINTING, JUMPING }
@@ -104,6 +105,9 @@ enum ActionState { IDLE, ATTACK, RUBBER_BAND, DAMAGED, ZERO_GRAV, LEECH, WALL_CL
 enum JumpState { IDLE, JUMP_START, JUMP_RISE, DOUBLE_JUMP, JUMP_FALL_START, JUMP_FALL, LANDING }
 enum RubberBandState { IDLE, START, DURATION, STICKY_BAND, END}
 enum LeechState { IDLE, START, DURATION, END }
+
+#actual direction
+var direction_lit = Directions.LEFT
 
 #actual states
 var transition_state = TransitionState.IDLE
@@ -158,7 +162,7 @@ func _physics_process(delta):
 	handle_knockback(delta)
 	handle_invincibility(delta)
 	handle_zero_grav(delta)
-	play_animations(direction)
+	play_animations()
 	check_for_inputs(delta)
 	handle_jump_helper(delta)
 	handle_falling(delta)
@@ -358,10 +362,12 @@ func move(delta):
 	if action_state != ActionState.RUBBER_BAND and action_state != ActionState.LEECH:
 		if Input.is_action_pressed("Left"):
 			direction = -1.0
+			direction_lit = Directions.LEFT
 			if movement_state != MovementState.JUMPING and handle_step_sfx_timer(delta):
 				play_sounds(SoundEffects.WALK)
 		elif Input.is_action_pressed("Right"):
 			direction = 1.0
+			direction_lit = Directions.RIGHT
 			if movement_state != MovementState.JUMPING and handle_step_sfx_timer(delta):
 				play_sounds(SoundEffects.WALK)
 			
@@ -379,11 +385,10 @@ func move(delta):
 				movement_state = MovementState.IDLE
 
 	#Flip sprite
-	if direction > 0:
+	if direction_lit == Directions.RIGHT:
 		animated_sprite.flip_h = false
-	elif direction < 0:
+	elif direction_lit == Directions.LEFT:
 		animated_sprite.flip_h = true
-	return direction
 
 func is_jump_height_reached():
 	if jump_cancelled:
@@ -415,7 +420,7 @@ func is_top_colliding():
 func is_bottom_colliding():
 	return raycast_floor.is_colliding()
 
-func play_animations(direction):
+func play_animations():
 	#this is the animation we will play at the end
 	var target_anim = ""
 	
@@ -485,12 +490,12 @@ func play_animations(direction):
 		animated_sprite.flip_v = false
 		
 	if target_anim == "rubber_band_ground_startup" or target_anim == "rubber_band_ground" or target_anim == "sticky_band":
-		if direction >= 0:
+		if direction_lit == Directions.RIGHT:
 			animated_sprite.offset.x = RB_ANIM_OFFSET
 		else:
 			animated_sprite.offset.x = -RB_ANIM_OFFSET
 	elif target_anim == "leech_start" or target_anim == "leech" or target_anim == "leech_end":
-		if direction >= 0:
+		if direction_lit == Directions.RIGHT:
 			animated_sprite.offset.x = LEECH_ANIM_OFFSET
 		else:
 			animated_sprite.offset.x = -LEECH_ANIM_OFFSET
@@ -552,7 +557,7 @@ func attack(down_pressed, up_pressed):
 	action_state = ActionState.ATTACK
 	#Decide which hitbox to use
 	var hitbox = front_hitbox
-	if direction == -1.0:
+	if direction_lit == Directions.LEFT:
 		hitbox = back_hitbox
 	if not is_on_floor():
 		if down_pressed:
@@ -576,9 +581,9 @@ func rubber_band():
 	action_state = ActionState.RUBBER_BAND
 	rubber_band_state = RubberBandState.START
 
-func rubber_band_attack(direction):
+func rubber_band_attack():
 	var hitbox = rb_hitbox_right
-	if direction >= 0: 
+	if direction_lit == Directions.RIGHT: 
 		hitbox = rb_hitbox_right
 	else:
 		hitbox = rb_hitbox_left
@@ -632,7 +637,7 @@ func leech():
 
 func is_leech_successful():
 	var hitbox = leech_right
-	if direction < 0:
+	if direction_lit == Directions.LEFT:
 		hitbox = leech_left
 	var bodies = hitbox.get_overlapping_bodies()
 	for body in bodies:
@@ -676,7 +681,7 @@ func _on_animation_finished():
 		movement_state = MovementState.IDLE
 	if animated_sprite.animation == "rubber_band_ground_startup":
 		rubber_band_state = RubberBandState.DURATION
-		rubber_band_attack(direction)
+		rubber_band_attack()
 	if animated_sprite.animation == "rubber_band_ground":
 		rubber_band_state = RubberBandState.IDLE
 		action_state = ActionState.IDLE

@@ -28,6 +28,7 @@ metadata/_custom_type_script = "uid://p550xmykutcc"
 
 [node name="Level03" type="Node2D" groups=["Apartment"]]
 script = ExtResource("1_66yxc")
+room_id = 3
 
 [node name="TileMap" type="TileMap" parent="."]
 material = SubResource("CanvasItemMaterial_052f2")
