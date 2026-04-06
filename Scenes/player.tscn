@@ -1,4 +1,4 @@
-[gd_scene load_steps=97 format=3 uid="uid://uqe5a2rw7h7h"]
+[gd_scene load_steps=98 format=3 uid="uid://uqe5a2rw7h7h"]
 
 [ext_resource type="Script" uid="uid://bb643hqwrxmyd" path="res://Scripts/player.gd" id="1_6ltq4"]
 [ext_resource type="Shader" uid="uid://d4fv1pxe8clud" path="res://Scenes/hitflash.gdshader" id="2_e6mvm"]
@@ -43,13 +43,14 @@
 [ext_resource type="Texture2D" uid="uid://otvow5ur27mn" path="res://Assets/Sprites/player/jump/second-draft/frame0006.png" id="24_f1uaf"]
 [ext_resource type="Texture2D" uid="uid://d4bre2cnuc87f" path="res://Assets/Sprites/player/jump/second-draft/frame0007.png" id="25_6hq81"]
 [ext_resource type="Texture2D" uid="uid://cd4lk7vn2au4u" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0010.png" id="25_e6mvm"]
-[ext_resource type="Texture2D" uid="uid://bbd2csrghr0f2" path="res://Assets/Sprites/player/jump/second-draft/frame0008.png" id="26_5cld6"]
 [ext_resource type="Texture2D" uid="uid://bt8xcca62p7ht" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0011.png" id="26_57lvd"]
-[ext_resource type="Texture2D" uid="uid://cvl14gqdm82t5" path="res://Assets/Sprites/player/jump/second-draft/frame0009.png" id="27_o736f"]
+[ext_resource type="Texture2D" uid="uid://cp4aioolhu3nn" path="res://Assets/Sprites/player/jump/third-draft/up/frame0008.png" id="26_w4w4b"]
+[ext_resource type="Texture2D" uid="uid://ct2e3ddpwnmtb" path="res://Assets/Sprites/player/jump/third-draft/up/frame0009.png" id="27_h5cax"]
 [ext_resource type="Texture2D" uid="uid://tleg71bn8cvx" path="res://Assets/Sprites/player/jump/second-draft/frame0001.png" id="27_qavoy"]
-[ext_resource type="Texture2D" uid="uid://d56ftec0nt2r" path="res://Assets/Sprites/player/jump/second-draft/frame0010.png" id="28_ketbw"]
 [ext_resource type="Texture2D" uid="uid://dgcho0fq34e0g" path="res://Assets/Sprites/player/jump/second-draft/frame0002.png" id="28_w4w4b"]
+[ext_resource type="Texture2D" uid="uid://cy2xpg2vyhjwt" path="res://Assets/Sprites/player/jump/third-draft/forward/frame0003.png" id="29_dj0x0"]
 [ext_resource type="Texture2D" uid="uid://rqv38duywbuq" path="res://Assets/Sprites/player/jump/second-draft/frame0003.png" id="29_h5cax"]
+[ext_resource type="Texture2D" uid="uid://b24oyy84x16sb" path="res://Assets/Sprites/player/jump/third-draft/forward/frame0004.png" id="30_f1uaf"]
 [ext_resource type="Texture2D" uid="uid://boto1vns7nqdi" path="res://Assets/Sprites/player/sprint/frame0000.png" id="36_bqbau"]
 [ext_resource type="Texture2D" uid="uid://cetu3ft8ipwoc" path="res://Assets/Sprites/player/sprint/frame0001.png" id="37_f5f5t"]
 [ext_resource type="Texture2D" uid="uid://bsrws0lia01r3" path="res://Assets/Sprites/player/sprint/frame0002.png" id="38_qvbpb"]
@@ -189,14 +190,11 @@ animations = [{
 "speed": 5.0
 }, {
 "frames": [{
-"duration": 1.0,
-"texture": ExtResource("26_5cld6")
+"duration": 2.0,
+"texture": ExtResource("26_w4w4b")
 }, {
 "duration": 1.0,
-"texture": ExtResource("27_o736f")
-}, {
-"duration": 1.0,
-"texture": ExtResource("28_ketbw")
+"texture": ExtResource("27_h5cax")
 }],
 "loop": false,
 "name": &"jump_land",
@@ -208,6 +206,17 @@ animations = [{
 }],
 "loop": false,
 "name": &"jump_rise",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("29_dj0x0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_f1uaf")
+}],
+"loop": false,
+"name": &"jump_rise_fwd",
 "speed": 10.0
 }, {
 "frames": [{
@@ -490,7 +499,7 @@ script = ExtResource("1_6ltq4")
 material = SubResource("ShaderMaterial_57lvd")
 position = Vector2(15, -213)
 sprite_frames = SubResource("SpriteFrames_gn6c1")
-animation = &"jump_falling"
+animation = &"jump_rise_fwd"
 autoplay = "idle"
 
 [node name="Hurtbox" type="CollisionShape2D" parent="."]

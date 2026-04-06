@@ -247,6 +247,7 @@ func handle_jump(delta):
 	if jump_state == JumpState.DOUBLE_JUMP and is_top_colliding():
 		double_jump_cancelled = true
 		return
+		
 	if movement_state != MovementState.JUMPING\
 	or action_state == ActionState.WALL_CLING\
 	or jump_state == JumpState.DOUBLE_JUMP:
@@ -486,7 +487,10 @@ func play_animations():
 				JumpState.JUMP_START:
 					target_anim = "jump_startup"
 				JumpState.JUMP_RISE:
-					target_anim = "jump_rise"
+					if walking_state == WalkingState.IDLE:
+						target_anim = "jump_rise"
+					else:
+						target_anim = "jump_rise_fwd"
 				JumpState.DOUBLE_JUMP:
 					target_anim = "double_jump"
 				JumpState.JUMP_FALL_START:
@@ -673,7 +677,9 @@ func _on_animation_finished():
 		action_state = ActionState.IDLE
 	if animated_sprite.animation == "jump_startup":
 		jump_state = JumpState.JUMP_RISE
-	if animated_sprite.animation == "jump_rise" or animated_sprite.animation == "double_jump":
+	if animated_sprite.animation == "jump_rise"\
+	or animated_sprite.animation == "double_jump"\
+	or animated_sprite.animation == "jump_rise_fwd":
 		#Since rising animation may need to be longer, the state doesn't change at the end of the animation
 		#The player should have just started falling
 		if velocity.y > 0:
@@ -681,6 +687,8 @@ func _on_animation_finished():
 		else:
 			if animated_sprite.animation == "jump_rise":
 				animated_sprite.play("jump_rise") #if the player is still going up, replay the animation
+			elif animated_sprite.animation == "jump_rise_fwd":
+				animated_sprite.play("jump_rise_fwd")
 			else:
 				animated_sprite.play("double_jump")
 	if animated_sprite.animation == "jump_fall":
