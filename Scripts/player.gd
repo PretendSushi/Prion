@@ -105,6 +105,8 @@ enum ActionState { IDLE, ATTACK, RUBBER_BAND, DAMAGED, ZERO_GRAV, LEECH, WALL_CL
 enum JumpState { IDLE, JUMP_START, JUMP_RISE, DOUBLE_JUMP, JUMP_FALL_START, JUMP_FALL, LANDING }
 enum RubberBandState { IDLE, START, DURATION, STICKY_BAND, END}
 enum LeechState { IDLE, START, DURATION, END }
+#redundant, refers to all horizontal movement, in air and otherwise
+enum WalkingState { IDLE, WALKING }
 
 #actual direction
 var direction_lit = Directions.RIGHT
@@ -116,6 +118,7 @@ var action_state = ActionState.IDLE
 var jump_state = JumpState.IDLE
 var rubber_band_state = RubberBandState.IDLE
 var leech_state = LeechState.IDLE
+var walking_state = WalkingState.IDLE
 
 #Any children of the player that are needed in the code are here
 @onready var animated_sprite = $AnimatedSprite2D
@@ -360,17 +363,20 @@ func move(delta):
 	or transition_state == TransitionState.TRANSITIONING\
 	or movement_state == MovementState.DASH:
 		return
+		
 	if action_state != ActionState.RUBBER_BAND and action_state != ActionState.LEECH:
 		if Input.is_action_pressed("Left"):
 			direction = -1.0
 			direction_lit = Directions.LEFT
 			if movement_state != MovementState.JUMPING and handle_step_sfx_timer(delta):
 				play_sounds(SoundEffects.WALK)
+			walking_state = WalkingState.WALKING
 		elif Input.is_action_pressed("Right"):
 			direction = 1.0
 			direction_lit = Directions.RIGHT
 			if movement_state != MovementState.JUMPING and handle_step_sfx_timer(delta):
 				play_sounds(SoundEffects.WALK)
+			walking_state = WalkingState.WALKING
 			
 		if movement_state == MovementState.JUMPING:
 			velocity.x = direction * AIR_SPEED
@@ -384,6 +390,7 @@ func move(delta):
 			velocity.x = 0
 			if movement_state != MovementState.JUMPING:
 				movement_state = MovementState.IDLE
+			walking_state = WalkingState.IDLE
 
 	#Flip sprite
 	if direction_lit == Directions.RIGHT:
@@ -439,7 +446,11 @@ func play_animations():
 			if jump_state == JumpState.JUMP_START:
 				target_anim = "jump_startup"
 			else:
-				target_anim = "jump_land"
+				if walking_state == WalkingState.IDLE:
+					target_anim = "jump_land"
+				else:
+					target_anim = "walk"
+					reset_jump()
 		elif movement_state == MovementState.DASH:
 			target_anim = "dash"
 		else:
@@ -825,3 +836,7 @@ func flip_for_direction():
 	elif direction_lit == Directions.RIGHT:
 		direction = 1.0
 		animated_sprite.flip_h = false
+		
+func reset_jump():
+	jump_state = JumpState.IDLE
+	movement_state = MovementState.IDLE
