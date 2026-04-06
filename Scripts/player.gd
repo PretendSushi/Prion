@@ -35,6 +35,7 @@ const JUMP_OFF_DURATION = 0.5
 const ZERO_GRAV_DURATION = 3
 const ROOM_ENTRANCE_AIR_TIME = 0.05
 const ROOM_ENTRANCE_HORIZONTAL_TIME = 0.2
+const FALL_ANIM_SPEED_TIME = 1.0
 const JUMP_CAP = 400 #max jump height in pixels
 const V_KNOCKBACK = 150
 const RB_ANIM_OFFSET = 450
@@ -89,6 +90,7 @@ var jump_off = false
 
 var walk_sfx_timer = 0
 
+var jump_fall_timer = 0
 #debug tool
 var god_mode = false
 
@@ -172,6 +174,7 @@ func _physics_process(delta):
 	handle_falling(delta)
 	handle_jump_off(delta)
 	check_wall_cling()
+	handle_fall_timer(delta)
 	move_and_slide()
 
 func handle_knockback(delta):
@@ -318,6 +321,18 @@ func handle_falling(delta):
 			jump_cancelled = false
 			double_jump_cancelled = false
 			jump_from_wall_cling = false
+
+func handle_fall_timer(delta):
+	if jump_state != JumpState.JUMP_FALL:
+		animated_sprite.speed_scale = 1.0
+		jump_fall_timer = 0
+		return
+	if jump_fall_timer >= FALL_ANIM_SPEED_TIME:
+		animated_sprite.speed_scale = 3.0
+		return
+	if jump_fall_timer >= 0.5:
+		animated_sprite.speed_scale = 2.0
+	jump_fall_timer += delta
 
 func dash():
 	if (movement_state == MovementState.DASH or protein < DASH_PROTEIN_COST) and !god_mode:
