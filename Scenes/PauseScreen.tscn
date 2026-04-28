@@ -42,6 +42,7 @@ text = "Settings"
 layout_mode = 2
 text = "Exit"
 
+[connection signal="back_button_pressed" from="SettingsMenu" to="." method="_on_settings_menu_back_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/ContinueBtn" to="." method="_on_continue_btn_pressed"]
 [connection signal="pressed" from="VBoxContainer/SettingsBtn" to="." method="_on_settings_btn_pressed"]
 [connection signal="pressed" from="VBoxContainer/ExitBtn" to="." method="_on_exit_btn_pressed"]

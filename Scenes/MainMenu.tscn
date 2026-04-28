@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3 uid="uid://cc2byabfp6f0i"]
+
+[ext_resource type="Script" uid="uid://cvql5prj6lhe1" path="res://Scenes/main_menu.gd" id="1_tt5f1"]
+[ext_resource type="PackedScene" uid="uid://o0lt657iuyhc" path="res://Scenes/SettingsMenu.tscn" id="2_853f1"]
+
+[node name="MainMenu" type="Node2D"]
+script = ExtResource("1_tt5f1")
+
+[node name="SettingsMenu" parent="." instance=ExtResource("2_853f1")]
+visible = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+offset_left = 355.0
+offset_top = 117.0
+offset_right = 906.0
+offset_bottom = 559.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+alignment = 1
+
+[node name="NewBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "New
+"
+
+[node name="ContBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Continue	"
+
+[node name="LoadBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Load
+"
+
+[node name="SettBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Settings"
+
+[node name="ExitBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Exit"
+
+[connection signal="back_button_pressed" from="SettingsMenu" to="." method="_on_settings_menu_back_button_pressed"]
+[connection signal="button_up" from="VBoxContainer/NewBtn" to="." method="_on_new_btn_button_up"]
+[connection signal="button_up" from="VBoxContainer/SettBtn" to="." method="_on_sett_btn_button_up"]
+[connection signal="button_up" from="VBoxContainer/ExitBtn" to="." method="_on_exit_btn_button_up"]

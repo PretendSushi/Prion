@@ -1,5 +1,7 @@
 extends Control
 
+signal back_button_pressed
+
 @onready var control_box = $ControlBox
 
 var waiting_for_input = false
@@ -13,6 +15,7 @@ const DEFAULT_MSG = "Press any key to change binding..."
 const UNAVAIL_MSG = "Key is already being used by another action"
 
 func _ready():
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	for action: String in InputMap.get_actions():
 		if not action.contains("ui"):
 			var hbox = HBoxContainer.new()
@@ -118,3 +121,7 @@ func disable_unfocused_buttons():
 func reenable_buttons():
 	for button in buttons:
 		button.disabled = false
+
+
+func _on_back_btn_pressed() -> void:
+	emit_signal("back_button_pressed")

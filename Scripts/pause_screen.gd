@@ -21,3 +21,8 @@ func _on_settings_btn_pressed() -> void:
 	buttons.visible = false
 	options.visible = true
 	
+
+
+func _on_settings_menu_back_button_pressed() -> void:
+	buttons.visible = true
+	options.visible = false
