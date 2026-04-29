@@ -22,6 +22,7 @@ InputManager="*res://Scripts/InputManager.gd"
 MusicPlayer="*res://Scenes/MusicPlayer.tscn"
 CustomStatTracker="*res://Scripts/StatTracker.gd"
 ExitManager="*res://Scripts/ExitManager.gd"
+SaveManager="*res://Scripts/SaveManager.gd"
 
 [display]
 

@@ -863,3 +863,9 @@ func flip_for_direction():
 func reset_jump():
 	jump_state = JumpState.IDLE
 	movement_state = MovementState.IDLE
+	
+func get_data_to_save():
+	return {
+		"last_save_point": RoomManager.last_save_point,
+		"unlocked_abilities": unlocked_standard_abilities
+	}

@@ -75,3 +75,8 @@ func _on_enemy_drop_protein(protein_pickup, x, y) -> void:
 	var protein_pickup_instance = protein_pickup.instantiate()
 	protein_pickup_instance.global_position = Vector2(x, y)
 	add_child(protein_pickup_instance)
+	
+func get_data_to_save():
+	return {
+		"room_id": room_id
+	}
