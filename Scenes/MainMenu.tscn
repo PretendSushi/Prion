@@ -42,5 +42,6 @@ text = "Exit"
 
 [connection signal="back_button_pressed" from="SettingsMenu" to="." method="_on_settings_menu_back_button_pressed"]
 [connection signal="button_up" from="VBoxContainer/NewBtn" to="." method="_on_new_btn_button_up"]
+[connection signal="button_up" from="VBoxContainer/ContBtn" to="." method="_on_cont_btn_button_up"]
 [connection signal="button_up" from="VBoxContainer/SettBtn" to="." method="_on_sett_btn_button_up"]
 [connection signal="button_up" from="VBoxContainer/ExitBtn" to="." method="_on_exit_btn_button_up"]

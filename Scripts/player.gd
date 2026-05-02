@@ -869,3 +869,9 @@ func get_data_to_save():
 		"last_save_point": RoomManager.last_save_point,
 		"unlocked_abilities": unlocked_standard_abilities
 	}
+ 
+func apply_save_data(data):
+	set_last_save_point(data["last_save_point"])
+	unlocked_standard_abilities = data["unlocked_abilities"]
+	global_position.x = data["last_save_point"]["player_x"]
+	global_position.y = data["last_save_point"]["player_y"]

@@ -14,6 +14,7 @@ func _ready():
 	
 	enemy = preload("res://Scenes/enemy.tscn")
 	if RoomManager.player_x != null and RoomManager.player_y != null:
+		print("hit")
 		position_player(RoomManager.player_x, RoomManager.player_y)
 		position_camera(RoomManager.player_x, RoomManager.player_y)
 		RoomManager.nullify_player_coords()
@@ -80,3 +81,6 @@ func get_data_to_save():
 	return {
 		"room_id": room_id
 	}
+
+func apply_save_data(data):
+	room_id = data["room_id"]

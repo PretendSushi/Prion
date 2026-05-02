@@ -43,6 +43,8 @@ func get_room_data():
 	
 func set_room_data(data):
 	room_data = data
+	player_x = data["player_x"]
+	player_y = data["player_y"]
 	
 func set_last_save_point(save_point):
 	last_save_point = save_point
