@@ -10,7 +10,6 @@ func _on_new_btn_button_up() -> void:
 func _on_exit_btn_button_up() -> void:
 	get_tree().quit()
 
-
 func _on_sett_btn_button_up() -> void:
 	buttons.visible = false
 	settings.visible = true
@@ -25,7 +24,6 @@ func _on_cont_btn_button_up() -> void:
 func _on_load_btn_pressed() -> void:
 	buttons.visible = false
 	loads.visible = true
-
 
 func _on_save_list_back_button_pressed() -> void:
 	buttons.visible = true

@@ -89,17 +89,24 @@ func generate_save_file_name():
 		else:
 			#otherwise, find the last save number and increase it by 1, and add it to the save file name
 			var files = DirAccess.get_files_at(PATH)
-			var last_save = files[files.size()-1]
-			var save_num = ""
-			for i in range(file_template.length(),last_save.length()):
-				if last_save[i] != ".":
-					save_num += last_save[i]
-				else:
-					break
-			var save_int = save_num.to_int()
-			save_int += 1
-			save_num = str(save_int)
-			print(file_template + save_num)
+			var save_num = find_highest_save_num(files)
+			save_num += 1
+			save_num = str(save_num)
 			return file_template + save_num + file_format
 	else:
 		print("Game could not be saved")
+		
+func find_highest_save_num(save_list):
+	var highest = -1
+	for save in save_list:
+		var save_num = ""
+		for i in range(file_template.length(), save.length()):
+			if save[i] != ".":
+				save_num += save[i]
+			else:
+				break
+		var save_int = save_num.to_int()
+		if save_int > highest:
+			highest = save_int
+	return highest
+			
