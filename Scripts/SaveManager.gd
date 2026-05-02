@@ -57,6 +57,12 @@ func find_last_save():
 					last_edited = file
 			return last_edited
 
+func get_all_saves():
+	var dir = DirAccess.open(PATH)
+	if dir:
+		return DirAccess.get_files_at(PATH)
+	print("Could not access directory: " + PATH)
+
 func is_valid_save_file(file):
 	for i in file_template.length():
 		if file_template[i] != file[i]:
