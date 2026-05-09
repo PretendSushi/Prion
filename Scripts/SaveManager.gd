@@ -1,8 +1,19 @@
 extends Node
 
 const PATH = "user://saves/"
+const FAST_LOAD_SCREEN_PATH = "res://Scenes/FastLoad.tscn"
 var file_template = "save"
 var file_format = ".json"
+
+var current_load = ""
+
+func _process(delta: float) -> void:
+	if current_load != "":
+		var status = ResourceLoader.load_threaded_get_status(current_load)
+		
+		if status == ResourceLoader.THREAD_LOAD_LOADED:
+			finish_load_setup(current_load)
+			current_load = ""
 
 func save_game():
 	#create the file
@@ -21,6 +32,8 @@ func save_game():
 	save_file.close()
 	
 func load_game(file_name):
+	get_tree().change_scene_to_file(FAST_LOAD_SCREEN_PATH)
+	
 	var file = FileAccess.open(PATH + file_name, FileAccess.READ)
 	
 	if file:
@@ -33,14 +46,20 @@ func load_game(file_name):
 		if room_path == null:
 			print("Failed to load data in file: " + PATH + file_name)
 		
-		get_tree().change_scene_to_file(room_path)
+		ResourceLoader.load_threaded_request(room_path)
+		current_load = room_path
 		
 		RoomManager.set_room_data({"room_id": int(data["level_data"]["room_id"]),
 									"player_x": data["player_data"]["last_save_point"]["player_x"],
 									"player_y": data["player_data"]["last_save_point"]["player_y"]})
+									
 	else:
 		print("Failed to open file at: " + PATH + file_name)
 		return false
+		
+func finish_load_setup(room_path):
+	var packed_scene = ResourceLoader.load_threaded_get(room_path)
+	get_tree().change_scene_to_packed(packed_scene)
 
 func find_last_save():
 	var dir = DirAccess.open(PATH)
@@ -109,4 +128,3 @@ func find_highest_save_num(save_list):
 		if save_int > highest:
 			highest = save_int
 	return highest
-			
