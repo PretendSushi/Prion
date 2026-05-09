@@ -40,6 +40,7 @@ const JUMP_CAP = 400 #max jump height in pixels
 const V_KNOCKBACK = 150
 const RB_ANIM_OFFSET = 450
 const LEECH_ANIM_OFFSET = 100
+const WALL_CLING_ANIM_OFFSET = 17
 const LEECH_HEALTH_GAIN = 25
 const STICKY_BAND_SPEED = 1800
 const JUMP_FORCE_FROM_WALL = 300
@@ -494,7 +495,7 @@ func play_animations():
 			elif rubber_band_state == RubberBandState.STICKY_BAND:
 				target_anim = "sticky_band"
 		elif action_state == ActionState.WALL_CLING and !jump_from_wall_cling:
-			target_anim = "idle"
+			target_anim = "wall_cling"
 		elif movement_state == MovementState.DASH:
 			target_anim = "dash"
 		else:
@@ -530,6 +531,11 @@ func play_animations():
 			animated_sprite.offset.x = LEECH_ANIM_OFFSET
 		else:
 			animated_sprite.offset.x = -LEECH_ANIM_OFFSET
+	elif target_anim == "wall_cling":
+		if direction_lit == Directions.LEFT:
+			animated_sprite.offset.x = WALL_CLING_ANIM_OFFSET
+		else:
+			animated_sprite.offset.x = -WALL_CLING_ANIM_OFFSET
 	else:
 		animated_sprite.offset.x = 0
 	#this is to avoid animations getting infinitely replayed and never ending

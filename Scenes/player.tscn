@@ -1,4 +1,4 @@
-[gd_scene load_steps=98 format=3 uid="uid://uqe5a2rw7h7h"]
+[gd_scene load_steps=100 format=3 uid="uid://uqe5a2rw7h7h"]
 
 [ext_resource type="Script" uid="uid://bb643hqwrxmyd" path="res://Scripts/player.gd" id="1_6ltq4"]
 [ext_resource type="Shader" uid="uid://d4fv1pxe8clud" path="res://Scenes/hitflash.gdshader" id="2_e6mvm"]
@@ -82,6 +82,8 @@
 [ext_resource type="Texture2D" uid="uid://ku06lbodybhi" path="res://Assets/Sprites/player/walk/second-draft/frame0013.png" id="73_isbcs"]
 [ext_resource type="Texture2D" uid="uid://cjnn8cgl8fgl7" path="res://Assets/Sprites/player/walk/second-draft/frame0014.png" id="74_142e3"]
 [ext_resource type="Texture2D" uid="uid://celbp8ino2yha" path="res://Assets/Sprites/player/walk/second-draft/frame0015.png" id="75_ts2c8"]
+[ext_resource type="Texture2D" uid="uid://dbyvkrtofrwhh" path="res://Assets/Sprites/player/wall_cling/first_draft/frame_02.png" id="80_6hq81"]
+[ext_resource type="Texture2D" uid="uid://cborvchevvss8" path="res://Assets/Sprites/player/wall_cling/first_draft/frame_03.png" id="81_5cld6"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_57lvd"]
 shader = ExtResource("2_e6mvm")
@@ -422,6 +424,17 @@ animations = [{
 "loop": true,
 "name": &"walk",
 "speed": 24.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("80_6hq81")
+}, {
+"duration": 1.0,
+"texture": ExtResource("81_5cld6")
+}],
+"loop": false,
+"name": &"wall_cling",
+"speed": 12.0
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jm6k1"]
@@ -499,9 +512,9 @@ script = ExtResource("1_6ltq4")
 material = SubResource("ShaderMaterial_57lvd")
 position = Vector2(15, -213)
 sprite_frames = SubResource("SpriteFrames_gn6c1")
-animation = &"rubber_band_ground_startup"
+animation = &"wall_cling"
 autoplay = "idle"
-frame = 3
+frame = 1
 frame_progress = 1.0
 
 [node name="Hurtbox" type="CollisionShape2D" parent="."]
