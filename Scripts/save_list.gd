@@ -8,7 +8,7 @@ signal back_button_pressed
 func _ready() -> void:
 	var saves = SaveManager.get_all_saves()
 	
-	if saves.size() > 0:
+	if saves != null and saves.size() > 0:
 		for save in saves:
 			if !SaveManager.is_valid_save_file(save):
 				continue
