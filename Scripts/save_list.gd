@@ -8,13 +8,14 @@ signal back_button_pressed
 func _ready() -> void:
 	var saves = SaveManager.get_all_saves()
 	
-	for save in saves:
-		if !SaveManager.is_valid_save_file(save):
-			continue
-		var button = Button.new()
-		button.text = save
-		vbox.add_child(button)
-		button.pressed.connect(_on_button_pressed.bind(save))
+	if saves.size() > 0:
+		for save in saves:
+			if !SaveManager.is_valid_save_file(save):
+				continue
+			var button = Button.new()
+			button.text = save
+			vbox.add_child(button)
+			button.pressed.connect(_on_button_pressed.bind(save))
 
 func _on_button_pressed(save):
 	SaveManager.load_game(save)
