@@ -3,6 +3,13 @@ extends Node2D
 @onready var buttons = $VBoxContainer
 @onready var settings = $SettingsMenu
 @onready var loads = $SaveList
+@onready var cont_btn = $VBoxContainer/ContBtn
+@onready var load_btn = $VBoxContainer/LoadBtn
+
+func _ready() -> void:
+	if SaveManager.find_last_save() == null:
+		cont_btn.disabled = true
+		load_btn.disabled = true
 
 func _on_new_btn_button_up() -> void:
 	get_tree().change_scene_to_file("res://Scenes/ApartmentRooms/level.tscn")

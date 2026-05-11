@@ -66,6 +66,7 @@ func find_last_save():
 	if dir:
 		if dir.get_files().is_empty() and dir.get_directories().is_empty():
 			print("No files in directory")
+			return null
 		else:
 			var files = DirAccess.get_files_at(PATH)
 			var last_edited = files[0]
