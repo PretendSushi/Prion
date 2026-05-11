@@ -135,8 +135,15 @@ var walking_state = WalkingState.IDLE
 @onready var leech_left = $LeechCollisionLeft
 @onready var raycast_floor = $RayCastFloor
 @onready var raycast_top = $RayCastTop
-@onready var raycast_left = $RayCastLeft
-@onready var raycast_right = $RayCastRight
+
+@onready var raycast_left_top = $RayCastLeftTop
+@onready var raycast_left_mid = $RayCastLeftMiddle
+@onready var raycast_left_bottom = $RayCastLeftBottom
+
+@onready var raycast_right_top = $RayCastRightTop
+@onready var raycast_right_mid = $RayCastRightMiddle
+@onready var raycast_right_bottom = $RayCastRightBottom
+
 @onready var hit_anim = $HitFlashAnim
 @onready var audio_player = $AudioPlayer
 
@@ -653,10 +660,23 @@ func check_wall_cling():
 	if action_state == ActionState.WALL_CLING:
 		action_state = ActionState.IDLE
 		
-	if (raycast_left.is_colliding() and Input.is_action_pressed("Left") and !jump_from_wall_cling)\
-	or (raycast_right.is_colliding() and Input.is_action_pressed("Right") and !jump_from_wall_cling):
+	if (full_wall_contact_dir() == Directions.LEFT and Input.is_action_pressed("Left") and !jump_from_wall_cling)\
+	or (full_wall_contact_dir() == Directions.RIGHT and Input.is_action_pressed("Right") and !jump_from_wall_cling):
 		action_state = ActionState.WALL_CLING
 		velocity.y = 0
+		
+func full_wall_contact_dir():
+	if raycast_left_top.is_colliding()\
+	and raycast_left_mid.is_colliding()\
+	and raycast_left_bottom.is_colliding():
+		return Directions.LEFT
+	
+	if raycast_right_top.is_colliding()\
+	and raycast_right_mid.is_colliding()\
+	and raycast_right_bottom.is_colliding():
+		return Directions.RIGHT
+	
+	return null
 
 func zero_grav():
 	if action_state == ActionState.ZERO_GRAV\
