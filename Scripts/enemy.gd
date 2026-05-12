@@ -37,8 +37,8 @@ var speed = 400.0
 @onready var hitbox = $HitboxArea
 
 func _ready():
-	health_pickup = preload("res://Scenes/HealthPickup.tscn")
-	protein_pickup = preload("res://Scenes/ProteinPickup.tscn")
+	health_pickup = preload("res://Scenes/Pickups/HealthPickup.tscn")
+	protein_pickup = preload("res://Scenes/Pickups/ProteinPickup.tscn")
 	player_in_range = false
 	can_attack = false
 

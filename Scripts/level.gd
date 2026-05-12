@@ -12,7 +12,7 @@ func _ready():
 	if music:
 		MusicPlayer.play_music(music)
 	
-	enemy = preload("res://Scenes/enemy.tscn")
+	#enemy = preload("res://Scenes/enemy.tscn")
 	if RoomManager.player_x != null and RoomManager.player_y != null:
 		position_player(RoomManager.player_x, RoomManager.player_y)
 		position_camera(RoomManager.player_x, RoomManager.player_y)

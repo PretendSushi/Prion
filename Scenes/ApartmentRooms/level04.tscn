@@ -4,10 +4,10 @@
 [ext_resource type="Script" uid="uid://cob3thhyjfwnv" path="res://Scripts/level.gd" id="1_if213"]
 [ext_resource type="PackedScene" uid="uid://uqe5a2rw7h7h" path="res://Scenes/player.tscn" id="2_hs1v1"]
 [ext_resource type="Script" uid="uid://dkehqfja5imcv" path="res://Scripts/camera.gd" id="3_if213"]
-[ext_resource type="PackedScene" uid="uid://cfiuyeqbaa37f" path="res://Scenes/RoomTransition.tscn" id="4_hs1v1"]
+[ext_resource type="PackedScene" uid="uid://cfiuyeqbaa37f" path="res://Scenes/Triggers/RoomTransition.tscn" id="4_hs1v1"]
 [ext_resource type="Script" uid="uid://p550xmykutcc" path="res://Scripts/RoomTransData.gd" id="6_m1alw"]
-[ext_resource type="PackedScene" uid="uid://b81mxy3nse00a" path="res://Scenes/BossTrigger.tscn" id="7_fhjua"]
-[ext_resource type="PackedScene" uid="uid://05mkxdcuslwo" path="res://Scenes/BossDetrigger.tscn" id="8_7ro2w"]
+[ext_resource type="PackedScene" uid="uid://b81mxy3nse00a" path="res://Scenes/Triggers/BossTrigger.tscn" id="7_fhjua"]
+[ext_resource type="PackedScene" uid="uid://05mkxdcuslwo" path="res://Scenes/Triggers/BossDetrigger.tscn" id="8_7ro2w"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_m1alw"]
 blend_mode = 3

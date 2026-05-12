@@ -1,8 +1,8 @@
 [gd_scene load_steps=8 format=3 uid="uid://c74e7gplr6lsc"]
 
-[ext_resource type="Script" uid="uid://clastanvfiu3w" path="res://Scripts/enemy_slug.gd" id="1_hhl2t"]
-[ext_resource type="Texture2D" uid="uid://bncubx0bnppx3" path="res://Assets/Sprites/enemy/enemy resized.png" id="1_lvlir"]
-[ext_resource type="Script" uid="uid://ccofa4d1bsjht" path="res://Scripts/DetectBox.gd" id="3_0vvmu"]
+[ext_resource type="Script" uid="uid://clastanvfiu3w" path="res://Scripts/enemy_slug.gd" id="1_x1rqp"]
+[ext_resource type="Texture2D" uid="uid://bncubx0bnppx3" path="res://Assets/Sprites/enemy/enemy resized.png" id="2_ubio8"]
+[ext_resource type="Script" uid="uid://ccofa4d1bsjht" path="res://Scripts/DetectBox.gd" id="3_miwey"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_afpow"]
 size = Vector2(349, 133.75)
@@ -11,7 +11,7 @@ size = Vector2(349, 133.75)
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("1_lvlir")
+"texture": ExtResource("2_ubio8")
 }],
 "loop": true,
 "name": &"idle",
@@ -25,7 +25,7 @@ size = Vector2(309, 106)
 size = Vector2(1000, 345)
 
 [node name="Enemy" type="CharacterBody2D"]
-script = ExtResource("1_hhl2t")
+script = ExtResource("1_x1rqp")
 
 [node name="Hurtbox" type="Area2D" parent="."]
 
@@ -44,7 +44,7 @@ shape = SubResource("RectangleShape2D_afiuv")
 
 [node name="DetectBox" type="Area2D" parent="."]
 position = Vector2(-1, 52)
-script = ExtResource("3_0vvmu")
+script = ExtResource("3_miwey")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectBox"]
 position = Vector2(-1, -43.5)
