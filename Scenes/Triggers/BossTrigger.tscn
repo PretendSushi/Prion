@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://b81mxy3nse00a"]
 
-[ext_resource type="Script" uid="uid://bulkofcbdfd0a" path="res://Scripts/boss_trigger.gd" id="1_gobrq"]
+[ext_resource type="Script" uid="uid://bulkofcbdfd0a" path="res://Scripts/Triggers/boss_trigger.gd" id="1_gobrq"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3aymx"]
 size = Vector2(953, 333)

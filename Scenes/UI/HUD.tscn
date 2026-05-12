@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://ltsdi67f64wv"]
 
-[ext_resource type="Script" uid="uid://de2bggo3a6nnf" path="res://Scripts/HUD.gd" id="1_a21xl"]
+[ext_resource type="Script" uid="uid://de2bggo3a6nnf" path="res://Scripts/UI/HUD.gd" id="1_a21xl"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_x3c4a"]
 

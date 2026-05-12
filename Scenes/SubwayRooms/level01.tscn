@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" uid="uid://cob3thhyjfwnv" path="res://Scripts/level.gd" id="1_t3em8"]
 [ext_resource type="TileSet" uid="uid://nhgkuh44o1ro" path="res://Resources/Tilesets/level_tileset.tres" id="2_njv6l"]
-[ext_resource type="Script" uid="uid://dkehqfja5imcv" path="res://Scripts/camera.gd" id="3_alnue"]
+[ext_resource type="Script" uid="uid://dkehqfja5imcv" path="res://Scripts/Player/camera.gd" id="3_alnue"]
 [ext_resource type="PackedScene" uid="uid://uqe5a2rw7h7h" path="res://Scenes/player.tscn" id="4_ry6js"]
 [ext_resource type="PackedScene" uid="uid://cfiuyeqbaa37f" path="res://Scenes/Triggers/RoomTransition.tscn" id="5_20tss"]
-[ext_resource type="Script" uid="uid://p550xmykutcc" path="res://Scripts/RoomTransData.gd" id="6_gsu5k"]
+[ext_resource type="Script" uid="uid://p550xmykutcc" path="res://Scripts/Data/RoomTransData.gd" id="6_gsu5k"]
 [ext_resource type="PackedScene" uid="uid://b80emgxonf1s8" path="res://Scenes/Enemies/Enemy_Shreiker.tscn" id="7_w6wte"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_3fnks"]

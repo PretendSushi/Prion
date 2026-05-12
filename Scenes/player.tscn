@@ -1,6 +1,6 @@
 [gd_scene load_steps=100 format=3 uid="uid://uqe5a2rw7h7h"]
 
-[ext_resource type="Script" uid="uid://bb643hqwrxmyd" path="res://Scripts/player.gd" id="1_6ltq4"]
+[ext_resource type="Script" uid="uid://bb643hqwrxmyd" path="res://Scripts/Player/player.gd" id="1_6ltq4"]
 [ext_resource type="Shader" uid="uid://d4fv1pxe8clud" path="res://Scripts/hitflash.gdshader" id="2_e6mvm"]
 [ext_resource type="Texture2D" uid="uid://clkr1as0siot6" path="res://Assets/Sprites/player/walk/first-draft/frame_00001.png" id="3_igrcy"]
 [ext_resource type="Texture2D" uid="uid://cwidmy60fo56y" path="res://Assets/Sprites/player/attack/frame_00002.png" id="3_p1odr"]

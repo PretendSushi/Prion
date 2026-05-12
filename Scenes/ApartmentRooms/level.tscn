@@ -6,11 +6,11 @@
 [ext_resource type="PackedScene" uid="uid://tnwyed04r1rv" path="res://Scenes/WorldElements/SavePoint.tscn" id="4_5csn7"]
 [ext_resource type="PackedScene" uid="uid://cf32yyk7lufyu" path="res://Scenes/Pickups/Note.tscn" id="5_vqbjw"]
 [ext_resource type="Resource" uid="uid://covbq8jtvemra" path="res://Resources/NoteReflection.tres" id="6_djous"]
-[ext_resource type="Script" uid="uid://dkehqfja5imcv" path="res://Scripts/camera.gd" id="7_age4r"]
+[ext_resource type="Script" uid="uid://dkehqfja5imcv" path="res://Scripts/Player/camera.gd" id="7_age4r"]
 [ext_resource type="PackedScene" uid="uid://uqe5a2rw7h7h" path="res://Scenes/player.tscn" id="8_uykej"]
 [ext_resource type="PackedScene" uid="uid://c74e7gplr6lsc" path="res://Scenes/Enemies/enemy.tscn" id="9_js3ec"]
 [ext_resource type="PackedScene" uid="uid://cfiuyeqbaa37f" path="res://Scenes/Triggers/RoomTransition.tscn" id="10_sfdqh"]
-[ext_resource type="Script" uid="uid://p550xmykutcc" path="res://Scripts/RoomTransData.gd" id="11_admag"]
+[ext_resource type="Script" uid="uid://p550xmykutcc" path="res://Scripts/Data/RoomTransData.gd" id="11_admag"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_pa6b8"]
 blend_mode = 3

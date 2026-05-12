@@ -3,9 +3,9 @@
 [ext_resource type="TileSet" uid="uid://nhgkuh44o1ro" path="res://Resources/Tilesets/level_tileset.tres" id="1_4pdqc"]
 [ext_resource type="Script" uid="uid://cob3thhyjfwnv" path="res://Scripts/level.gd" id="1_66yxc"]
 [ext_resource type="PackedScene" uid="uid://cfiuyeqbaa37f" path="res://Scenes/Triggers/RoomTransition.tscn" id="2_052f2"]
-[ext_resource type="Script" uid="uid://p550xmykutcc" path="res://Scripts/RoomTransData.gd" id="3_37coi"]
+[ext_resource type="Script" uid="uid://p550xmykutcc" path="res://Scripts/Data/RoomTransData.gd" id="3_37coi"]
 [ext_resource type="PackedScene" uid="uid://uqe5a2rw7h7h" path="res://Scenes/player.tscn" id="4_f685g"]
-[ext_resource type="Script" uid="uid://dkehqfja5imcv" path="res://Scripts/camera.gd" id="5_66yxc"]
+[ext_resource type="Script" uid="uid://dkehqfja5imcv" path="res://Scripts/Player/camera.gd" id="5_66yxc"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_052f2"]
 blend_mode = 3

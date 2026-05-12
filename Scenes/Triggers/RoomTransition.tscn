@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://cfiuyeqbaa37f"]
 
-[ext_resource type="Script" uid="uid://dng1yina8gu6a" path="res://Scripts/room_transition.gd" id="1_lgamu"]
+[ext_resource type="Script" uid="uid://dng1yina8gu6a" path="res://Scripts/Triggers/room_transition.gd" id="1_lgamu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_j6s1e"]
 size = Vector2(50, 500)

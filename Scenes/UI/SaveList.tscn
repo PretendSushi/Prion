@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b7f3yqrbvpr4r"]
 
-[ext_resource type="Script" uid="uid://duhhg81t2nisu" path="res://Scripts/save_list.gd" id="1_27oqs"]
+[ext_resource type="Script" uid="uid://duhhg81t2nisu" path="res://Scripts/UI/save_list.gd" id="1_27oqs"]
 
 [node name="SaveList" type="Control"]
 layout_mode = 3

@@ -1,6 +1,6 @@
 [gd_scene load_steps=12 format=3 uid="uid://b80emgxonf1s8"]
 
-[ext_resource type="Script" uid="uid://88077btebd7x" path="res://Scripts/enemy_shreiker.gd" id="1_1tntk"]
+[ext_resource type="Script" uid="uid://88077btebd7x" path="res://Scripts/Enemies/enemy_shreiker.gd" id="1_1tntk"]
 [ext_resource type="Texture2D" uid="uid://be21jk2i5vp72" path="res://Assets/Sprites/enemy/Shrieker/frame0000.png" id="2_klwl6"]
 [ext_resource type="Texture2D" uid="uid://bfvful0r1euyx" path="res://Assets/Sprites/enemy/Shrieker/frame0001.png" id="3_yyjrk"]
 [ext_resource type="Texture2D" uid="uid://b30xrfttlo217" path="res://Assets/Sprites/enemy/Shrieker/frame0002.png" id="4_onhi0"]
