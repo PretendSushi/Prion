@@ -43,6 +43,7 @@ Camera=""
 Apartment=""
 Subway=""
 Monorail=""
+Barrier=""
 
 [input]
 

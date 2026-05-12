@@ -616,6 +616,9 @@ func attack(down_pressed, up_pressed):
 			emit_signal("player_attack", ATTACK_DAMAGE, KNOCKBACK)
 			if hitbox == bottom_hitbox:
 				bounce()
+		if body.is_in_group("Barrier"):
+			player_attack.connect(body._on_player_attack.bind())
+			emit_signal("player_attack")
 	
 func rubber_band():
 	if action_state == ActionState.RUBBER_BAND\

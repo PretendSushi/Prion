@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://i2khwini8146"]
+[gd_scene load_steps=17 format=3 uid="uid://i2khwini8146"]
 
 [ext_resource type="Script" uid="uid://cob3thhyjfwnv" path="res://Scripts/level.gd" id="1_qcfsa"]
 [ext_resource type="Texture2D" uid="uid://5igdb8oyc2f1" path="res://Assets/World/Backgrounds/sketch_apartments_room1.png" id="2_owdy6"]
@@ -11,12 +11,13 @@
 [ext_resource type="PackedScene" uid="uid://c74e7gplr6lsc" path="res://Scenes/Enemies/enemy.tscn" id="9_js3ec"]
 [ext_resource type="PackedScene" uid="uid://cfiuyeqbaa37f" path="res://Scenes/Triggers/RoomTransition.tscn" id="10_sfdqh"]
 [ext_resource type="Script" uid="uid://p550xmykutcc" path="res://Scripts/Data/RoomTransData.gd" id="11_admag"]
+[ext_resource type="PackedScene" uid="uid://dujjeoreijtqa" path="res://Scenes/WorldElements/BreakableBarriers/BreakableBarrier.tscn" id="12_owdy6"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_pa6b8"]
 blend_mode = 3
 light_mode = 1
 
-[sub_resource type="Resource" id="Resource_qcfsa"]
+[sub_resource type="Resource" id="Resource_22kvq"]
 resource_local_to_scene = true
 script = ExtResource("11_admag")
 room_id = 2
@@ -82,7 +83,7 @@ position = Vector2(-2051, -674)
 
 [node name="RoomTransition" parent="." groups=["RoomTransitionTriggers"] instance=ExtResource("10_sfdqh")]
 position = Vector2(2974, 900)
-room_trans_data = SubResource("Resource_qcfsa")
+room_trans_data = SubResource("Resource_22kvq")
 
 [node name="RoomTransition2" parent="." groups=["RoomTransitionTriggers"] instance=ExtResource("10_sfdqh")]
 position = Vector2(-1078, -1174)
@@ -92,6 +93,9 @@ room_trans_data = SubResource("Resource_ha31o")
 [node name="RoomTransition3" parent="." instance=ExtResource("10_sfdqh")]
 position = Vector2(2980, 68)
 room_trans_data = SubResource("Resource_owdy6")
+
+[node name="BreakableBarrier" parent="." instance=ExtResource("12_owdy6")]
+position = Vector2(2020, 900)
 
 [connection signal="update_camera_follow_speed" from="Player" to="Camera" method="_on_player_update_camera_follow_speed"]
 [connection signal="drop_health" from="Enemy" to="." method="_on_enemy_drop_health"]

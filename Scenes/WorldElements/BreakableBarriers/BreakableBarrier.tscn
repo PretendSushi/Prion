@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://dujjeoreijtqa"]
+
+[ext_resource type="Script" uid="uid://bkwopfxj5dy23" path="res://Scripts/breakable_barrier.gd" id="1_tyn2f"]
+[ext_resource type="Texture2D" uid="uid://sko7e8oxveqo" path="res://Assets/World/Barriers/placeholder_barrier.png" id="2_kl1h8"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fdpns"]
+size = Vector2(100, 500)
+
+[node name="BreakableBarrier" type="StaticBody2D" groups=["Barrier"]]
+script = ExtResource("1_tyn2f")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.239, 0.679)
+texture = ExtResource("2_kl1h8")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_fdpns")
+
+[node name="BreakableSide" type="RayCast2D" parent="."]
+position = Vector2(-50, 0)
+rotation = 1.5708
+target_position = Vector2(0, 150)
