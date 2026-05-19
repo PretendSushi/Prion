@@ -29,15 +29,9 @@ const RUBBER_BAND_DAMAGE = 80
 const RUBBER_BAND_PROTEIN_COST = 40 
 const DASH_PROTEIN_COST = 5
 const KNOCKBACK = 1000
-const KNOCKBACK_DURATION = 0.5
-const INVINCIBLE_DURATION = 2.5
-const JUMP_OFF_DURATION = 0.5
-const ZERO_GRAV_DURATION = 3
 const ROOM_ENTRANCE_AIR_TIME = 0.05
 const ROOM_ENTRANCE_HORIZONTAL_TIME = 0.2
-const FALL_ANIM_SPEED_TIME = 1.0
 const JUMP_CAP = 400 #max jump height in pixels
-const V_KNOCKBACK = 150
 const RB_ANIM_OFFSET = 450
 const LEECH_ANIM_OFFSET = 100
 const WALL_CLING_ANIM_OFFSET = 17
@@ -46,8 +40,6 @@ const STICKY_BAND_SPEED = 1800
 const JUMP_FORCE_FROM_WALL = 300
 const STEP_PITCH_LOW = 0.80
 const STEP_PITCH_HIGH = 1.20
-const WALK_SFX_TIME = 0.3
-const SPRINT_SFX_TIME = 0.1
 #Paths for sound effects
 const STEP_SFX_PATH = "res://Assets/Sounds/Player/Step.wav"
 
@@ -59,8 +51,6 @@ var gravity = 1800#ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 0
 
 #Tracks the amount of time the player has been knocked back
-var knockback_timer = 0
-#var jump_timer = 0
 var jump_start_y = 0
 var jump_cancelled = false
 var double_jump_cancelled = false
@@ -74,24 +64,9 @@ var notes_list = []
 var unlocked_standard_abilities = []
 #The current interactable object available to the player
 var current_interactable = null
-#Flag for invincibility
-var invincible = false
-#Timer for invincibility
-var invincible_timer = 0
-#Timer for zero g
-var zero_grav_timer = 0
-#cooldown check, sets to true when in effect
-var zero_grav_cooldown = false
 #flag to track if the player is trying to jump from a wall cling
 var jump_from_wall_cling = false
-#the player needs to jump off from the wall before being allowed to move freely
-var jump_off_timer = 0
-#this flag just tracks if the jump off is currently happening
-var jump_off = false
 
-var walk_sfx_timer = 0
-
-var jump_fall_timer = 0
 #debug tool
 var god_mode = false
 
@@ -101,27 +76,9 @@ enum StandardAbilities { LIQUIFY, RUBBER_BAND, STICKY_BAND, HELICOPTER, ZERO_GRA
 enum SoundEffects { WALK }
 #Direction
 enum Directions { LEFT, RIGHT }
-#Available states
-#enum TransitionState { IDLE, TRANSITIONING }
-#enum MovementState { IDLE, WALKING, DASH, SPRINTING, JUMPING }
-#enum ActionState { IDLE, ATTACK, RUBBER_BAND, DAMAGED, ZERO_GRAV, LEECH, WALL_CLING }
-#enum JumpState { IDLE, JUMP_START, JUMP_RISE, DOUBLE_JUMP, JUMP_FALL_START, JUMP_FALL, LANDING }
-#enum RubberBandState { IDLE, START, DURATION, STICKY_BAND, END}
-#enum LeechState { IDLE, START, DURATION, END }
-##redundant, refers to all horizontal movement, in air and otherwise
-#enum WalkingState { IDLE, WALKING }
 
 #actual direction
 var direction_lit = Directions.RIGHT
-
-#actual states
-#var transition_state = TransitionState.IDLE
-#var movement_state = MovementState.IDLE
-#var action_state = ActionState.IDLE
-#var jump_state = JumpState.IDLE
-#var rubber_band_state = RubberBandState.IDLE
-#var leech_state = LeechState.IDLE
-#var walking_state = WalkingState.IDLE
 
 #Any children of the player that are needed in the code are here
 @onready var animated_sprite = $AnimatedSprite2D
@@ -148,9 +105,11 @@ var direction_lit = Directions.RIGHT
 @onready var audio_player = $AudioPlayer
 
 @onready var state_machine = $StateMachine
+@onready var player_timers = $Timers
 
 func _ready():
 	state_machine.init()
+	player_timers.init()
 	if RoomManager.player_stats != null:
 		apply_data(RoomManager.player_stats)
 		flip_for_direction()
@@ -174,49 +133,19 @@ func _ready():
 	audio_player.max_distance = 5000
 
 func _physics_process(delta):
-	if !handle_knockback(delta):
+	if !player_timers.handle_knockback(delta):
 		move(delta)
-	handle_knockback(delta)
-	handle_invincibility(delta)
-	handle_zero_grav(delta)
+	player_timers.handle_knockback(delta)
+	player_timers.handle_invincibility(delta)
+	player_timers.handle_zero_grav(delta)
 	play_animations()
 	check_for_inputs(delta)
 	handle_jump_helper(delta)
 	handle_falling(delta)
-	handle_jump_off(delta)
+	player_timers.handle_jump_off(delta)
 	check_wall_cling()
-	handle_fall_timer(delta)
+	player_timers.handle_fall_timer(delta)
 	move_and_slide()
-
-func handle_knockback(delta):
-	#if the timer is over 0, the player is being knocked back
-	if knockback_timer > 0:
-		knockback_timer -= delta #Subtract elapsed time from it
-		#once half the time has elapsed, the playaer needs to start falling
-		if knockback_timer <= KNOCKBACK_DURATION / 2:
-			velocity.y = V_KNOCKBACK 
-		return true
-	return false
-	
-func handle_invincibility(delta):
-	if invincible_timer > 0:
-		invincible_timer -= delta
-	else:
-		invincible = false
-
-func handle_jump_off(delta):
-	if jump_off_timer > 0:
-		jump_off_timer -= delta
-	else:
-		jump_off = false
-		
-func handle_zero_grav(delta):
-	if zero_grav_timer > 0:
-		zero_grav_timer -= delta
-	else:
-		if state_machine.get_action_state() == state_machine.ActionState.ZERO_GRAV:
-			state_machine.set_action_state(state_machine.ActionState.IDLE)
-			zero_grav_cooldown = true
 
 func check_for_inputs(delta):
 	#Movement inputs are not checked here
@@ -265,10 +194,10 @@ func handle_jump(delta):
 	if state_machine.get_movement_state() != state_machine.MovementState.JUMPING\
 	or state_machine.get_action_state() == state_machine.ActionState.WALL_CLING\
 	or state_machine.get_jump_state() == state_machine.JumpState.DOUBLE_JUMP:
-		if jump_from_wall_cling and !jump_off:
+		if jump_from_wall_cling and !player_timers.get_jump_off_flag():
 			velocity.x = JUMP_FORCE_FROM_WALL * -direction
-			jump_off_timer = JUMP_OFF_DURATION
-			jump_off = true
+			player_timers.set_jump_off_timer()
+			player_timers.set_jump_off_flag(true)
 			animated_sprite.flip_h = !animated_sprite.flip_h
 		state_machine.set_movement_state(state_machine.MovementState.JUMPING)
 		if state_machine.get_jump_state() != state_machine.JumpState.DOUBLE_JUMP:
@@ -310,9 +239,6 @@ func handle_falling(delta):
 			if state_machine.get_jump_state() == state_machine.JumpState.DOUBLE_JUMP:
 				double_jump_cancelled = true
 			state_machine.set_jump_state(state_machine.JumpState.JUMP_FALL_START)
-		#print(jump_state)
-		#if jump_cancelled and double_jump_cancelled and jump_state < JumpState.JUMP_FALL_START:
-			#jump_state = JumpState.JUMP_FALL_START
 	elif state_machine.get_action_state() == state_machine.ActionState.ZERO_GRAV:
 		if not is_top_colliding():
 			if state_machine.get_movement_state() != state_machine.MovementState.JUMPING and !jump_cancelled :
@@ -327,23 +253,11 @@ func handle_falling(delta):
 				jump_cancelled = false
 	else:
 		if state_machine.get_movement_state() != state_machine.MovementState.JUMPING:
-			zero_grav_cooldown = false
+			player_timers.set_zero_grav_cooldown_flag(false)
 			state_machine.set_jump_state(state_machine.JumpState.IDLE)
 			jump_cancelled = false
 			double_jump_cancelled = false
 			jump_from_wall_cling = false
-
-func handle_fall_timer(delta):
-	if state_machine.get_jump_state() != state_machine.JumpState.JUMP_FALL:
-		animated_sprite.speed_scale = 1.0
-		jump_fall_timer = 0
-		return
-	if jump_fall_timer >= FALL_ANIM_SPEED_TIME:
-		animated_sprite.speed_scale = 3.0
-		return
-	if jump_fall_timer >= 0.5:
-		animated_sprite.speed_scale = 2.0
-	jump_fall_timer += delta
 
 func dash():
 	if (state_machine.get_movement_state() == state_machine.MovementState.DASH or protein < DASH_PROTEIN_COST) and !god_mode:
@@ -374,19 +288,9 @@ func handle_stop_sprint():
 			state_machine.set_movement_state(state_machine.MovementState.JUMPING)
 	emit_signal("update_camera_follow_speed", GROUND_SPEED)
 
-func handle_step_sfx_timer(delta):
-	if walk_sfx_timer > 0:
-		walk_sfx_timer -= delta
-		return false
-	if state_machine.get_movement_state() == state_machine.MovementState.WALKING:
-		walk_sfx_timer = WALK_SFX_TIME
-	elif state_machine.get_movement_state() == state_machine.MovementState.SPRINTING:
-		walk_sfx_timer = SPRINT_SFX_TIME
-	return true
-
 func move(delta):
 	if state_machine.get_rubber_band_state() == state_machine.RubberBandState.STICKY_BAND\
-	or jump_off\
+	or player_timers.get_jump_off_flag()\
 	or state_machine.get_transition_state() == state_machine.TransitionState.TRANSITIONING\
 	or state_machine.get_movement_state() == state_machine.MovementState.DASH:
 		return
@@ -395,13 +299,15 @@ func move(delta):
 		if Input.is_action_pressed("Left"):
 			direction = -1.0
 			direction_lit = Directions.LEFT
-			if state_machine.get_movement_state() != state_machine.MovementState.JUMPING and handle_step_sfx_timer(delta):
+			if state_machine.get_movement_state() != state_machine.MovementState.JUMPING\
+			and player_timers.handle_step_sfx_timer(delta):
 				play_sounds(SoundEffects.WALK)
 			state_machine.set_walking_state(state_machine.WalkingState.WALKING)
 		elif Input.is_action_pressed("Right"):
 			direction = 1.0
 			direction_lit = Directions.RIGHT
-			if state_machine.get_movement_state() != state_machine.MovementState.JUMPING and handle_step_sfx_timer(delta):
+			if state_machine.get_movement_state() != state_machine.MovementState.JUMPING\
+			and player_timers.handle_step_sfx_timer(delta):
 				play_sounds(SoundEffects.WALK)
 			state_machine.set_walking_state(state_machine.WalkingState.WALKING)
 			
@@ -553,7 +459,7 @@ func play_animations():
 		animated_sprite.play(target_anim)
 		
 func _on_enemy_hit_player(damage, knockback, enemy_pos):
-	if invincible or god_mode:
+	if player_timers.get_invincible_flag() or god_mode:
 		return
 	hit_anim.play("hit")
 	health -= damage
@@ -565,11 +471,11 @@ func _on_enemy_hit_player(damage, knockback, enemy_pos):
 	else:
 		kb_dir = -1
 	velocity.x = knockback * kb_dir
-	velocity.y = -V_KNOCKBACK
-	knockback_timer = KNOCKBACK_DURATION
+	velocity.y = -player_timers.V_KNOCKBACK
+	player_timers.set_knockback_timer()
 	#handle invincibility
-	invincible = true
-	invincible_timer = INVINCIBLE_DURATION
+	player_timers.set_invincible_flag(true)
+	player_timers.set_invincible_timer()
 	#handle cancelling rubberband
 	if state_machine.get_action_state() == state_machine.ActionState.RUBBER_BAND and state_machine.get_rubber_band_state() != state_machine.RubberBandState.IDLE:
 		state_machine.set_action_state(state_machine.ActionState.IDLE)
@@ -686,11 +592,11 @@ func full_wall_contact_dir():
 
 func zero_grav():
 	if state_machine.get_action_state() == state_machine.ActionState.ZERO_GRAV\
-	or zero_grav_cooldown\
+	or player_timers.get_zero_grav_cooldown_flag()\
 	or !is_standard_ability_unlocked(StandardAbilities.ZERO_GRAV):
 		return
 	state_machine.set_action_state(state_machine.ActionState.ZERO_GRAV)
-	zero_grav_timer = ZERO_GRAV_DURATION
+	player_timers.set_zero_grav_timer()
 	
 func leech():
 	if state_machine.get_action_state() == state_machine.ActionState.LEECH:
