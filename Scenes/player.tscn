@@ -1,4 +1,4 @@
-[gd_scene load_steps=102 format=3 uid="uid://uqe5a2rw7h7h"]
+[gd_scene load_steps=103 format=3 uid="uid://uqe5a2rw7h7h"]
 
 [ext_resource type="Script" uid="uid://bb643hqwrxmyd" path="res://Scripts/Player/player.gd" id="1_6ltq4"]
 [ext_resource type="Shader" uid="uid://d4fv1pxe8clud" path="res://Scripts/hitflash.gdshader" id="2_e6mvm"]
@@ -86,6 +86,7 @@
 [ext_resource type="Texture2D" uid="uid://cborvchevvss8" path="res://Assets/Sprites/player/wall_cling/first_draft/frame_03.png" id="81_5cld6"]
 [ext_resource type="Script" uid="uid://duqrs821j570l" path="res://Scripts/Player/state_machine.gd" id="85_5cld6"]
 [ext_resource type="Script" uid="uid://dc2uwqcjwvbpi" path="res://Scripts/Player/player_timers.gd" id="86_o736f"]
+[ext_resource type="Script" uid="uid://c5qba2o2agw6d" path="res://Scripts/Player/player_movement.gd" id="87_ketbw"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_57lvd"]
 shader = ExtResource("2_e6mvm")
@@ -653,6 +654,9 @@ script = ExtResource("85_5cld6")
 
 [node name="Timers" type="Node2D" parent="."]
 script = ExtResource("86_o736f")
+
+[node name="Movement" type="Node2D" parent="."]
+script = ExtResource("87_ketbw")
 
 [connection signal="health_changed" from="." to="UICanvas/UI/HUD" method="_on_player_health_changed"]
 [connection signal="initialize_health" from="." to="UICanvas/UI/HUD" method="_on_player_initialize_health"]
