@@ -1,4 +1,4 @@
-[gd_scene load_steps=104 format=3 uid="uid://uqe5a2rw7h7h"]
+[gd_scene load_steps=105 format=3 uid="uid://uqe5a2rw7h7h"]
 
 [ext_resource type="Script" uid="uid://bb643hqwrxmyd" path="res://Scripts/Player/player.gd" id="1_6ltq4"]
 [ext_resource type="Shader" uid="uid://d4fv1pxe8clud" path="res://Scripts/hitflash.gdshader" id="2_e6mvm"]
@@ -88,6 +88,7 @@
 [ext_resource type="Script" uid="uid://dc2uwqcjwvbpi" path="res://Scripts/Player/player_timers.gd" id="86_o736f"]
 [ext_resource type="Script" uid="uid://c5qba2o2agw6d" path="res://Scripts/Player/player_movement.gd" id="87_ketbw"]
 [ext_resource type="Script" uid="uid://6gf68ajbmfht" path="res://Scripts/Player/player_animations.gd" id="88_4grkl"]
+[ext_resource type="Script" uid="uid://1hd2k7s2acep" path="res://Scripts/Player/player_collisions.gd" id="89_6yrdb"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_57lvd"]
 shader = ExtResource("2_e6mvm")
@@ -661,6 +662,9 @@ script = ExtResource("87_ketbw")
 
 [node name="Animations" type="Node2D" parent="."]
 script = ExtResource("88_4grkl")
+
+[node name="Collisions" type="Node2D" parent="."]
+script = ExtResource("89_6yrdb")
 
 [connection signal="health_changed" from="." to="UICanvas/UI/HUD" method="_on_player_health_changed"]
 [connection signal="initialize_health" from="." to="UICanvas/UI/HUD" method="_on_player_initialize_health"]

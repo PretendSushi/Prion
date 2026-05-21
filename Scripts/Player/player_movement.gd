@@ -21,8 +21,11 @@ const ROOM_ENTRANCE_HORIZONTAL_TIME = 0.2
 #Nodes
 var player
 var animated_sprite
+
+#Modules
 var state_machine
 var player_timers
+var collisions
 
 #Flags
 var jump_cancelled
@@ -37,6 +40,7 @@ func init():
 	animated_sprite = $"../AnimatedSprite2D"
 	state_machine = $"../StateMachine"
 	player_timers = $"../Timers"
+	collisions = $"../Collisions"
 	
 	direction_lit = Directions.RIGHT
 	
@@ -100,10 +104,10 @@ func handle_jump(delta):
 			state_machine.set_jump_state(state_machine.JumpState.DOUBLE_JUMP)
 		else:
 			return
-	if state_machine.get_movement_state() == state_machine.MovementState.JUMPING and player.is_top_colliding():
+	if state_machine.get_movement_state() == state_machine.MovementState.JUMPING and collisions.is_top_colliding():
 		jump_cancelled = true
 		return
-	if state_machine.get_jump_state() == state_machine.JumpState.DOUBLE_JUMP and player.is_top_colliding():
+	if state_machine.get_jump_state() == state_machine.JumpState.DOUBLE_JUMP and collisions.is_top_colliding():
 		double_jump_cancelled = true
 		return
 		
@@ -150,18 +154,18 @@ func handle_falling(delta):
 			state_machine.set_jump_state(state_machine.JumpState.JUMP_FALL_START)
 			state_machine.set_movement_state(state_machine.MovementState.JUMPING)
 		player.velocity.y += player.gravity * delta
-		if state_machine.set_movement_state(state_machine.MovementState.JUMPING) and player.is_top_colliding():
+		if state_machine.set_movement_state(state_machine.MovementState.JUMPING) and collisions.is_top_colliding():
 			jump_cancelled = true
 			if state_machine.get_jump_state() == state_machine.JumpState.DOUBLE_JUMP:
 				double_jump_cancelled = true
 			state_machine.set_jump_state(state_machine.JumpState.JUMP_FALL_START)
 	elif state_machine.get_action_state() == state_machine.ActionState.ZERO_GRAV:
-		if not player.is_top_colliding():
+		if not collisions.is_top_colliding():
 			if state_machine.get_movement_state() != state_machine.MovementState.JUMPING and !jump_cancelled :
 				state_machine.set_jump_state(state_machine.JumpState.JUMP_FALL_START)
 				state_machine.set_movement_state(state_machine.MovementState.JUMPING)
 			player.velocity.y -= player.gravity * delta
-			if state_machine.get_movement_state() == state_machine.MovementState.JUMPING and player.is_bottom_colliding():
+			if state_machine.get_movement_state() == state_machine.MovementState.JUMPING and collisions.is_bottom_colliding():
 				jump_cancelled = true
 		else:
 			if state_machine.get_movement_state() != state_machine.MovementState.JUMPING:
@@ -192,13 +196,13 @@ func dash():
 	emit_signal("protein_changed", player.protein)
 
 func handle_sprint():
-	if state_machine.get_movement_state() != state_machine.MovementState.JUMPING and player.is_bottom_colliding():
+	if state_machine.get_movement_state() != state_machine.MovementState.JUMPING and collisions.is_bottom_colliding():
 		state_machine.set_movement_state(state_machine.MovementState.SPRINTING)
 		emit_signal("update_camera_follow_speed", SPRINT_SPEED)
 		
 func handle_stop_sprint():
 	if state_machine.get_movement_state() == state_machine.MovementState.SPRINTING:
-		if player.is_bottom_colliding():
+		if collisions.is_bottom_colliding():
 			state_machine.set_movement_state(state_machine.MovementState.IDLE)
 		else:
 			state_machine.set_movement_state(state_machine.MovementState.JUMPING)
@@ -236,8 +240,8 @@ func check_wall_cling():
 	if state_machine.get_action_state() == state_machine.ActionState.WALL_CLING:
 		state_machine.set_action_state(state_machine.ActionState.IDLE)
 		
-	if (player.full_wall_contact_dir() == Directions.LEFT and Input.is_action_pressed("Left") and !jump_from_wall_cling)\
-	or (player.full_wall_contact_dir() == Directions.RIGHT and Input.is_action_pressed("Right") and !jump_from_wall_cling):
+	if (collisions.full_wall_contact_dir() == Directions.LEFT and Input.is_action_pressed("Left") and !jump_from_wall_cling)\
+	or (collisions.full_wall_contact_dir() == Directions.RIGHT and Input.is_action_pressed("Right") and !jump_from_wall_cling):
 		state_machine.set_action_state(state_machine.ActionState.WALL_CLING)
 		player.velocity.y = 0
 

@@ -69,16 +69,6 @@ enum SoundEffects { WALK }
 @onready var rb_hitbox_left = $RBCollisionLeft
 @onready var leech_right = $LeechCollisionRight
 @onready var leech_left = $LeechCollisionLeft
-@onready var raycast_floor = $RayCastFloor
-@onready var raycast_top = $RayCastTop
-
-@onready var raycast_left_top = $RayCastLeftTop
-@onready var raycast_left_mid = $RayCastLeftMiddle
-@onready var raycast_left_bottom = $RayCastLeftBottom
-
-@onready var raycast_right_top = $RayCastRightTop
-@onready var raycast_right_mid = $RayCastRightMiddle
-@onready var raycast_right_bottom = $RayCastRightBottom
 
 @onready var hit_anim = $HitFlashAnim
 @onready var audio_player = $AudioPlayer
@@ -88,12 +78,14 @@ enum SoundEffects { WALK }
 @onready var player_timers = $Timers
 @onready var movement = $Movement
 @onready var animations = $Animations
+@onready var collisions = $Collisions
 
 func _ready():
 	state_machine.init()
 	player_timers.init()
 	movement.init()
 	animations.init()
+	collisions.init()
 	if RoomManager.player_stats != null:
 		apply_data(RoomManager.player_stats)
 		flip_for_direction()
@@ -155,15 +147,6 @@ func check_for_inputs(delta):
 		movement.handle_stop_sprint()
 	if Input.is_action_just_pressed("Dash"):
 		movement.dash()
-
-func is_on_surface():
-	return raycast_floor.is_colliding() or raycast_top.is_colliding()
-	
-func is_top_colliding():
-	return raycast_top.is_colliding()
-	
-func is_bottom_colliding():
-	return raycast_floor.is_colliding()
 
 func _on_enemy_hit_player(damage, knockback, enemy_pos):
 	if player_timers.get_invincible_flag() or god_mode:
@@ -267,19 +250,6 @@ func sticky_band(hitbox, body):
 	state_machine.set_rubber_band_state(state_machine.RubberBandState.STICKY_BAND)
 	velocity.y = 0
 	velocity.x = STICKY_BAND_SPEED * movement.get_direction()
-	
-func full_wall_contact_dir():
-	if raycast_left_top.is_colliding()\
-	and raycast_left_mid.is_colliding()\
-	and raycast_left_bottom.is_colliding():
-		return movement.Directions.LEFT
-	
-	if raycast_right_top.is_colliding()\
-	and raycast_right_mid.is_colliding()\
-	and raycast_right_bottom.is_colliding():
-		return movement.Directions.RIGHT
-	
-	return null
 
 func zero_grav():
 	if state_machine.get_action_state() == state_machine.ActionState.ZERO_GRAV\

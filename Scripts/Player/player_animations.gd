@@ -9,12 +9,14 @@ const WALL_CLING_ANIM_OFFSET = 17
 var animated_sprite
 var state_machine
 var movement
+var collisions
 var player
 
 func init():
 	animated_sprite = $"../AnimatedSprite2D"
 	state_machine = $"../StateMachine"
 	movement = $"../Movement"
+	collisions = $"../Collisions"
 	player = $".."
 	animated_sprite.animation_finished.connect(_on_animation_finished) #calls _on_animation_finished every time an animation ends
 
@@ -22,7 +24,7 @@ func play_animations():
 	#this is the animation we will play at the end
 	var target_anim = ""
 	
-	if player.is_on_surface():
+	if collisions.is_on_surface():
 		if state_machine.get_action_state() == state_machine.ActionState.RUBBER_BAND:
 			if state_machine.get_rubber_band_state() == state_machine.RubberBandState.START:
 				target_anim = "rubber_band_ground_startup"
