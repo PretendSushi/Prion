@@ -22,9 +22,9 @@ const ATTACK_DAMAGE = 40
 const RUBBER_BAND_DAMAGE = 80
 const RUBBER_BAND_PROTEIN_COST = 40 
 const KNOCKBACK = 1000
-const RB_ANIM_OFFSET = 450
-const LEECH_ANIM_OFFSET = 100
-const WALL_CLING_ANIM_OFFSET = 17
+#const RB_ANIM_OFFSET = 450
+#const LEECH_ANIM_OFFSET = 100
+#const WALL_CLING_ANIM_OFFSET = 17
 const LEECH_HEALTH_GAIN = 25
 const STICKY_BAND_SPEED = 1800
 const STEP_PITCH_LOW = 0.80
@@ -87,11 +87,13 @@ enum SoundEffects { WALK }
 @onready var state_machine = $StateMachine
 @onready var player_timers = $Timers
 @onready var movement = $Movement
+@onready var animations = $Animations
 
 func _ready():
 	state_machine.init()
 	player_timers.init()
 	movement.init()
+	animations.init()
 	if RoomManager.player_stats != null:
 		apply_data(RoomManager.player_stats)
 		flip_for_direction()
@@ -104,7 +106,6 @@ func _ready():
 	emit_signal("initialize_health", MAX_HEALTH, health)
 	emit_signal("initialize_protein", MAX_PROTEIN, protein)
 	emit_signal("initialize_inventory", notes_list)
-	animated_sprite.animation_finished.connect(_on_animation_finished) #calls _on_animation_finished every time an animation ends
 	unlocked_standard_abilities.append(StandardAbilities.HELICOPTER)
 	unlocked_standard_abilities.append(StandardAbilities.RUBBER_BAND)
 	unlocked_standard_abilities.append(StandardAbilities.STICKY_BAND)
@@ -120,7 +121,7 @@ func _physics_process(delta):
 	player_timers.handle_knockback(delta)
 	player_timers.handle_invincibility(delta)
 	player_timers.handle_zero_grav(delta)
-	play_animations()
+	animations.play_animations()
 	check_for_inputs(delta)
 	movement.handle_jump_helper(delta)
 	movement.handle_falling(delta)
@@ -164,103 +165,6 @@ func is_top_colliding():
 func is_bottom_colliding():
 	return raycast_floor.is_colliding()
 
-func play_animations():
-	#this is the animation we will play at the end
-	var target_anim = ""
-	
-	if is_on_surface():
-		if state_machine.get_action_state() == state_machine.ActionState.RUBBER_BAND:
-			if state_machine.get_rubber_band_state() == state_machine.RubberBandState.START:
-				target_anim = "rubber_band_ground_startup"
-			elif state_machine.get_rubber_band_state() == state_machine.RubberBandState.DURATION:
-				target_anim = "rubber_band_ground"
-			elif state_machine.get_rubber_band_state() == state_machine.RubberBandState.STICKY_BAND:
-				target_anim = "sticky_band"
-			else:
-				target_anim = "idle"
-		elif state_machine.get_movement_state() == state_machine.MovementState.JUMPING:
-			if state_machine.get_jump_state() == state_machine.JumpState.JUMP_START:
-				target_anim = "jump_startup"
-			else:
-				if state_machine.get_walking_state() == state_machine.WalkingState.IDLE:
-					target_anim = "jump_land"
-				else:
-					target_anim = "walk"
-					reset_jump()
-		elif state_machine.get_movement_state() == state_machine.MovementState.DASH:
-			target_anim = "dash"
-		else:
-			if state_machine.get_action_state() == state_machine.ActionState.LEECH:
-				if state_machine.get_leech_state() == state_machine.LeechState.START:
-					target_anim = "leech_start"
-				elif state_machine.get_leech_state() == state_machine.LeechState.DURATION:
-					target_anim = "leech"
-				elif state_machine.get_leech_state() == state_machine.LeechState.END:
-					target_anim = "leech_end"
-			elif state_machine.get_action_state() == state_machine.ActionState.ATTACK:
-				target_anim = "attack"
-			elif state_machine.get_movement_state() == state_machine.MovementState.WALKING:
-				target_anim = "walk"
-			elif state_machine.get_movement_state() == state_machine.MovementState.SPRINTING:
-				target_anim = "sprint"
-			else:
-				target_anim = "idle"
-	else:
-		if state_machine.get_action_state() == state_machine.ActionState.RUBBER_BAND:
-			if state_machine.get_rubber_band_state() == state_machine.RubberBandState.START:
-				target_anim = "rubber_band_ground_startup"
-			elif state_machine.get_rubber_band_state() == state_machine.RubberBandState.DURATION:
-				target_anim = "rubber_band_ground"
-			elif state_machine.get_rubber_band_state() == state_machine.RubberBandState.STICKY_BAND:
-				target_anim = "sticky_band"
-		elif state_machine.get_action_state() == state_machine.ActionState.WALL_CLING and !movement.jump_from_wall_cling:
-			target_anim = "wall_cling"
-		elif state_machine.get_movement_state() == state_machine.MovementState.DASH:
-			target_anim = "dash"
-		else:
-			match state_machine.get_jump_state():
-				state_machine.JumpState.JUMP_START:
-					target_anim = "jump_startup"
-				state_machine.JumpState.JUMP_RISE:
-					if state_machine.get_walking_state() == state_machine.WalkingState.IDLE:
-						target_anim = "jump_rise"
-					else:
-						target_anim = "jump_rise_fwd"
-				state_machine.JumpState.DOUBLE_JUMP:
-					target_anim = "double_jump"
-				state_machine.JumpState.JUMP_FALL_START:
-					target_anim = "jump_fall"
-				state_machine.JumpState.JUMP_FALL:
-					target_anim = "jump_falling"
-				state_machine.JumpState.IDLE:
-					target_anim = "jump_fall"
-	
-	if state_machine.get_action_state() == state_machine.ActionState.ZERO_GRAV:
-		animated_sprite.flip_v = true
-	else:
-		animated_sprite.flip_v = false
-		
-	if target_anim == "rubber_band_ground_startup" or target_anim == "rubber_band_ground" or target_anim == "sticky_band":
-		if movement.get_direction_lit() == movement.Directions.RIGHT:
-			animated_sprite.offset.x = RB_ANIM_OFFSET
-		else:
-			animated_sprite.offset.x = -RB_ANIM_OFFSET
-	elif target_anim == "leech_start" or target_anim == "leech" or target_anim == "leech_end":
-		if movement.get_direction_lit() == movement.Directions.RIGHT:
-			animated_sprite.offset.x = LEECH_ANIM_OFFSET
-		else:
-			animated_sprite.offset.x = -LEECH_ANIM_OFFSET
-	elif target_anim == "wall_cling":
-		if movement.get_direction_lit() == movement.Directions.LEFT:
-			animated_sprite.offset.x = WALL_CLING_ANIM_OFFSET
-		else:
-			animated_sprite.offset.x = -WALL_CLING_ANIM_OFFSET
-	else:
-		animated_sprite.offset.x = 0
-	#this is to avoid animations getting infinitely replayed and never ending
-	if animated_sprite.animation != target_anim:
-		animated_sprite.play(target_anim)
-		
 func _on_enemy_hit_player(damage, knockback, enemy_pos):
 	if player_timers.get_invincible_flag() or god_mode:
 		return
@@ -411,54 +315,6 @@ func on_leech_successful():
 		health += LEECH_HEALTH_GAIN
 	emit_signal("health_changed", health)
 
-func _on_animation_finished():
-	#changes state at the end of animations. Exists for animation purposes
-	if animated_sprite.animation == "attack":
-		state_machine.set_action_state(state_machine.ActionState.IDLE)
-	if animated_sprite.animation == "jump_startup":
-		state_machine.set_jump_state(state_machine.JumpState.JUMP_RISE)
-	if animated_sprite.animation == "jump_rise"\
-	or animated_sprite.animation == "double_jump"\
-	or animated_sprite.animation == "jump_rise_fwd":
-		#Since rising animation may need to be longer, the state doesn't change at the end of the animation
-		#The player should have just started falling
-		if velocity.y > 0:
-			state_machine.set_jump_state(state_machine.JumpState.JUMP_FALL_START)
-		else:
-			if animated_sprite.animation == "jump_rise":
-				animated_sprite.play("jump_rise") #if the player is still going up, replay the animation
-			elif animated_sprite.animation == "jump_rise_fwd":
-				animated_sprite.play("jump_rise_fwd")
-			else:
-				animated_sprite.play("double_jump")
-	if animated_sprite.animation == "jump_fall":
-		state_machine.set_jump_state(state_machine.JumpState.JUMP_FALL)
-	if animated_sprite.animation == "jump_land":
-		play_sounds(SoundEffects.WALK)
-		state_machine.set_jump_state(state_machine.JumpState.IDLE)
-		state_machine.set_movement_state(state_machine.MovementState.IDLE)
-	if animated_sprite.animation == "rubber_band_ground_startup":
-		state_machine.set_rubber_band_state(state_machine.RubberBandState.DURATION)
-		rubber_band_attack()
-	if animated_sprite.animation == "rubber_band_ground":
-		state_machine.set_rubber_band_state(state_machine.RubberBandState.IDLE)
-		state_machine.set_action_state(state_machine.ActionState.IDLE)
-	if animated_sprite.animation == "leech_start":
-		if is_leech_successful():
-			state_machine.set_leech_state(state_machine.LeechState.DURATION)
-		else:
-			state_machine.set_leech_state(state_machine.LeechState.END)
-	if animated_sprite.animation == "leech":
-		state_machine.set_leech_state(state_machine.LeechState.END)
-	if animated_sprite.animation == "leech_end":
-		state_machine.set_leech_state(state_machine.LeechState.IDLE)
-		state_machine.set_action_state(state_machine.ActionState.IDLE)
-	if animated_sprite.animation == "dash":
-		state_machine.set_movement_state(state_machine.MovementState.JUMPING)
-		state_machine.set_jump_state(state_machine.JumpState.JUMP_FALL_START)
-		movement.jump_cancelled = true
-		velocity.x = 0
-
 func _on_interactable_focused(interactable) -> void:
 	current_interactable = interactable
 
@@ -547,11 +403,7 @@ func flip_for_direction():
 	elif movement.get_direction_lit() == movement.Directions.RIGHT:
 		movement.set_direction(1.0)
 		animated_sprite.flip_h = false
-		
-func reset_jump():
-	state_machine.set_jump_state(state_machine.JumpState.IDLE)
-	state_machine.set_movement_state(state_machine.MovementState.IDLE)
-	
+
 func get_data_to_save():
 	return {
 		"last_save_point": RoomManager.last_save_point,

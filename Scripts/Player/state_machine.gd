@@ -28,6 +28,10 @@ func init():
 	leech_state = LeechState.IDLE
 	walking_state = WalkingState.IDLE
 
+func reset_jump():
+	jump_state = JumpState.IDLE
+	movement_state = MovementState.IDLE
+
 func set_movement_state(state):
 	if !MovementState.values().has(state):
 		print("Error: Invalid movement state")
