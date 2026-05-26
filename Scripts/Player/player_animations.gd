@@ -10,6 +10,7 @@ var animated_sprite
 var state_machine
 var movement
 var collisions
+var attacks
 var player
 
 func init():
@@ -17,6 +18,7 @@ func init():
 	state_machine = $"../StateMachine"
 	movement = $"../Movement"
 	collisions = $"../Collisions"
+	attacks = $"../Attacks"
 	player = $".."
 	animated_sprite.animation_finished.connect(_on_animation_finished) #calls _on_animation_finished every time an animation ends
 
@@ -145,7 +147,7 @@ func _on_animation_finished():
 		state_machine.set_movement_state(state_machine.MovementState.IDLE)
 	if animated_sprite.animation == "rubber_band_ground_startup":
 		state_machine.set_rubber_band_state(state_machine.RubberBandState.DURATION)
-		player.rubber_band_attack()
+		attacks.rubber_band_attack()
 	if animated_sprite.animation == "rubber_band_ground":
 		state_machine.set_rubber_band_state(state_machine.RubberBandState.IDLE)
 		state_machine.set_action_state(state_machine.ActionState.IDLE)

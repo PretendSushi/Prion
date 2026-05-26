@@ -5,7 +5,6 @@ signal health_changed
 signal protein_changed
 signal initialize_health
 signal initialize_protein
-signal player_attack
 signal player_leech
 signal show_inventory
 signal initialize_inventory
@@ -15,16 +14,9 @@ signal update_camera
 signal update_camera_follow_speed
 
 #Constants
-const BOUNCE_VELOCITY = -1200.0
 const MAX_HEALTH = 100
 const MAX_PROTEIN = 100
-const ATTACK_DAMAGE = 40
-const RUBBER_BAND_DAMAGE = 80
 const RUBBER_BAND_PROTEIN_COST = 40 
-const KNOCKBACK = 1000
-#const RB_ANIM_OFFSET = 450
-#const LEECH_ANIM_OFFSET = 100
-#const WALL_CLING_ANIM_OFFSET = 17
 const LEECH_HEALTH_GAIN = 25
 const STICKY_BAND_SPEED = 1800
 const STEP_PITCH_LOW = 0.80
@@ -61,12 +53,7 @@ enum SoundEffects { WALK }
 
 #Any children of the player that are needed in the code are here
 @onready var animated_sprite = $AnimatedSprite2D
-@onready var front_hitbox = $FrontHitbox
-@onready var back_hitbox = $BackHitbox
-@onready var bottom_hitbox = $BottomCollision
-@onready var top_hitbox = $TopCollision
-@onready var rb_hitbox_right = $RBCollisionRight
-@onready var rb_hitbox_left = $RBCollisionLeft
+
 @onready var leech_right = $LeechCollisionRight
 @onready var leech_left = $LeechCollisionLeft
 
@@ -79,6 +66,7 @@ enum SoundEffects { WALK }
 @onready var movement = $Movement
 @onready var animations = $Animations
 @onready var collisions = $Collisions
+@onready var attacks = $Attacks
 
 func _ready():
 	state_machine.init()
@@ -86,6 +74,7 @@ func _ready():
 	movement.init()
 	animations.init()
 	collisions.init()
+	attacks.init()
 	if RoomManager.player_stats != null:
 		apply_data(RoomManager.player_stats)
 		flip_for_direction()
@@ -127,7 +116,7 @@ func check_for_inputs(delta):
 	#Check for attack input 
 	if Input.is_action_just_pressed("Attack"):
 		#This needs to be made more readable. Takes attack takes two arguments, whether up or down are being pressed
-		attack(Input.is_action_pressed("Down"), Input.is_action_pressed("Jump"))
+		attacks.attack()
 	#Check for open inventory input, and emit the signal so the inventory code can handle the rest
 	if Input.is_action_just_pressed("Inventory"):
 		emit_signal("show_inventory")
@@ -187,37 +176,6 @@ func die():
 		global_position.x = RoomManager.last_save_point.player_x
 		global_position.y = RoomManager.last_save_point.player_y
 	CustomStatTracker.add_death()
-
-func bounce():
-	#for pogoing
-	velocity.y = BOUNCE_VELOCITY
-
-func attack(down_pressed, up_pressed):
-	#the player can only attack once, then not again until the end of the animation
-	if state_machine.get_action_state() == state_machine.ActionState.ATTACK or state_machine.get_action_state() == state_machine.ActionState.ZERO_GRAV:
-		return
-	#if it is a legit attack, set the state
-	state_machine.set_action_state(state_machine.ActionState.ATTACK)
-	#Decide which hitbox to use
-	var hitbox = front_hitbox
-	if movement.get_direction_lit() == movement.Directions.LEFT:
-		hitbox = back_hitbox
-	if not is_on_floor():
-		if down_pressed:
-			hitbox = bottom_hitbox
-	if up_pressed:
-		hitbox = top_hitbox
-	#Find every NPC who should take damage
-	var bodies = hitbox.get_overlapping_bodies()
-	for body in bodies:
-		if body.name.contains("Enemy"):
-			player_attack.connect(body._on_player_attack.bind())
-			emit_signal("player_attack", ATTACK_DAMAGE, KNOCKBACK)
-			if hitbox == bottom_hitbox:
-				bounce()
-		if body.is_in_group("Barrier"):
-			player_attack.connect(body._on_player_attack.bind())
-			emit_signal("player_attack")
 	
 func rubber_band():
 	if state_machine.get_action_state() == state_machine.ActionState.RUBBER_BAND\
@@ -227,23 +185,6 @@ func rubber_band():
 	state_machine.set_action_state(state_machine.ActionState.RUBBER_BAND)
 	state_machine.set_rubber_band_state(state_machine.RubberBandState.START)
 
-func rubber_band_attack():
-	var hitbox = rb_hitbox_right
-	if movement.direction_lit == movement.Directions.RIGHT: 
-		hitbox = rb_hitbox_right
-	else:
-		hitbox = rb_hitbox_left
-	var bodies = hitbox.get_overlapping_bodies()
-	for body in bodies:
-		if body.name == "Enemy":
-			player_attack.connect(body._on_player_attack.bind())
-			emit_signal("player_attack", RUBBER_BAND_DAMAGE, KNOCKBACK)
-		if body.name == "TileMap":
-			sticky_band(hitbox, body)
-	if !god_mode:
-		protein -= RUBBER_BAND_PROTEIN_COST
-		emit_signal("protein_changed", protein)
-	
 func sticky_band(hitbox, body):
 	if !is_standard_ability_unlocked(StandardAbilities.STICKY_BAND) and !god_mode:
 		return
@@ -273,7 +214,7 @@ func is_leech_successful():
 	for body in bodies:
 		if body.is_in_group("Enemy"):
 			player_leech.connect(body._on_player_leech.bind())
-			emit_signal("player_leech", ATTACK_DAMAGE)
+			emit_signal("player_leech", attacks.ATTACK_DAMAGE)
 			on_leech_successful()
 			return true
 	return false

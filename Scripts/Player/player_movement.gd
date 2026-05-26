@@ -17,6 +17,7 @@ const AIR_SPEED = 900.0
 const JUMP_CAP = 400 #max jump height in pixels
 const ROOM_ENTRANCE_AIR_TIME = 0.05
 const ROOM_ENTRANCE_HORIZONTAL_TIME = 0.2
+const BOUNCE_VELOCITY = -1200.0
 
 #Nodes
 var player
@@ -281,6 +282,10 @@ func auto_move_on_room_change(entrance_way):
 func _auto_move_helper():
 	player.velocity.x = 0
 	state_machine.set_transition_state(state_machine.TransitionState.IDLE)
+
+func bounce():
+	#for pogoing
+	player.velocity.y = BOUNCE_VELOCITY
 
 func get_direction():
 	return direction
