@@ -24,10 +24,11 @@ func save_game():
 	
 	var data = {}
 	
-	data["player_data"] = player_node.get_data_to_save()
+	data["player_data"] = player_node.save_manager.get_data_to_save()
 	data["level_data"] = level_node.get_data_to_save()
 	
 	var updated_json = JSON.stringify(data, "\t")
+
 	save_file.store_string(updated_json)
 	save_file.close()
 	
@@ -99,6 +100,7 @@ func is_valid_save_file(file):
 func generate_save_file_name():
 	#first save, save1.json
 	if !DirAccess.dir_exists_absolute(PATH):
+		DirAccess.make_dir_recursive_absolute(PATH)
 		return file_template + "1" + file_format
 		
 	var dir = DirAccess.open(PATH)

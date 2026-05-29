@@ -18,7 +18,7 @@ func _remove_text():
 	
 func _on_interact(player):
 	player.restore_max_hp()
-	player.set_last_save_point(build_dict())
+	player.save_manager.set_last_save_point(build_dict())
 	CustomStatTracker.add_time_played()
 	SaveManager.save_game()
 	SaveManager.find_last_save()

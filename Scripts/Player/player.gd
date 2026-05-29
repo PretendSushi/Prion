@@ -54,6 +54,7 @@ enum SoundEffects { WALK }
 @onready var collisions = $Collisions
 @onready var attacks = $Attacks
 @onready var abilities = $Abilities
+@onready var save_manager = $SaveManager
 
 func _ready():
 	state_machine.init()
@@ -63,6 +64,7 @@ func _ready():
 	collisions.init()
 	attacks.init()
 	abilities.init()
+	save_manager.init()
 	if RoomManager.player_stats != null:
 		apply_data(RoomManager.player_stats)
 		animations.flip_for_direction()
@@ -222,26 +224,8 @@ func play_sounds(sound_effect: SoundEffects):
 			audio_player.pitch_scale = randf_range(STEP_PITCH_LOW, STEP_PITCH_HIGH) 
 			audio_player.play()
 
-func set_last_save_point(save_dict: Dictionary):
-	if not save_dict:
-		print("Error. No data")
-		return
-	RoomManager.set_last_save_point(save_dict)
-
 func activate_god_mode():
 	god_mode = true
 	
 func deactivate_god_mode():
 	god_mode = false
-
-func get_data_to_save():
-	return {
-		"last_save_point": RoomManager.last_save_point,
-		"unlocked_abilities": abilities.get_unlocked_standard_abilities()
-	}
- 
-func apply_save_data(data):
-	set_last_save_point(data["last_save_point"])
-	abilities.add_standard_abilities(data["unlocked_abilities"])
-	global_position.x = data["last_save_point"]["player_x"]
-	global_position.y = data["last_save_point"]["player_y"]

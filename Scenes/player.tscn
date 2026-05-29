@@ -1,4 +1,4 @@
-[gd_scene load_steps=107 format=3 uid="uid://uqe5a2rw7h7h"]
+[gd_scene load_steps=108 format=3 uid="uid://uqe5a2rw7h7h"]
 
 [ext_resource type="Script" uid="uid://bb643hqwrxmyd" path="res://Scripts/Player/player.gd" id="1_6ltq4"]
 [ext_resource type="Shader" uid="uid://d4fv1pxe8clud" path="res://Scripts/hitflash.gdshader" id="2_e6mvm"]
@@ -91,6 +91,7 @@
 [ext_resource type="Script" uid="uid://1hd2k7s2acep" path="res://Scripts/Player/player_collisions.gd" id="89_6yrdb"]
 [ext_resource type="Script" uid="uid://chxmdu4y6s10a" path="res://Scripts/Player/player_attacks.gd" id="90_ue0p1"]
 [ext_resource type="Script" uid="uid://bn4dpmqambmfw" path="res://Scripts/Player/player_abilities.gd" id="91_isbcs"]
+[ext_resource type="Script" uid="uid://bb0nh2p8k8x3i" path="res://Scripts/Player/player_save_manager.gd" id="92_142e3"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_57lvd"]
 shader = ExtResource("2_e6mvm")
@@ -673,6 +674,9 @@ script = ExtResource("90_ue0p1")
 
 [node name="Abilities" type="Node2D" parent="."]
 script = ExtResource("91_isbcs")
+
+[node name="SaveManager" type="Node2D" parent="."]
+script = ExtResource("92_142e3")
 
 [connection signal="health_changed" from="." to="UICanvas/UI/HUD" method="_on_player_health_changed"]
 [connection signal="initialize_health" from="." to="UICanvas/UI/HUD" method="_on_player_initialize_health"]
