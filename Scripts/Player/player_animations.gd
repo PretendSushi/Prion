@@ -11,6 +11,7 @@ var state_machine
 var movement
 var collisions
 var attacks
+var abilities
 var player
 
 func init():
@@ -19,6 +20,7 @@ func init():
 	movement = $"../Movement"
 	collisions = $"../Collisions"
 	attacks = $"../Attacks"
+	abilities = $"../Abilities"
 	player = $".."
 	animated_sprite.animation_finished.connect(_on_animation_finished) #calls _on_animation_finished every time an animation ends
 
@@ -152,7 +154,7 @@ func _on_animation_finished():
 		state_machine.set_rubber_band_state(state_machine.RubberBandState.IDLE)
 		state_machine.set_action_state(state_machine.ActionState.IDLE)
 	if animated_sprite.animation == "leech_start":
-		if player.is_leech_successful():
+		if abilities.is_leech_successful():
 			state_machine.set_leech_state(state_machine.LeechState.DURATION)
 		else:
 			state_machine.set_leech_state(state_machine.LeechState.END)
@@ -166,3 +168,11 @@ func _on_animation_finished():
 		state_machine.set_jump_state(state_machine.JumpState.JUMP_FALL_START)
 		movement.jump_cancelled = true
 		player.velocity.x = 0
+		
+func flip_for_direction():
+	if movement.get_direction_lit() == movement.Directions.LEFT:
+		movement.set_direction(-1.0)
+		animated_sprite.flip_h = true
+	elif movement.get_direction_lit() == movement.Directions.RIGHT:
+		movement.set_direction(1.0)
+		animated_sprite.flip_h = false

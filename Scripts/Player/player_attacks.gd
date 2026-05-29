@@ -13,6 +13,7 @@ const RUBBER_BAND_PROTEIN_COST = 40
 var state_machine
 var movement
 var collisions
+var abilities
 
 #Nodes
 var player
@@ -21,6 +22,7 @@ func init():
 	state_machine = $"../StateMachine"
 	movement = $"../Movement"
 	collisions = $"../Collisions"
+	abilities = $"../Abilities"
 	player = $".."
 
 func attack():
@@ -51,7 +53,7 @@ func rubber_band_attack():
 			player_attack.connect(body._on_player_attack.bind())
 			emit_signal("player_attack", RUBBER_BAND_DAMAGE, KNOCKBACK)
 		if body.name == "TileMap":
-			player.sticky_band(hitbox, body)
+			abilities.sticky_band(hitbox, body)
 	if !player.god_mode:
 		player.protein -= RUBBER_BAND_PROTEIN_COST
 		emit_signal("protein_changed", player.protein)

@@ -21,6 +21,9 @@ var back_hitbox
 var bottom_hitbox
 var top_hitbox
 
+var leech_right
+var leech_left
+
 func init():
 	movement = $"../Movement"
 	raycast_top = $"../RayCastTop"
@@ -39,7 +42,10 @@ func init():
 	back_hitbox = $"../BackHitbox"
 	bottom_hitbox = $"../BottomCollision"
 	top_hitbox = $"../TopCollision"
-
+	
+	leech_left = $"../LeechCollisionLeft"
+	leech_right = $"../LeechCollisionRight"
+	
 func is_on_surface():
 	return raycast_floor.is_colliding() or raycast_top.is_colliding()
 	
@@ -89,3 +95,9 @@ func get_bottom_hitbox():
 	
 func get_top_hitbox():
 	return top_hitbox
+
+func get_leech_left():
+	return leech_left
+	
+func get_leech_right():
+	return leech_right

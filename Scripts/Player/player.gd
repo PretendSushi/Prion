@@ -5,7 +5,6 @@ signal health_changed
 signal protein_changed
 signal initialize_health
 signal initialize_protein
-signal player_leech
 signal show_inventory
 signal initialize_inventory
 signal interacted
@@ -16,9 +15,6 @@ signal update_camera_follow_speed
 #Constants
 const MAX_HEALTH = 100
 const MAX_PROTEIN = 100
-const RUBBER_BAND_PROTEIN_COST = 40 
-const LEECH_HEALTH_GAIN = 25
-const STICKY_BAND_SPEED = 1800
 const STEP_PITCH_LOW = 0.80
 const STEP_PITCH_HIGH = 1.20
 #Paths for sound effects
@@ -29,33 +25,23 @@ var step_sfx
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = 1800#ProjectSettings.get_setting("physics/2d/default_gravity")
-#var direction = 0
-
-#Tracks the amount of time the player has been knocked back
 #You know what this tracks
 var health = 100
 #Basically mana
 var protein = 100
 #This is a list of all notes the player has collected
 var notes_list = []
-#A list of abilities the player has unlocked
-var unlocked_standard_abilities = []
 #The current interactable object available to the player
 var current_interactable = null
 
 #debug tool
 var god_mode = false
 
-#Available abilities
-enum StandardAbilities { LIQUIFY, RUBBER_BAND, STICKY_BAND, HELICOPTER, ZERO_GRAV }
 #Sound effects
 enum SoundEffects { WALK }
 
 #Any children of the player that are needed in the code are here
 @onready var animated_sprite = $AnimatedSprite2D
-
-@onready var leech_right = $LeechCollisionRight
-@onready var leech_left = $LeechCollisionLeft
 
 @onready var hit_anim = $HitFlashAnim
 @onready var audio_player = $AudioPlayer
@@ -67,6 +53,7 @@ enum SoundEffects { WALK }
 @onready var animations = $Animations
 @onready var collisions = $Collisions
 @onready var attacks = $Attacks
+@onready var abilities = $Abilities
 
 func _ready():
 	state_machine.init()
@@ -75,9 +62,10 @@ func _ready():
 	animations.init()
 	collisions.init()
 	attacks.init()
+	abilities.init()
 	if RoomManager.player_stats != null:
 		apply_data(RoomManager.player_stats)
-		flip_for_direction()
+		animations.flip_for_direction()
 	if health <= 0:
 		restore_max_hp()
 		hit_anim.stop()
@@ -87,10 +75,6 @@ func _ready():
 	emit_signal("initialize_health", MAX_HEALTH, health)
 	emit_signal("initialize_protein", MAX_PROTEIN, protein)
 	emit_signal("initialize_inventory", notes_list)
-	unlocked_standard_abilities.append(StandardAbilities.HELICOPTER)
-	unlocked_standard_abilities.append(StandardAbilities.RUBBER_BAND)
-	unlocked_standard_abilities.append(StandardAbilities.STICKY_BAND)
-	unlocked_standard_abilities.append(StandardAbilities.ZERO_GRAV)
 	
 	step_sfx = load(STEP_SFX_PATH)
 	audio_player.stream = step_sfx
@@ -121,13 +105,13 @@ func check_for_inputs(delta):
 	if Input.is_action_just_pressed("Inventory"):
 		emit_signal("show_inventory")
 	if Input.is_action_just_pressed("RubberBand"):
-		rubber_band()
+		abilities.rubber_band()
 	if Input.is_action_just_pressed("Interact"):
 		interact()
 	if Input.is_action_just_pressed("ZeroGrav"):
-		zero_grav()
+		abilities.zero_grav()
 	if Input.is_action_just_pressed("Leech"):
-		leech()
+		abilities.leech()
 	if Input.is_action_just_pressed("Jump"):
 		movement.handle_jump(delta)
 	if Input.is_action_pressed("Sprint"):
@@ -176,55 +160,6 @@ func die():
 		global_position.x = RoomManager.last_save_point.player_x
 		global_position.y = RoomManager.last_save_point.player_y
 	CustomStatTracker.add_death()
-	
-func rubber_band():
-	if state_machine.get_action_state() == state_machine.ActionState.RUBBER_BAND\
-	or protein < RUBBER_BAND_PROTEIN_COST\
-	or !is_standard_ability_unlocked(StandardAbilities.RUBBER_BAND):
-		return
-	state_machine.set_action_state(state_machine.ActionState.RUBBER_BAND)
-	state_machine.set_rubber_band_state(state_machine.RubberBandState.START)
-
-func sticky_band(hitbox, body):
-	if !is_standard_ability_unlocked(StandardAbilities.STICKY_BAND) and !god_mode:
-		return
-	state_machine.set_rubber_band_state(state_machine.RubberBandState.STICKY_BAND)
-	velocity.y = 0
-	velocity.x = STICKY_BAND_SPEED * movement.get_direction()
-
-func zero_grav():
-	if state_machine.get_action_state() == state_machine.ActionState.ZERO_GRAV\
-	or player_timers.get_zero_grav_cooldown_flag()\
-	or !is_standard_ability_unlocked(StandardAbilities.ZERO_GRAV):
-		return
-	state_machine.set_action_state(state_machine.ActionState.ZERO_GRAV)
-	player_timers.set_zero_grav_timer()
-	
-func leech():
-	if state_machine.get_action_state() == state_machine.ActionState.LEECH:
-		return
-	state_machine.set_action_state(state_machine.ActionState.LEECH)
-	state_machine.set_leech_state(state_machine.LeechState.START)
-
-func is_leech_successful():
-	var hitbox = leech_right
-	if movement.direction_lit == movement.Directions.LEFT:
-		hitbox = leech_left
-	var bodies = hitbox.get_overlapping_bodies()
-	for body in bodies:
-		if body.is_in_group("Enemy"):
-			player_leech.connect(body._on_player_leech.bind())
-			emit_signal("player_leech", attacks.ATTACK_DAMAGE)
-			on_leech_successful()
-			return true
-	return false
-
-func on_leech_successful():
-	if health + LEECH_HEALTH_GAIN >= 100:
-		health = 100
-	else:
-		health += LEECH_HEALTH_GAIN
-	emit_signal("health_changed", health)
 
 func _on_interactable_focused(interactable) -> void:
 	current_interactable = interactable
@@ -281,14 +216,6 @@ func apply_data(data):
 	movement.set_direction(data.direction)
 	movement.set_direction_lit(data.direction_lit)
 
-func is_standard_ability_unlocked(target_ability: StandardAbilities):
-	if god_mode:
-		return true
-	for ability in unlocked_standard_abilities:
-		if ability == target_ability:
-			return true
-	return false
-
 func play_sounds(sound_effect: SoundEffects):
 	if sound_effect == SoundEffects.WALK:
 		if !audio_player.playing:
@@ -307,22 +234,14 @@ func activate_god_mode():
 func deactivate_god_mode():
 	god_mode = false
 
-func flip_for_direction():
-	if movement.get_direction_lit() == movement.Directions.LEFT:
-		movement.set_direction(-1.0)
-		animated_sprite.flip_h = true
-	elif movement.get_direction_lit() == movement.Directions.RIGHT:
-		movement.set_direction(1.0)
-		animated_sprite.flip_h = false
-
 func get_data_to_save():
 	return {
 		"last_save_point": RoomManager.last_save_point,
-		"unlocked_abilities": unlocked_standard_abilities
+		"unlocked_abilities": abilities.get_unlocked_standard_abilities()
 	}
  
 func apply_save_data(data):
 	set_last_save_point(data["last_save_point"])
-	unlocked_standard_abilities = data["unlocked_abilities"]
+	abilities.add_standard_abilities(data["unlocked_abilities"])
 	global_position.x = data["last_save_point"]["player_x"]
 	global_position.y = data["last_save_point"]["player_y"]
