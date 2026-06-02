@@ -54,6 +54,3 @@ func rubber_band_attack():
 			emit_signal("player_attack", RUBBER_BAND_DAMAGE, KNOCKBACK)
 		if body.name == "TileMap":
 			abilities.sticky_band(hitbox, body)
-	if !player.god_mode:
-		player.protein -= RUBBER_BAND_PROTEIN_COST
-		emit_signal("protein_changed", player.protein)

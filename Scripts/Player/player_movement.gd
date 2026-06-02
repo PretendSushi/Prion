@@ -27,6 +27,7 @@ var animated_sprite
 var state_machine
 var player_timers
 var collisions
+var abilities
 
 #Flags
 var jump_cancelled
@@ -42,6 +43,7 @@ func init():
 	state_machine = $"../StateMachine"
 	player_timers = $"../Timers"
 	collisions = $"../Collisions"
+	abilities = $"../Abilities"
 	
 	direction_lit = Directions.RIGHT
 	
@@ -101,7 +103,7 @@ func handle_jump(delta):
 	if jump_cancelled:
 		if state_machine.get_jump_state() != state_machine.JumpState.DOUBLE_JUMP\
 		and !double_jump_cancelled\
-		and player.is_standard_ability_unlocked(player.StandardAbilities.HELICOPTER):
+		and abilities.is_standard_ability_unlocked(abilities.StandardAbilities.HELICOPTER):
 			state_machine.set_jump_state(state_machine.JumpState.DOUBLE_JUMP)
 		else:
 			return

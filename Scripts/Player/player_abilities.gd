@@ -43,6 +43,9 @@ func rubber_band():
 	or player.protein < RUBBER_BAND_PROTEIN_COST\
 	or !is_standard_ability_unlocked(StandardAbilities.RUBBER_BAND):
 		return
+	if !player.god_mode:
+		player.protein -= RUBBER_BAND_PROTEIN_COST
+		player.update_protein()
 	state_machine.set_action_state(state_machine.ActionState.RUBBER_BAND)
 	state_machine.set_rubber_band_state(state_machine.RubberBandState.START)
 	
