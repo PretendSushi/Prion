@@ -49,7 +49,7 @@ func rubber_band_attack():
 	var hitbox = collisions.get_rubber_band_hitbox()
 	var bodies = hitbox.get_overlapping_bodies()
 	for body in bodies:
-		if body.name == "Enemy":
+		if body.is_in_group("Enemy"):
 			player_attack.connect(body._on_player_attack.bind())
 			emit_signal("player_attack", RUBBER_BAND_DAMAGE, KNOCKBACK)
 		if body.name == "TileMap":
