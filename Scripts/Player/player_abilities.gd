@@ -85,7 +85,8 @@ func on_leech_successful():
 		player.health = 100
 	else:
 		player.health += LEECH_HEALTH_GAIN
-	emit_signal("health_changed", player.health)
+	print("hit")
+	player.update_health()
 
 func is_standard_ability_unlocked(target_ability: StandardAbilities):
 	if player.god_mode:

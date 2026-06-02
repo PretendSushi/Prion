@@ -229,3 +229,9 @@ func activate_god_mode():
 	
 func deactivate_god_mode():
 	god_mode = false
+
+func update_health():
+	emit_signal("health_changed", health)
+	
+func update_protein():
+	emit_signal("protein_changed", protein)
