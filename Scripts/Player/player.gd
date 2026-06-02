@@ -235,3 +235,6 @@ func update_health():
 	
 func update_protein():
 	emit_signal("protein_changed", protein)
+
+func change_camera_follow_speed(speed):
+	emit_signal("update_camera_follow_speed", speed)

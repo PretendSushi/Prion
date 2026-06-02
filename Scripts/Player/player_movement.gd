@@ -201,7 +201,7 @@ func dash():
 func handle_sprint():
 	if state_machine.get_movement_state() != state_machine.MovementState.JUMPING and collisions.is_bottom_colliding():
 		state_machine.set_movement_state(state_machine.MovementState.SPRINTING)
-		emit_signal("update_camera_follow_speed", SPRINT_SPEED)
+		player.change_camera_follow_speed(SPRINT_SPEED)
 		
 func handle_stop_sprint():
 	if state_machine.get_movement_state() == state_machine.MovementState.SPRINTING:
@@ -209,7 +209,7 @@ func handle_stop_sprint():
 			state_machine.set_movement_state(state_machine.MovementState.IDLE)
 		else:
 			state_machine.set_movement_state(state_machine.MovementState.JUMPING)
-	emit_signal("update_camera_follow_speed", GROUND_SPEED)
+	player.change_camera_follow_speed(GROUND_SPEED)
 
 func is_jump_height_reached():
 	if jump_cancelled:
