@@ -5,8 +5,6 @@ signal health_changed
 signal protein_changed
 signal initialize_health
 signal initialize_protein
-signal player_attack
-signal player_leech
 signal show_inventory
 signal initialize_inventory
 signal interacted
@@ -14,40 +12,11 @@ signal note_added
 signal update_camera
 signal update_camera_follow_speed
 
-#constants
-const GROUND_SPEED = 700.0
-const AIR_SPEED = 900.0
-const SPRINT_SPEED = 1400.0
-const JUMP_VELOCITY = -800.0
-const JUMP_FORCE = 3000
-const BOUNCE_VELOCITY = -1200.0
-const DASH_VELOCITY = 1500
+#Constants
 const MAX_HEALTH = 100
 const MAX_PROTEIN = 100
-const ATTACK_DAMAGE = 40
-const RUBBER_BAND_DAMAGE = 80
-const RUBBER_BAND_PROTEIN_COST = 40 
-const DASH_PROTEIN_COST = 5
-const KNOCKBACK = 1000
-const KNOCKBACK_DURATION = 0.5
-const INVINCIBLE_DURATION = 2.5
-const JUMP_OFF_DURATION = 0.5
-const ZERO_GRAV_DURATION = 3
-const ROOM_ENTRANCE_AIR_TIME = 0.05
-const ROOM_ENTRANCE_HORIZONTAL_TIME = 0.2
-const FALL_ANIM_SPEED_TIME = 1.0
-const JUMP_CAP = 400 #max jump height in pixels
-const V_KNOCKBACK = 150
-const RB_ANIM_OFFSET = 450
-const LEECH_ANIM_OFFSET = 100
-const WALL_CLING_ANIM_OFFSET = 17
-const LEECH_HEALTH_GAIN = 25
-const STICKY_BAND_SPEED = 1800
-const JUMP_FORCE_FROM_WALL = 300
 const STEP_PITCH_LOW = 0.80
 const STEP_PITCH_HIGH = 1.20
-const WALK_SFX_TIME = 0.3
-const SPRINT_SFX_TIME = 0.1
 #Paths for sound effects
 const STEP_SFX_PATH = "res://Assets/Sounds/Player/Step.wav"
 
@@ -56,101 +25,49 @@ var step_sfx
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = 1800#ProjectSettings.get_setting("physics/2d/default_gravity")
-var direction = 0
-
-#Tracks the amount of time the player has been knocked back
-var knockback_timer = 0
-#var jump_timer = 0
-var jump_start_y = 0
-var jump_cancelled = false
-var double_jump_cancelled = false
 #You know what this tracks
 var health = 100
 #Basically mana
 var protein = 100
 #This is a list of all notes the player has collected
 var notes_list = []
-#A list of abilities the player has unlocked
-var unlocked_standard_abilities = []
 #The current interactable object available to the player
 var current_interactable = null
-#Flag for invincibility
-var invincible = false
-#Timer for invincibility
-var invincible_timer = 0
-#Timer for zero g
-var zero_grav_timer = 0
-#cooldown check, sets to true when in effect
-var zero_grav_cooldown = false
-#flag to track if the player is trying to jump from a wall cling
-var jump_from_wall_cling = false
-#the player needs to jump off from the wall before being allowed to move freely
-var jump_off_timer = 0
-#this flag just tracks if the jump off is currently happening
-var jump_off = false
 
-var walk_sfx_timer = 0
-
-var jump_fall_timer = 0
 #debug tool
 var god_mode = false
 
-#Available abilities
-enum StandardAbilities { LIQUIFY, RUBBER_BAND, STICKY_BAND, HELICOPTER, ZERO_GRAV }
 #Sound effects
 enum SoundEffects { WALK }
-#Direction
-enum Directions { LEFT, RIGHT }
-#Available states
-enum TransitionState { IDLE, TRANSITIONING }
-enum MovementState { IDLE, WALKING, DASH, SPRINTING, JUMPING }
-enum ActionState { IDLE, ATTACK, RUBBER_BAND, DAMAGED, ZERO_GRAV, LEECH, WALL_CLING }
-enum JumpState { IDLE, JUMP_START, JUMP_RISE, DOUBLE_JUMP, JUMP_FALL_START, JUMP_FALL, LANDING }
-enum RubberBandState { IDLE, START, DURATION, STICKY_BAND, END}
-enum LeechState { IDLE, START, DURATION, END }
-#redundant, refers to all horizontal movement, in air and otherwise
-enum WalkingState { IDLE, WALKING }
-
-#actual direction
-var direction_lit = Directions.RIGHT
-
-#actual states
-var transition_state = TransitionState.IDLE
-var movement_state = MovementState.IDLE
-var action_state = ActionState.IDLE
-var jump_state = JumpState.IDLE
-var rubber_band_state = RubberBandState.IDLE
-var leech_state = LeechState.IDLE
-var walking_state = WalkingState.IDLE
 
 #Any children of the player that are needed in the code are here
 @onready var animated_sprite = $AnimatedSprite2D
-@onready var front_hitbox = $FrontHitbox
-@onready var back_hitbox = $BackHitbox
-@onready var bottom_hitbox = $BottomCollision
-@onready var top_hitbox = $TopCollision
-@onready var rb_hitbox_right = $RBCollisionRight
-@onready var rb_hitbox_left = $RBCollisionLeft
-@onready var leech_right = $LeechCollisionRight
-@onready var leech_left = $LeechCollisionLeft
-@onready var raycast_floor = $RayCastFloor
-@onready var raycast_top = $RayCastTop
-
-@onready var raycast_left_top = $RayCastLeftTop
-@onready var raycast_left_mid = $RayCastLeftMiddle
-@onready var raycast_left_bottom = $RayCastLeftBottom
-
-@onready var raycast_right_top = $RayCastRightTop
-@onready var raycast_right_mid = $RayCastRightMiddle
-@onready var raycast_right_bottom = $RayCastRightBottom
 
 @onready var hit_anim = $HitFlashAnim
 @onready var audio_player = $AudioPlayer
 
+#Modules
+@onready var state_machine = $StateMachine
+@onready var player_timers = $Timers
+@onready var movement = $Movement
+@onready var animations = $Animations
+@onready var collisions = $Collisions
+@onready var attacks = $Attacks
+@onready var abilities = $Abilities
+@onready var save_manager = $SaveManager
+
 func _ready():
+	state_machine.init()
+	player_timers.init()
+	movement.init()
+	animations.init()
+	collisions.init()
+	attacks.init()
+	abilities.init()
+	save_manager.init()
 	if RoomManager.player_stats != null:
 		apply_data(RoomManager.player_stats)
-		flip_for_direction()
+		animations.flip_for_direction()
 	if health <= 0:
 		restore_max_hp()
 		hit_anim.stop()
@@ -160,397 +77,54 @@ func _ready():
 	emit_signal("initialize_health", MAX_HEALTH, health)
 	emit_signal("initialize_protein", MAX_PROTEIN, protein)
 	emit_signal("initialize_inventory", notes_list)
-	animated_sprite.animation_finished.connect(_on_animation_finished) #calls _on_animation_finished every time an animation ends
-	unlocked_standard_abilities.append(StandardAbilities.HELICOPTER)
-	unlocked_standard_abilities.append(StandardAbilities.RUBBER_BAND)
-	unlocked_standard_abilities.append(StandardAbilities.STICKY_BAND)
-	unlocked_standard_abilities.append(StandardAbilities.ZERO_GRAV)
 	
 	step_sfx = load(STEP_SFX_PATH)
 	audio_player.stream = step_sfx
 	audio_player.max_distance = 5000
 
 func _physics_process(delta):
-	if !handle_knockback(delta):
-		move(delta)
-	handle_knockback(delta)
-	handle_invincibility(delta)
-	handle_zero_grav(delta)
-	play_animations()
+	if !player_timers.handle_knockback(delta):
+		movement.move(delta)
+	player_timers.handle_knockback(delta)
+	player_timers.handle_invincibility(delta)
+	player_timers.handle_zero_grav(delta)
+	animations.play_animations()
 	check_for_inputs(delta)
-	handle_jump_helper(delta)
-	handle_falling(delta)
-	handle_jump_off(delta)
-	check_wall_cling()
-	handle_fall_timer(delta)
+	movement.handle_jump_helper(delta)
+	movement.handle_falling(delta)
+	player_timers.handle_jump_off(delta)
+	movement.check_wall_cling()
+	player_timers.handle_fall_timer(delta)
 	move_and_slide()
-
-func handle_knockback(delta):
-	#if the timer is over 0, the player is being knocked back
-	if knockback_timer > 0:
-		knockback_timer -= delta #Subtract elapsed time from it
-		#once half the time has elapsed, the playaer needs to start falling
-		if knockback_timer <= KNOCKBACK_DURATION / 2:
-			velocity.y = V_KNOCKBACK 
-		return true
-	return false
-	
-func handle_invincibility(delta):
-	if invincible_timer > 0:
-		invincible_timer -= delta
-	else:
-		invincible = false
-
-func handle_jump_off(delta):
-	if jump_off_timer > 0:
-		jump_off_timer -= delta
-	else:
-		jump_off = false
-		
-func handle_zero_grav(delta):
-	if zero_grav_timer > 0:
-		zero_grav_timer -= delta
-	else:
-		if action_state == ActionState.ZERO_GRAV:
-			action_state = ActionState.IDLE
-			zero_grav_cooldown = true
 
 func check_for_inputs(delta):
 	#Movement inputs are not checked here
 	#Check for attack input 
 	if Input.is_action_just_pressed("Attack"):
 		#This needs to be made more readable. Takes attack takes two arguments, whether up or down are being pressed
-		attack(Input.is_action_pressed("Down"), Input.is_action_pressed("Jump"))
+		attacks.attack()
 	#Check for open inventory input, and emit the signal so the inventory code can handle the rest
 	if Input.is_action_just_pressed("Inventory"):
 		emit_signal("show_inventory")
 	if Input.is_action_just_pressed("RubberBand"):
-		rubber_band()
+		abilities.rubber_band()
 	if Input.is_action_just_pressed("Interact"):
 		interact()
 	if Input.is_action_just_pressed("ZeroGrav"):
-		zero_grav()
+		abilities.zero_grav()
 	if Input.is_action_just_pressed("Leech"):
-		leech()
+		abilities.leech()
 	if Input.is_action_just_pressed("Jump"):
-		handle_jump(delta)
+		movement.handle_jump(delta)
 	if Input.is_action_pressed("Sprint"):
-		handle_sprint()
+		movement.handle_sprint()
 	if Input.is_action_just_released("Sprint"):
-		handle_stop_sprint()
+		movement.handle_stop_sprint()
 	if Input.is_action_just_pressed("Dash"):
-		dash()
+		movement.dash()
 
-func handle_jump(delta):
-	if action_state == ActionState.WALL_CLING:
-		jump_cancelled = false
-		jump_from_wall_cling = true
-	if jump_cancelled:
-		if jump_state != JumpState.DOUBLE_JUMP\
-		and !double_jump_cancelled\
-		and is_standard_ability_unlocked(StandardAbilities.HELICOPTER):
-			jump_state = JumpState.DOUBLE_JUMP
-		else:
-			return
-	if movement_state == MovementState.JUMPING and is_top_colliding():
-		jump_cancelled = true
-		return
-	if jump_state == JumpState.DOUBLE_JUMP and is_top_colliding():
-		double_jump_cancelled = true
-		return
-		
-	if movement_state != MovementState.JUMPING\
-	or action_state == ActionState.WALL_CLING\
-	or jump_state == JumpState.DOUBLE_JUMP:
-		if jump_from_wall_cling and !jump_off:
-			velocity.x = JUMP_FORCE_FROM_WALL * -direction
-			jump_off_timer = JUMP_OFF_DURATION
-			jump_off = true
-			animated_sprite.flip_h = !animated_sprite.flip_h
-		movement_state = MovementState.JUMPING
-		if jump_state != JumpState.DOUBLE_JUMP:
-			jump_state = JumpState.JUMP_START
-		jump_start_y = global_position.y
-		if action_state == ActionState.ZERO_GRAV:
-			velocity.y = -JUMP_VELOCITY
-		else:
-			velocity.y = JUMP_VELOCITY
-
-func handle_jump_helper(delta):
-	#print(is_jump_height_reached())
-	if Input.is_action_pressed("Jump")\
-	and movement_state == MovementState.JUMPING\
-	and (!jump_cancelled or !double_jump_cancelled) \
-	and !is_jump_height_reached():
-		if action_state == ActionState.ZERO_GRAV:
-			velocity.y += JUMP_FORCE * delta
-		else:
-			velocity.y -= JUMP_FORCE * delta
-	if Input.is_action_just_released("Jump"):
-		jump_cancelled = true
-		if jump_state == JumpState.DOUBLE_JUMP:
-			double_jump_cancelled = true
-
-func handle_falling(delta):
-	if rubber_band_state == RubberBandState.STICKY_BAND\
-	or transition_state == TransitionState.TRANSITIONING\
-	or movement_state == MovementState.DASH:
-		return
-	if not is_on_floor() and action_state != ActionState.ZERO_GRAV:
-		if movement_state != MovementState.JUMPING and !jump_cancelled:
-			#This means the player is falling without having jumped.
-			jump_state = JumpState.JUMP_FALL_START
-			movement_state = MovementState.JUMPING
-		velocity.y += gravity * delta
-		if movement_state == MovementState.JUMPING and is_top_colliding():
-			jump_cancelled = true
-			if jump_state == JumpState.DOUBLE_JUMP:
-				double_jump_cancelled = true
-			jump_state = JumpState.JUMP_FALL_START
-		#print(jump_state)
-		#if jump_cancelled and double_jump_cancelled and jump_state < JumpState.JUMP_FALL_START:
-			#jump_state = JumpState.JUMP_FALL_START
-	elif action_state == ActionState.ZERO_GRAV:
-		if not is_top_colliding():
-			if movement_state != MovementState.JUMPING and !jump_cancelled :
-				jump_state = JumpState.JUMP_FALL_START
-				movement_state = MovementState.JUMPING
-			velocity.y -= gravity * delta
-			if movement_state == MovementState.JUMPING and is_bottom_colliding():
-				jump_cancelled = true
-		else:
-			if movement_state != MovementState.JUMPING:
-				jump_state = JumpState.IDLE
-				jump_cancelled = false
-	else:
-		if movement_state != MovementState.JUMPING:
-			zero_grav_cooldown = false
-			jump_state = JumpState.IDLE
-			jump_cancelled = false
-			double_jump_cancelled = false
-			jump_from_wall_cling = false
-
-func handle_fall_timer(delta):
-	if jump_state != JumpState.JUMP_FALL:
-		animated_sprite.speed_scale = 1.0
-		jump_fall_timer = 0
-		return
-	if jump_fall_timer >= FALL_ANIM_SPEED_TIME:
-		animated_sprite.speed_scale = 3.0
-		return
-	if jump_fall_timer >= 0.5:
-		animated_sprite.speed_scale = 2.0
-	jump_fall_timer += delta
-
-func dash():
-	if (movement_state == MovementState.DASH or protein < DASH_PROTEIN_COST) and !god_mode:
-		return
-	movement_state = MovementState.DASH
-	if direction:
-		velocity.x = DASH_VELOCITY * direction
-	else:
-		if !animated_sprite.flip_h:
-			velocity.x = DASH_VELOCITY
-		else:
-			velocity.x = -DASH_VELOCITY
-	velocity.y = 0
-	if !god_mode:
-		protein -= DASH_PROTEIN_COST
-	emit_signal("protein_changed", protein)
-
-func handle_sprint():
-	if movement_state != MovementState.JUMPING and is_bottom_colliding():
-		movement_state = MovementState.SPRINTING
-		emit_signal("update_camera_follow_speed", SPRINT_SPEED)
-		
-func handle_stop_sprint():
-	if movement_state == MovementState.SPRINTING:
-		if is_bottom_colliding():
-			movement_state = MovementState.IDLE
-		else:
-			movement_state = MovementState.JUMPING
-	emit_signal("update_camera_follow_speed", GROUND_SPEED)
-
-func handle_step_sfx_timer(delta):
-	if walk_sfx_timer > 0:
-		walk_sfx_timer -= delta
-		return false
-	if movement_state == MovementState.WALKING:
-		walk_sfx_timer = WALK_SFX_TIME
-	elif movement_state == MovementState.SPRINTING:
-		walk_sfx_timer = SPRINT_SFX_TIME
-	return true
-
-func move(delta):
-	if rubber_band_state == RubberBandState.STICKY_BAND\
-	or jump_off\
-	or transition_state == TransitionState.TRANSITIONING\
-	or movement_state == MovementState.DASH:
-		return
-		
-	if action_state != ActionState.RUBBER_BAND and action_state != ActionState.LEECH:
-		if Input.is_action_pressed("Left"):
-			direction = -1.0
-			direction_lit = Directions.LEFT
-			if movement_state != MovementState.JUMPING and handle_step_sfx_timer(delta):
-				play_sounds(SoundEffects.WALK)
-			walking_state = WalkingState.WALKING
-		elif Input.is_action_pressed("Right"):
-			direction = 1.0
-			direction_lit = Directions.RIGHT
-			if movement_state != MovementState.JUMPING and handle_step_sfx_timer(delta):
-				play_sounds(SoundEffects.WALK)
-			walking_state = WalkingState.WALKING
-			
-		if movement_state == MovementState.JUMPING:
-			velocity.x = direction * AIR_SPEED
-		elif movement_state == MovementState.SPRINTING:
-			velocity.x = direction * SPRINT_SPEED
-		else:
-			velocity.x = direction * GROUND_SPEED
-			movement_state = MovementState.WALKING
-		
-		if !Input.is_action_pressed("Left") and !Input.is_action_pressed("Right"):
-			velocity.x = 0
-			if movement_state != MovementState.JUMPING:
-				movement_state = MovementState.IDLE
-			walking_state = WalkingState.IDLE
-
-	#Flip sprite
-	if direction_lit == Directions.RIGHT:
-		animated_sprite.flip_h = false
-	elif direction_lit == Directions.LEFT:
-		animated_sprite.flip_h = true
-
-func is_jump_height_reached():
-	if jump_cancelled:
-		if jump_state == JumpState.DOUBLE_JUMP:
-			if double_jump_cancelled:
-				return true
-		else:
-			return true
-	if action_state != ActionState.ZERO_GRAV:
-		if global_position.y - jump_start_y <= -JUMP_CAP:
-			if jump_state == JumpState.DOUBLE_JUMP:
-				double_jump_cancelled = true
-			jump_cancelled = true
-			return true
-		return false
-	elif global_position.y - jump_start_y >= JUMP_CAP:
-		if jump_state == JumpState.DOUBLE_JUMP:
-			double_jump_cancelled = true
-		jump_cancelled = true
-		return true
-	return false
-	
-func is_on_surface():
-	return raycast_floor.is_colliding() or raycast_top.is_colliding()
-	
-func is_top_colliding():
-	return raycast_top.is_colliding()
-	
-func is_bottom_colliding():
-	return raycast_floor.is_colliding()
-
-func play_animations():
-	#this is the animation we will play at the end
-	var target_anim = ""
-	
-	if is_on_surface():
-		if action_state == ActionState.RUBBER_BAND:
-			if rubber_band_state == RubberBandState.START:
-				target_anim = "rubber_band_ground_startup"
-			elif rubber_band_state == RubberBandState.DURATION:
-				target_anim = "rubber_band_ground"
-			elif rubber_band_state == RubberBandState.STICKY_BAND:
-				target_anim = "sticky_band"
-			else:
-				target_anim = "idle"
-		elif movement_state == MovementState.JUMPING:
-			if jump_state == JumpState.JUMP_START:
-				target_anim = "jump_startup"
-			else:
-				if walking_state == WalkingState.IDLE:
-					target_anim = "jump_land"
-				else:
-					target_anim = "walk"
-					reset_jump()
-		elif movement_state == MovementState.DASH:
-			target_anim = "dash"
-		else:
-			if action_state == ActionState.LEECH:
-				if leech_state == LeechState.START:
-					target_anim = "leech_start"
-				elif leech_state == LeechState.DURATION:
-					target_anim = "leech"
-				elif leech_state == LeechState.END:
-					target_anim = "leech_end"
-			elif action_state == ActionState.ATTACK:
-				target_anim = "attack"
-			elif movement_state == MovementState.WALKING:
-				target_anim = "walk"
-			elif movement_state == MovementState.SPRINTING:
-				target_anim = "sprint"
-			else:
-				target_anim = "idle"
-	else:
-		if action_state == ActionState.RUBBER_BAND:
-			if rubber_band_state == RubberBandState.START:
-				target_anim = "rubber_band_ground_startup"
-			elif rubber_band_state == RubberBandState.DURATION:
-				target_anim = "rubber_band_ground"
-			elif rubber_band_state == RubberBandState.STICKY_BAND:
-				target_anim = "sticky_band"
-		elif action_state == ActionState.WALL_CLING and !jump_from_wall_cling:
-			target_anim = "wall_cling"
-		elif movement_state == MovementState.DASH:
-			target_anim = "dash"
-		else:
-			match jump_state:
-				JumpState.JUMP_START:
-					target_anim = "jump_startup"
-				JumpState.JUMP_RISE:
-					if walking_state == WalkingState.IDLE:
-						target_anim = "jump_rise"
-					else:
-						target_anim = "jump_rise_fwd"
-				JumpState.DOUBLE_JUMP:
-					target_anim = "double_jump"
-				JumpState.JUMP_FALL_START:
-					target_anim = "jump_fall"
-				JumpState.JUMP_FALL:
-					target_anim = "jump_falling"
-				JumpState.IDLE:
-					target_anim = "jump_fall"
-	
-	if action_state == ActionState.ZERO_GRAV:
-		animated_sprite.flip_v = true
-	else:
-		animated_sprite.flip_v = false
-		
-	if target_anim == "rubber_band_ground_startup" or target_anim == "rubber_band_ground" or target_anim == "sticky_band":
-		if direction_lit == Directions.RIGHT:
-			animated_sprite.offset.x = RB_ANIM_OFFSET
-		else:
-			animated_sprite.offset.x = -RB_ANIM_OFFSET
-	elif target_anim == "leech_start" or target_anim == "leech" or target_anim == "leech_end":
-		if direction_lit == Directions.RIGHT:
-			animated_sprite.offset.x = LEECH_ANIM_OFFSET
-		else:
-			animated_sprite.offset.x = -LEECH_ANIM_OFFSET
-	elif target_anim == "wall_cling":
-		if direction_lit == Directions.LEFT:
-			animated_sprite.offset.x = WALL_CLING_ANIM_OFFSET
-		else:
-			animated_sprite.offset.x = -WALL_CLING_ANIM_OFFSET
-	else:
-		animated_sprite.offset.x = 0
-	#this is to avoid animations getting infinitely replayed and never ending
-	if animated_sprite.animation != target_anim:
-		animated_sprite.play(target_anim)
-		
 func _on_enemy_hit_player(damage, knockback, enemy_pos):
-	if invincible or god_mode:
+	if player_timers.get_invincible_flag() or god_mode:
 		return
 	hit_anim.play("hit")
 	health -= damage
@@ -562,15 +136,15 @@ func _on_enemy_hit_player(damage, knockback, enemy_pos):
 	else:
 		kb_dir = -1
 	velocity.x = knockback * kb_dir
-	velocity.y = -V_KNOCKBACK
-	knockback_timer = KNOCKBACK_DURATION
+	velocity.y = -player_timers.V_KNOCKBACK
+	player_timers.set_knockback_timer()
 	#handle invincibility
-	invincible = true
-	invincible_timer = INVINCIBLE_DURATION
+	player_timers.set_invincible_flag(true)
+	player_timers.set_invincible_timer()
 	#handle cancelling rubberband
-	if action_state == ActionState.RUBBER_BAND and rubber_band_state != RubberBandState.IDLE:
-		action_state = ActionState.IDLE
-		rubber_band_state = RubberBandState.IDLE
+	if state_machine.get_action_state() == state_machine.ActionState.RUBBER_BAND and state_machine.get_rubber_band_state() != state_machine.RubberBandState.IDLE:
+		state_machine.set_action_state(state_machine.ActionState.IDLE)
+		state_machine.set_rubber_band_state(state_machine.RubberBandState.IDLE)
 	#handle death
 	if health <= 0:
 		die()
@@ -588,180 +162,6 @@ func die():
 		global_position.x = RoomManager.last_save_point.player_x
 		global_position.y = RoomManager.last_save_point.player_y
 	CustomStatTracker.add_death()
-
-func bounce():
-	#for pogoing
-	velocity.y = BOUNCE_VELOCITY
-
-func attack(down_pressed, up_pressed):
-	#the player can only attack once, then not again until the end of the animation
-	if action_state == ActionState.ATTACK or action_state == ActionState.ZERO_GRAV:
-		return
-	#if it is a legit attack, set the state
-	action_state = ActionState.ATTACK
-	#Decide which hitbox to use
-	var hitbox = front_hitbox
-	if direction_lit == Directions.LEFT:
-		hitbox = back_hitbox
-	if not is_on_floor():
-		if down_pressed:
-			hitbox = bottom_hitbox
-	if up_pressed:
-		hitbox = top_hitbox
-	#Find every NPC who should take damage
-	var bodies = hitbox.get_overlapping_bodies()
-	for body in bodies:
-		if body.name.contains("Enemy"):
-			player_attack.connect(body._on_player_attack.bind())
-			emit_signal("player_attack", ATTACK_DAMAGE, KNOCKBACK)
-			if hitbox == bottom_hitbox:
-				bounce()
-		if body.is_in_group("Barrier"):
-			player_attack.connect(body._on_player_attack.bind())
-			emit_signal("player_attack")
-	
-func rubber_band():
-	if action_state == ActionState.RUBBER_BAND\
-	or protein < RUBBER_BAND_PROTEIN_COST\
-	or !is_standard_ability_unlocked(StandardAbilities.RUBBER_BAND):
-		return
-	action_state = ActionState.RUBBER_BAND
-	rubber_band_state = RubberBandState.START
-
-func rubber_band_attack():
-	var hitbox = rb_hitbox_right
-	if direction_lit == Directions.RIGHT: 
-		hitbox = rb_hitbox_right
-	else:
-		hitbox = rb_hitbox_left
-	var bodies = hitbox.get_overlapping_bodies()
-	for body in bodies:
-		if body.name == "Enemy":
-			player_attack.connect(body._on_player_attack.bind())
-			emit_signal("player_attack", RUBBER_BAND_DAMAGE, KNOCKBACK)
-		if body.name == "TileMap":
-			sticky_band(hitbox, body)
-	if !god_mode:
-		protein -= RUBBER_BAND_PROTEIN_COST
-		emit_signal("protein_changed", protein)
-	
-func sticky_band(hitbox, body):
-	if !is_standard_ability_unlocked(StandardAbilities.STICKY_BAND) and !god_mode:
-		return
-	rubber_band_state = RubberBandState.STICKY_BAND
-	velocity.y = 0
-	velocity.x = STICKY_BAND_SPEED * direction
-	
-func check_wall_cling():
-	if is_on_wall():
-		if rubber_band_state == RubberBandState.STICKY_BAND:
-			rubber_band_state = RubberBandState.IDLE
-		if action_state == ActionState.RUBBER_BAND:
-			action_state = ActionState.IDLE
-	else:
-		jump_from_wall_cling = false
-	if action_state == ActionState.WALL_CLING:
-		action_state = ActionState.IDLE
-		
-	if (full_wall_contact_dir() == Directions.LEFT and Input.is_action_pressed("Left") and !jump_from_wall_cling)\
-	or (full_wall_contact_dir() == Directions.RIGHT and Input.is_action_pressed("Right") and !jump_from_wall_cling):
-		action_state = ActionState.WALL_CLING
-		velocity.y = 0
-		
-func full_wall_contact_dir():
-	if raycast_left_top.is_colliding()\
-	and raycast_left_mid.is_colliding()\
-	and raycast_left_bottom.is_colliding():
-		return Directions.LEFT
-	
-	if raycast_right_top.is_colliding()\
-	and raycast_right_mid.is_colliding()\
-	and raycast_right_bottom.is_colliding():
-		return Directions.RIGHT
-	
-	return null
-
-func zero_grav():
-	if action_state == ActionState.ZERO_GRAV\
-	or zero_grav_cooldown\
-	or !is_standard_ability_unlocked(StandardAbilities.ZERO_GRAV):
-		return
-	action_state = ActionState.ZERO_GRAV
-	zero_grav_timer = ZERO_GRAV_DURATION
-	
-func leech():
-	if action_state == ActionState.LEECH:
-		return
-	action_state = ActionState.LEECH
-	leech_state = LeechState.START
-
-func is_leech_successful():
-	var hitbox = leech_right
-	if direction_lit == Directions.LEFT:
-		hitbox = leech_left
-	var bodies = hitbox.get_overlapping_bodies()
-	for body in bodies:
-		if body.is_in_group("Enemy"):
-			player_leech.connect(body._on_player_leech.bind())
-			emit_signal("player_leech", ATTACK_DAMAGE)
-			on_leech_successful()
-			return true
-	return false
-
-func on_leech_successful():
-	if health + LEECH_HEALTH_GAIN >= 100:
-		health = 100
-	else:
-		health += LEECH_HEALTH_GAIN
-	emit_signal("health_changed", health)
-
-func _on_animation_finished():
-	#changes state at the end of animations. Exists for animation purposes
-	if animated_sprite.animation == "attack":
-		action_state = ActionState.IDLE
-	if animated_sprite.animation == "jump_startup":
-		jump_state = JumpState.JUMP_RISE
-	if animated_sprite.animation == "jump_rise"\
-	or animated_sprite.animation == "double_jump"\
-	or animated_sprite.animation == "jump_rise_fwd":
-		#Since rising animation may need to be longer, the state doesn't change at the end of the animation
-		#The player should have just started falling
-		if velocity.y > 0:
-			jump_state = JumpState.JUMP_FALL_START
-		else:
-			if animated_sprite.animation == "jump_rise":
-				animated_sprite.play("jump_rise") #if the player is still going up, replay the animation
-			elif animated_sprite.animation == "jump_rise_fwd":
-				animated_sprite.play("jump_rise_fwd")
-			else:
-				animated_sprite.play("double_jump")
-	if animated_sprite.animation == "jump_fall":
-		jump_state = JumpState.JUMP_FALL
-	if animated_sprite.animation == "jump_land":
-		play_sounds(SoundEffects.WALK)
-		jump_state = JumpState.IDLE
-		movement_state = MovementState.IDLE
-	if animated_sprite.animation == "rubber_band_ground_startup":
-		rubber_band_state = RubberBandState.DURATION
-		rubber_band_attack()
-	if animated_sprite.animation == "rubber_band_ground":
-		rubber_band_state = RubberBandState.IDLE
-		action_state = ActionState.IDLE
-	if animated_sprite.animation == "leech_start":
-		if is_leech_successful():
-			leech_state = LeechState.DURATION
-		else:
-			leech_state = LeechState.END
-	if animated_sprite.animation == "leech":
-		leech_state = LeechState.END
-	if animated_sprite.animation == "leech_end":
-		leech_state = LeechState.IDLE
-		action_state = ActionState.IDLE
-	if animated_sprite.animation == "dash":
-		movement_state = MovementState.JUMPING
-		jump_state = JumpState.JUMP_FALL_START
-		jump_cancelled = true
-		velocity.x = 0
 
 func _on_interactable_focused(interactable) -> void:
 	current_interactable = interactable
@@ -808,60 +208,15 @@ func get_data_as_dict():
 	return {
 		"health": health,
 		"protein": protein,
-		"direction": direction,
-		"direction_lit": direction_lit
+		"direction": movement.get_direction(),
+		"direction_lit": movement.get_direction_lit()
 	}
 	
 func apply_data(data):
 	health = data.health
 	protein = data.protein
-	direction = data.direction
-	direction_lit = data.direction_lit
-	
-func auto_move_on_room_change(entrance_way):
-	transition_state = TransitionState.TRANSITIONING
-	match entrance_way:
-		RoomTransData.EntranceWay.TOP:
-			transition_state = TransitionState.IDLE
-		RoomTransData.EntranceWay.BOTTOM:
-			velocity.y = -JUMP_FORCE
-			velocity.x = (SPRINT_SPEED) * direction
-			await get_tree().create_timer(ROOM_ENTRANCE_AIR_TIME).timeout
-			var timer = Timer.new()
-			add_child(timer)
-			timer.wait_time = ROOM_ENTRANCE_HORIZONTAL_TIME
-			timer.one_shot = true
-			timer.timeout.connect(_auto_move_helper)
-			timer.start()
-			velocity.y = 0
-		RoomTransData.EntranceWay.LEFT:
-			velocity.x = (GROUND_SPEED) * direction
-			movement_state = MovementState.WALKING
-			await get_tree().create_timer(ROOM_ENTRANCE_HORIZONTAL_TIME).timeout
-			velocity.x = 0
-			transition_state = TransitionState.IDLE
-		RoomTransData.EntranceWay.RIGHT:
-			velocity.x = (GROUND_SPEED) * direction
-			movement_state = MovementState.WALKING
-			await get_tree().create_timer(ROOM_ENTRANCE_HORIZONTAL_TIME).timeout
-			velocity.x = 0
-			transition_state = TransitionState.IDLE
-		_:
-			#"Why isn't this just outside the switch case so you don't have to repeat it for each case?"
-			#Because the bottom case will switch the state too soon
-			transition_state = TransitionState.IDLE
-			
-func _auto_move_helper():
-	velocity.x = 0
-	transition_state = TransitionState.IDLE
-
-func is_standard_ability_unlocked(target_ability: StandardAbilities):
-	if god_mode:
-		return true
-	for ability in unlocked_standard_abilities:
-		if ability == target_ability:
-			return true
-	return false
+	movement.set_direction(data.direction)
+	movement.set_direction_lit(data.direction_lit)
 
 func play_sounds(sound_effect: SoundEffects):
 	if sound_effect == SoundEffects.WALK:
@@ -869,38 +224,17 @@ func play_sounds(sound_effect: SoundEffects):
 			audio_player.pitch_scale = randf_range(STEP_PITCH_LOW, STEP_PITCH_HIGH) 
 			audio_player.play()
 
-func set_last_save_point(save_dict: Dictionary):
-	if not save_dict:
-		print("Error. No data")
-		return
-	RoomManager.set_last_save_point(save_dict)
-
 func activate_god_mode():
 	god_mode = true
 	
 func deactivate_god_mode():
 	god_mode = false
 
-func flip_for_direction():
-	if direction_lit == Directions.LEFT:
-		direction = -1.0
-		animated_sprite.flip_h = true
-	elif direction_lit == Directions.RIGHT:
-		direction = 1.0
-		animated_sprite.flip_h = false
-		
-func reset_jump():
-	jump_state = JumpState.IDLE
-	movement_state = MovementState.IDLE
+func update_health():
+	emit_signal("health_changed", health)
 	
-func get_data_to_save():
-	return {
-		"last_save_point": RoomManager.last_save_point,
-		"unlocked_abilities": unlocked_standard_abilities
-	}
- 
-func apply_save_data(data):
-	set_last_save_point(data["last_save_point"])
-	unlocked_standard_abilities = data["unlocked_abilities"]
-	global_position.x = data["last_save_point"]["player_x"]
-	global_position.y = data["last_save_point"]["player_y"]
+func update_protein():
+	emit_signal("protein_changed", protein)
+
+func change_camera_follow_speed(speed):
+	emit_signal("update_camera_follow_speed", speed)

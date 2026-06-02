@@ -67,7 +67,7 @@ func is_player_moving():
 	if get_tree().get_nodes_in_group("Player"):
 		var player = get_tree().get_nodes_in_group("Player")[0]
 		if player:
-			return player.movement_state == player.MovementState.WALKING
+			return player.state_machine.get_movement_state() == player.state_machine.MovementState.WALKING
 		return false
 
 func get_player_coords(body):
