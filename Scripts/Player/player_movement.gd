@@ -175,13 +175,14 @@ func handle_falling(delta):
 				state_machine.set_jump_state(state_machine.JumpState.IDLE)
 				jump_cancelled = false
 	else:
-		if state_machine.get_movement_state() != state_machine.MovementState.JUMPING:
+		if state_machine.get_movement_state() != state_machine.MovementState.JUMPING\
+		or state_machine.get_jump_state() == state_machine.JumpState.LANDING:
 			player_timers.set_zero_grav_cooldown_flag(false)
 			state_machine.set_jump_state(state_machine.JumpState.IDLE)
 			jump_cancelled = false
 			double_jump_cancelled = false
 			jump_from_wall_cling = false
-
+	
 func dash():
 	if (state_machine.get_movement_state() == state_machine.MovementState.DASH or player.protein < DASH_PROTEIN_COST) and !player.god_mode:
 		return
