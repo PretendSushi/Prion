@@ -130,14 +130,7 @@ func _on_enemy_hit_player(damage, knockback, enemy_pos):
 	health -= damage
 	emit_signal("health_changed", health)
 	#handle knockback
-	var kb_dir = 0
-	if enemy_pos.x < global_position.x:
-		kb_dir = 1
-	else:
-		kb_dir = -1
-	velocity.x = knockback * kb_dir
-	velocity.y = -player_timers.V_KNOCKBACK
-	player_timers.set_knockback_timer()
+	take_knockback(enemy_pos, knockback)
 	#handle invincibility
 	player_timers.set_invincible_flag(true)
 	player_timers.set_invincible_timer()
@@ -148,6 +141,16 @@ func _on_enemy_hit_player(damage, knockback, enemy_pos):
 	#handle death
 	if health <= 0:
 		die()
+
+func take_knockback(enemy_pos, knockback):
+	var kb_dir = 0
+	if enemy_pos.x < global_position.x:
+		kb_dir = 1
+	else: 
+		kb_dir = -1
+	velocity.x = knockback * kb_dir
+	velocity.y = -player_timers.V_KNOCKBACK
+	player_timers.set_knockback_timer()
 
 func die():
 	if god_mode:
