@@ -33,6 +33,7 @@ var abilities
 var jump_cancelled
 var double_jump_cancelled
 var jump_from_wall_cling
+var can_dash
 
 #Values
 var jump_start_y
@@ -50,6 +51,7 @@ func init():
 	jump_cancelled = false
 	double_jump_cancelled = false
 	jump_from_wall_cling = false
+	can_dash = true
 	
 	jump_start_y = 0
 
@@ -182,9 +184,13 @@ func handle_falling(delta):
 			jump_cancelled = false
 			double_jump_cancelled = false
 			jump_from_wall_cling = false
+			can_dash = true
 	
 func dash():
-	if (state_machine.get_movement_state() == state_machine.MovementState.DASH or player.protein < DASH_PROTEIN_COST) and !player.god_mode:
+	if (state_machine.get_movement_state() == state_machine.MovementState.DASH\
+	or player.protein < DASH_PROTEIN_COST)\
+	and !player.god_mode\
+	or !can_dash:
 		return
 	state_machine.set_movement_state(state_machine.MovementState.DASH)
 	if direction:
@@ -197,6 +203,8 @@ func dash():
 	player.velocity.y = 0
 	if !player.god_mode:
 		player.protein -= DASH_PROTEIN_COST
+	if state_machine.get_jump_state() != state_machine.JumpState.IDLE and can_dash:
+		can_dash = false
 	player.handle_protein_changed()
 
 func handle_sprint():
