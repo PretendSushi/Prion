@@ -15,7 +15,11 @@ func _ready() -> void:
 	connect("body_entered", Callable(self, "_on_body_entered"))
 	connect("body_exited", Callable(self, "_on_body_exited"))
 	for key in InputMap.action_get_events("Interact"):
-		prompt_text += "[%s] to " % OS.get_keycode_string(key.physical_keycode)
+		if key is InputEventKey:
+			prompt_text += "[%s] to " % OS.get_keycode_string(key.physical_keycode)
+		else:
+			var button := key as InputEventJoypadButton
+			prompt_text += "[%s] to " % button.as_text()
 	
 func _process(delta: float) -> void:
 	pass

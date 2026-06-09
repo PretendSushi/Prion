@@ -96,6 +96,10 @@ func _physics_process(delta):
 	movement.check_wall_cling()
 	player_timers.handle_fall_timer(delta)
 	move_and_slide()
+	
+func _input(event):
+	if event is InputEventJoypadButton and event.pressed:
+		print("Button index:", event.button_index)
 
 func check_for_inputs(delta):
 	#Movement inputs are not checked here
