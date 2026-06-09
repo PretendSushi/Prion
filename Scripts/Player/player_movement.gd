@@ -197,7 +197,7 @@ func dash():
 	player.velocity.y = 0
 	if !player.god_mode:
 		player.protein -= DASH_PROTEIN_COST
-	emit_signal("protein_changed", player.protein)
+	player.handle_protein_changed()
 
 func handle_sprint():
 	if state_machine.get_movement_state() != state_machine.MovementState.JUMPING and collisions.is_bottom_colliding():

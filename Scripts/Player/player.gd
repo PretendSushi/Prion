@@ -197,6 +197,9 @@ func handle_protein_pickup(protein_gain):
 		protein += protein_gain
 	emit_signal("protein_changed", protein)
 	
+func handle_protein_changed():
+	emit_signal("protein_changed", protein)
+	
 func interact():
 	if current_interactable == null:
 		return
