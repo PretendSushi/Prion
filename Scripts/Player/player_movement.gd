@@ -61,7 +61,8 @@ func move(delta):
 	or state_machine.get_transition_state() == state_machine.TransitionState.TRANSITIONING\
 	or state_machine.get_movement_state() == state_machine.MovementState.DASH:
 		return
-		
+	
+	player.change_camera_follow_speed(GROUND_SPEED)
 	if state_machine.get_action_state() != state_machine.ActionState.RUBBER_BAND and state_machine.get_action_state() != state_machine.ActionState.LEECH:
 		if Input.is_action_pressed("Left"):
 			direction = -1.0
@@ -196,6 +197,7 @@ func dash():
 	or !can_dash:
 		return
 	state_machine.set_movement_state(state_machine.MovementState.DASH)
+	player.change_camera_follow_speed(DASH_VELOCITY)
 	if direction:
 		player.velocity.x = DASH_VELOCITY * direction
 	else:
