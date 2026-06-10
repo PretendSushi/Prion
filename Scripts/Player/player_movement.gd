@@ -156,6 +156,9 @@ func handle_falling(delta):
 	if not player.is_on_floor() and state_machine.get_action_state() != state_machine.ActionState.ZERO_GRAV:
 		if state_machine.get_movement_state() != state_machine.MovementState.JUMPING and !jump_cancelled:
 			#This means the player is falling without having jumped.
+			jump_cancelled = true
+			if state_machine.get_jump_state() == state_machine.JumpState.DOUBLE_JUMP:
+				double_jump_cancelled = true
 			state_machine.set_jump_state(state_machine.JumpState.JUMP_FALL_START)
 			state_machine.set_movement_state(state_machine.MovementState.JUMPING)
 		player.velocity.y += player.gravity * delta
