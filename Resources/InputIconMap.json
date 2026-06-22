@@ -1,0 +1,97 @@
+[
+	{
+	"buttons":
+		[
+			{
+				"input": "0",
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_button_color_a_outline.png"
+			},
+			{
+				"input": "1",
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_button_color_b_outline.png"
+			},
+			{
+				"input": "2",
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_button_color_x_outline.png"
+			},
+			{
+				"input": "3",
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_button_color_y_outline.png"
+			},
+			{
+				"input": "4",
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_button_view_outline.png"
+			},
+			{
+				"input": "5",
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_guide.png"
+			},
+			{
+				"input": "6",
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_button_menu_outline.png"
+			},
+			{
+				"input": "7",
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_ls_outline.png"
+			},
+			{
+				"input": "8",
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_rs_outline.png"
+			},
+			{
+				"input": "9",
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_lb_outline.png"
+			},
+			{
+				"input": "10",
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_rb_outline.png"
+			},
+			{
+				"input": "11",
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_dpad_up_outline.png"
+			},
+			{
+				"input": "12",
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_dpad_down_outline.png"
+			},
+			{
+				"input": "13",
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_dpad_left_outline.png"
+			},
+			{
+				"input": "14",
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_dpad_right_outline.png"
+			},
+		]
+	},
+	{
+	"joystick":
+		[
+			{
+				"axis": 0,
+				"axis_value": -1.0,
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_stick_l_left.png"
+			},
+			{
+				"axis": 0,
+				"axis_value": 1.0,
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_stick_l_right.png"
+			},
+			{
+				"axis": 1,
+				"axis_value": 1.0,
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_stick_l_down.png"
+			},
+			{
+				"axis": 1,
+				"axis_value": -1.0,
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_stick_l_up.png"
+			},
+			{
+				"axis": 5,
+				"axis_value": 1.0,
+				"icon": "res://Assets/kenney_input-prompts_1.5/Xbox Series/Default/xbox_rt_outline.png"
+			}
+		]
+	}
+]
