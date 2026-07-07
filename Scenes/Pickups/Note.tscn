@@ -17,10 +17,15 @@ position = Vector2(40, -60)
 shape = SubResource("RectangleShape2D_r41ma")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
+z_index = 1000
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -60.0
+offset_left = -130.0
 offset_top = -50.0
-offset_right = 140.0
+offset_right = 203.0
 grow_horizontal = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false

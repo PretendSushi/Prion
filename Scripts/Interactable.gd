@@ -6,10 +6,11 @@ signal interacted
 signal focused
 signal unfocused
 
-@export var prompt_text = "Press "
+@export var prompt_text = "[font_size=32]Press "
 
 var is_player_nearby = false
 var player_ref = null
+const FILEPATH = "res://Resources/InputIconMap.json"
 
 func _ready() -> void:
 	connect("body_entered", Callable(self, "_on_body_entered"))
@@ -18,8 +19,12 @@ func _ready() -> void:
 		if key is InputEventKey:
 			prompt_text += "[%s] to " % OS.get_keycode_string(key.physical_keycode)
 		else:
+			var icon_map = open_icon_map()
 			var button := key as InputEventJoypadButton
-			prompt_text += "[%s] to " % button.as_text()
+			for i in icon_map[0]["buttons"]:
+				if i["input"] == str(button.button_index):
+					prompt_text += "[img=44x44]%s[/img] " % i["icon"] 
+					break
 	
 func _process(delta: float) -> void:
 	pass
@@ -54,3 +59,20 @@ func _on_body_exited(body):
 		emit_signal("unfocused", self)
 		_remove_text()
 	
+func open_icon_map():
+	if not FileAccess.file_exists(FILEPATH):
+		print("File does not exist: ", FILEPATH)
+		return null
+	var file = FileAccess.open(FILEPATH, FileAccess.READ)
+	if file == null:
+		print("Failed to oppen file. Error code: ", FileAccess.get_open_error())
+		return null
+	var json_text = file.get_as_text()
+	file.close()
+	
+	var data = JSON.parse_string(json_text)
+	if data == null:
+		print("Failed to parse JSON string. Check if the format is correct.")
+		return null
+		
+	return data
