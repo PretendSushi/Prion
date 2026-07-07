@@ -78,3 +78,8 @@ func _on_boss_detrigger_deboss_camera() -> void:
 	boss_trigger_entered = false
 	target_zoom = Vector2(0.5, 0.5) #remove magic number
 	setup_camera_limits()
+
+func change_zoom(max_res, selected_res):
+	var new_zoom = float(selected_res)/float(max_res)
+	target_zoom = Vector2(new_zoom, new_zoom)
+	

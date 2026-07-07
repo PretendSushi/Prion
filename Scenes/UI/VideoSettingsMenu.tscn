@@ -1,0 +1,48 @@
+[gd_scene load_steps=2 format=3 uid="uid://bw0aqujsy6jd3"]
+
+[ext_resource type="Script" uid="uid://dohf1hvqys3en" path="res://Scripts/UI/video_settings_menu.gd" id="1_acjim"]
+
+[node name="VideoSettingsMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_acjim")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 591.0
+offset_top = 97.0
+offset_right = 631.0
+offset_bottom = 137.0
+
+[node name="ScreenMode" type="OptionButton" parent="VBoxContainer"]
+layout_mode = 2
+item_count = 3
+popup/item_0/text = "Windowed"
+popup/item_0/id = 0
+popup/item_1/text = "Fullscreen"
+popup/item_1/id = 1
+popup/item_2/text = "Borderless"
+popup/item_2/id = 2
+
+[node name="Resolution" type="OptionButton" parent="VBoxContainer"]
+layout_mode = 2
+item_count = 4
+popup/item_0/text = "Low"
+popup/item_0/id = 0
+popup/item_1/text = "Med"
+popup/item_1/id = 1
+popup/item_2/text = "High"
+popup/item_2/id = 2
+popup/item_3/text = "Ultra"
+popup/item_3/id = 3
+
+[node name="ApplyBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Apply Changes"
+
+[node name="BackBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Back"
+
+[connection signal="pressed" from="VBoxContainer/ApplyBtn" to="." method="_on_apply_btn_pressed"]
+[connection signal="pressed" from="VBoxContainer/BackBtn" to="." method="_on_back_btn_pressed"]

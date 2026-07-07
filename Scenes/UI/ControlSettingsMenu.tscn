@@ -1,0 +1,59 @@
+[gd_scene load_steps=2 format=3 uid="uid://o0lt657iuyhc"]
+
+[ext_resource type="Script" uid="uid://bsl8mf7l3uxrc" path="res://Scripts/UI/control_settings_menu.gd" id="1_6grkx"]
+
+[node name="ControlSettingsMenu" type="Control"]
+process_mode = 2
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_6grkx")
+
+[node name="BackBtn" type="Button" parent="."]
+layout_mode = 2
+offset_left = 47.0
+offset_top = 37.0
+offset_right = 113.0
+offset_bottom = 68.0
+text = "<"
+
+[node name="ControlBox" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 403.0
+offset_top = 178.0
+offset_right = 771.0
+offset_bottom = 723.0
+
+[node name="ControlsLabel" type="Label" parent="ControlBox"]
+layout_mode = 2
+text = "Controls"
+
+[node name="VScrollBar" type="ScrollContainer" parent="ControlBox"]
+custom_minimum_size = Vector2(0, 500)
+layout_mode = 2
+
+[node name="VBoxKBD" type="VBoxContainer" parent="ControlBox/VScrollBar"]
+layout_mode = 2
+
+[node name="VBoxJPD" type="VBoxContainer" parent="ControlBox/VScrollBar"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 389.0
+offset_top = 68.0
+offset_right = 892.0
+offset_bottom = 108.0
+
+[node name="KeyboardBtn" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Keyboard"
+
+[node name="ControllerBtn" type="Button" parent="HBoxContainer"]
+layout_direction = 3
+layout_mode = 2
+text = "Controller"
+
+[connection signal="pressed" from="BackBtn" to="." method="_on_back_btn_pressed"]
+[connection signal="pressed" from="HBoxContainer/KeyboardBtn" to="." method="_on_keyboard_btn_pressed"]
+[connection signal="pressed" from="HBoxContainer/ControllerBtn" to="." method="_on_controller_btn_pressed"]

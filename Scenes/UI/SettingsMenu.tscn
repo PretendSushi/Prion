@@ -1,59 +1,45 @@
-[gd_scene load_steps=2 format=3 uid="uid://o0lt657iuyhc"]
+[gd_scene load_steps=4 format=3 uid="uid://eoue6f1tatmo"]
 
-[ext_resource type="Script" uid="uid://bsl8mf7l3uxrc" path="res://Scripts/UI/settings_menu.gd" id="1_gne0f"]
+[ext_resource type="Script" uid="uid://yawl82uuha0d" path="res://Scripts/UI/settings_menu.gd" id="1_gne0f"]
+[ext_resource type="PackedScene" uid="uid://bw0aqujsy6jd3" path="res://Scenes/UI/VideoSettingsMenu.tscn" id="2_mw62m"]
+[ext_resource type="PackedScene" uid="uid://o0lt657iuyhc" path="res://Scenes/UI/ControlSettingsMenu.tscn" id="2_q4b8a"]
 
 [node name="SettingsMenu" type="Control"]
-process_mode = 2
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_gne0f")
 
-[node name="BackBtn" type="Button" parent="."]
-layout_mode = 2
-offset_left = 47.0
-offset_top = 37.0
-offset_right = 113.0
-offset_bottom = 68.0
-text = "<"
+[node name="VideoSettingsMenu" parent="." instance=ExtResource("2_mw62m")]
+visible = false
 
-[node name="ControlBox" type="VBoxContainer" parent="."]
+[node name="ControlSettingsMenu" parent="." instance=ExtResource("2_q4b8a")]
+visible = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 0
-offset_left = 403.0
-offset_top = 178.0
-offset_right = 771.0
-offset_bottom = 723.0
+offset_left = 565.0
+offset_top = 177.0
+offset_right = 605.0
+offset_bottom = 217.0
 
-[node name="ControlsLabel" type="Label" parent="ControlBox"]
+[node name="AudBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Audio"
+
+[node name="VidBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Video"
+
+[node name="ConBtn" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 text = "Controls"
 
-[node name="VScrollBar" type="ScrollContainer" parent="ControlBox"]
-custom_minimum_size = Vector2(0, 500)
+[node name="BackBtn" type="Button" parent="VBoxContainer"]
 layout_mode = 2
+text = "Back"
 
-[node name="VBoxKBD" type="VBoxContainer" parent="ControlBox/VScrollBar"]
-layout_mode = 2
-
-[node name="VBoxJPD" type="VBoxContainer" parent="ControlBox/VScrollBar"]
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
-layout_mode = 0
-offset_left = 389.0
-offset_top = 68.0
-offset_right = 892.0
-offset_bottom = 108.0
-
-[node name="KeyboardBtn" type="Button" parent="HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 0
-text = "Keyboard"
-
-[node name="ControllerBtn" type="Button" parent="HBoxContainer"]
-layout_direction = 3
-layout_mode = 2
-text = "Controller"
-
-[connection signal="pressed" from="BackBtn" to="." method="_on_back_btn_pressed"]
-[connection signal="pressed" from="HBoxContainer/KeyboardBtn" to="." method="_on_keyboard_btn_pressed"]
-[connection signal="pressed" from="HBoxContainer/ControllerBtn" to="." method="_on_controller_btn_pressed"]
+[connection signal="back" from="VideoSettingsMenu" to="." method="_on_video_settings_menu_back"]
+[connection signal="back" from="ControlSettingsMenu" to="." method="_on_control_settings_menu_back"]
+[connection signal="pressed" from="VBoxContainer/VidBtn" to="." method="_on_vid_btn_pressed"]
+[connection signal="pressed" from="VBoxContainer/ConBtn" to="." method="_on_con_btn_pressed"]
+[connection signal="pressed" from="VBoxContainer/BackBtn" to="." method="_on_back_btn_pressed"]

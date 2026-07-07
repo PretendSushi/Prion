@@ -1,13 +1,13 @@
 [gd_scene load_steps=4 format=3 uid="uid://cc2byabfp6f0i"]
 
 [ext_resource type="Script" uid="uid://cvql5prj6lhe1" path="res://Scripts/UI/main_menu.gd" id="1_72sra"]
-[ext_resource type="PackedScene" uid="uid://o0lt657iuyhc" path="res://Scenes/UI/SettingsMenu.tscn" id="2_t6w0q"]
+[ext_resource type="PackedScene" uid="uid://eoue6f1tatmo" path="res://Scenes/UI/SettingsMenu.tscn" id="2_72sra"]
 [ext_resource type="PackedScene" uid="uid://b7f3yqrbvpr4r" path="res://Scenes/UI/SaveList.tscn" id="3_k8um8"]
 
 [node name="MainMenu" type="Node2D"]
 script = ExtResource("1_72sra")
 
-[node name="SettingsMenu" parent="." instance=ExtResource("2_t6w0q")]
+[node name="SettingsMenu" parent="." instance=ExtResource("2_72sra")]
 visible = false
 
 [node name="SaveList" parent="." instance=ExtResource("3_k8um8")]
@@ -44,7 +44,7 @@ text = "Settings"
 layout_mode = 2
 text = "Exit"
 
-[connection signal="back_button_pressed" from="SettingsMenu" to="." method="_on_settings_menu_back_button_pressed"]
+[connection signal="go_back" from="SettingsMenu" to="." method="_on_settings_menu_go_back"]
 [connection signal="back_button_pressed" from="SaveList" to="." method="_on_save_list_back_button_pressed"]
 [connection signal="button_up" from="VBoxContainer/NewBtn" to="." method="_on_new_btn_button_up"]
 [connection signal="button_up" from="VBoxContainer/ContBtn" to="." method="_on_cont_btn_button_up"]

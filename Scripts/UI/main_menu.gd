@@ -20,8 +20,8 @@ func _on_exit_btn_button_up() -> void:
 func _on_sett_btn_button_up() -> void:
 	buttons.visible = false
 	settings.visible = true
-
-func _on_settings_menu_back_button_pressed() -> void:
+	
+func _on_settings_menu_go_back() -> void:
 	buttons.visible = true
 	settings.visible = false
 
