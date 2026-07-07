@@ -2,14 +2,17 @@ extends Node2D
 
 #Modules
 var abilities
+var player
 
 func init():
 	abilities = $"../Abilities"
+	player = $".."
 
 func get_data_to_save():
 	return {
 		"last_save_point": RoomManager.last_save_point,
-		"unlocked_abilities": abilities.get_unlocked_standard_abilities()
+		"unlocked_abilities": abilities.get_unlocked_standard_abilities(),
+		"notes_lsit": player.notes_list
 	}
  
 func apply_save_data(data):
