@@ -21,9 +21,9 @@ metadata/_custom_type_script = "uid://p550xmykutcc"
 [sub_resource type="Resource" id="Resource_66yxc"]
 script = ExtResource("3_37coi")
 room_id = 4
-player_x = 0.0
+player_x = 11902.0
 player_y = 0.0
-entrance_way = 0
+entrance_way = 1
 metadata/_custom_type_script = "uid://p550xmykutcc"
 
 [node name="Level03" type="Node2D" groups=["Apartment"]]
