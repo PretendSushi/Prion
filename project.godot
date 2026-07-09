@@ -23,6 +23,7 @@ MusicPlayer="*res://Scenes/MusicPlayer.tscn"
 CustomStatTracker="*res://Scripts/Autoloads/StatTracker.gd"
 ExitManager="*res://Scripts/Autoloads/ExitManager.gd"
 SaveManager="*res://Scripts/Autoloads/SaveManager.gd"
+GraphicsManager="*res://Scripts/Autoloads/GraphicsManager.gd"
 
 [display]
 

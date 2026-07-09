@@ -29,6 +29,10 @@ func _ready():
 		player.movement.auto_move_on_room_change(room_data.entrance_way)
 	else:
 		RoomManager.set_room_data({"room_id": room_id, "player_x": player.global_position.x, "player_y": player.global_position.y})
+		
+	var camera = get_tree().get_first_node_in_group("Camera")
+	if camera:
+		camera.change_zoom(2160, GraphicsManager.get_resolution().y)
 	
 func _physics_process(delta):
 	pass
