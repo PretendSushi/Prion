@@ -10,6 +10,7 @@ extends Camera2D
 var boss_trigger_entered = false
 var zoom_speed = 2.0
 var target_zoom = Vector2(0.5, 0.5)
+var base_zoom = Vector2(0.5, 0.5)
 
 func _ready():
 	setup_camera_limits()
@@ -69,6 +70,9 @@ func _on_boss_trigger_boss_camera(left_bound, right_bound) -> void:
 	limit_right = right_bound
 	
 	var bound_width = (right_bound - left_bound) / get_viewport_rect().size.x
+	var zoom_mult = GraphicsManager.get_res_mult()
+	
+	bound_width *= zoom_mult
 	
 	target_zoom = zoom / (bound_width/ 2)
 
@@ -76,10 +80,11 @@ func _on_boss_detrigger_deboss_camera() -> void:
 	if !boss_trigger_entered:
 		return
 	boss_trigger_entered = false
-	target_zoom = Vector2(0.5, 0.5) #remove magic number
+	target_zoom = base_zoom
 	setup_camera_limits()
 
 func change_zoom(max_res, selected_res):
 	var new_zoom = float(selected_res)/float(max_res)
 	target_zoom = Vector2(new_zoom, new_zoom)
+	base_zoom = Vector2(new_zoom, new_zoom)
 	

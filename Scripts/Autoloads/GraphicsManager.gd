@@ -7,7 +7,7 @@ var window_size: DisplayServer
 
 func on_setings_changed(res, win_size):
 	resolution = res
-	#window_size = win_size
+	#window_size = win_size #OPCODE 28?!?!?!?!?!
 	
 func get_resolution():
 	return resolution
