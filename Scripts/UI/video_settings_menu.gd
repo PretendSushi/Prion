@@ -47,7 +47,7 @@ func _on_apply_btn_pressed() -> void:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
 			selected_res = 2160
 	var camera = get_tree().get_first_node_in_group("Camera")
-	if camera:
+	if camera and selected_res != 0:
 		camera.change_zoom(2160, selected_res)
 	GraphicsManager.on_setings_changed(get_window().content_scale_size, DisplayServer.WINDOW_MODE_FULLSCREEN)
 
