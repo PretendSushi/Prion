@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dohf1hvqys3en" path="res://Scripts/UI/video_settings_menu.gd" id="1_acjim"]
 
-[node name="VideoSettingsMenu" type="Control"]
+[node name="VideoSettingsMenu" type="Control" groups=["GraphicsSettings"]]
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_acjim")

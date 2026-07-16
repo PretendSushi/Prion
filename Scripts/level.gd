@@ -12,7 +12,6 @@ func _ready():
 	if music:
 		MusicPlayer.play_music(music)
 	
-	#enemy = preload("res://Scenes/enemy.tscn")
 	if RoomManager.player_x != null and RoomManager.player_y != null:
 		position_player(RoomManager.player_x, RoomManager.player_y)
 		position_camera(RoomManager.player_x, RoomManager.player_y)
@@ -33,6 +32,10 @@ func _ready():
 	var camera = get_tree().get_first_node_in_group("Camera")
 	if camera:
 		camera.change_zoom(2160, GraphicsManager.get_resolution().y)
+	if GraphicsManager.config_exists():
+		var settings = GraphicsManager.load_settings()
+		GraphicsManager.apply_settings(settings)
+	GraphicsManager.rebuild_settings()
 	
 func _physics_process(delta):
 	pass
