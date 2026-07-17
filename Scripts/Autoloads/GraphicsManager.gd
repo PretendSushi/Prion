@@ -89,13 +89,10 @@ func apply_settings(settings):
 			selected_res = 1440
 			res_id = HIGH_RES_ID
 		ULTRA_RES_ID:
-			print("here")
 			get_window().content_scale_size = (Vector2i(3840, 2160))
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
 			selected_res = 2160
 			res_id = ULTRA_RES_ID
-	print(settings["resolution"])
-	print(ULTRA_RES_ID)
 	var camera = get_tree().get_first_node_in_group("Camera")
 	if camera and selected_res != 0:
 		camera.change_zoom(2160, selected_res)
