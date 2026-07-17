@@ -88,5 +88,6 @@ func _on_boss_detrigger_deboss_camera() -> void:
 func change_zoom(max_res, selected_res):
 	var new_zoom = float(selected_res)/float(max_res)
 	target_zoom = Vector2(new_zoom, new_zoom)
+	zoom = Vector2(new_zoom, new_zoom)
 	base_zoom = Vector2(new_zoom, new_zoom)
 	
