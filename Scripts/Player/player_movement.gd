@@ -168,6 +168,8 @@ func handle_falling(delta):
 			if state_machine.get_jump_state() == state_machine.JumpState.DOUBLE_JUMP:
 				double_jump_cancelled = true
 			state_machine.set_jump_state(state_machine.JumpState.JUMP_FALL_START)
+		#if state_machine.get_movement_state() == state_machine.MovementState.JUMPING and jump_cancelled and collisions.is_bottom_colliding():
+			#jump_cancelled = false
 	elif state_machine.get_action_state() == state_machine.ActionState.ZERO_GRAV:
 		if not collisions.is_top_colliding():
 			if state_machine.get_movement_state() != state_machine.MovementState.JUMPING and !jump_cancelled :
