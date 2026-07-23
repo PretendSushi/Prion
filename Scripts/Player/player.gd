@@ -125,7 +125,7 @@ func check_for_inputs(delta):
 	if Input.is_action_just_released("Sprint"):
 		movement.handle_stop_sprint()
 	if Input.is_action_just_pressed("Dash"):
-		movement.dash()
+		movement.dash_start()
 
 func _on_enemy_hit_player(damage, knockback, enemy_pos):
 	if player_timers.get_invincible_flag() or god_mode:

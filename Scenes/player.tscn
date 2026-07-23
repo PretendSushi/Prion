@@ -125,15 +125,6 @@ animations = [{
 "speed": 10.0
 }, {
 "frames": [{
-"duration": 0.5,
-"texture": ExtResource("8_un823")
-}, {
-"duration": 0.5,
-"texture": ExtResource("9_aclic")
-}, {
-"duration": 0.5,
-"texture": ExtResource("10_0y64g")
-}, {
 "duration": 2.0,
 "texture": ExtResource("11_ramv3")
 }, {
@@ -142,19 +133,38 @@ animations = [{
 }, {
 "duration": 2.0,
 "texture": ExtResource("13_vinow")
+}],
+"loop": false,
+"name": &"dash",
+"speed": 15.0
 }, {
+"frames": [{
 "duration": 1.0,
 "texture": ExtResource("14_awsf5")
 }, {
-"duration": 1.0,
+"duration": 2.0,
 "texture": ExtResource("15_v84ne")
 }, {
 "duration": 1.0,
 "texture": ExtResource("16_4pcjl")
 }],
 "loop": false,
-"name": &"dash",
-"speed": 15.0
+"name": &"dash_end",
+"speed": 20.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_un823")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_aclic")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_0y64g")
+}],
+"loop": false,
+"name": &"dash_start",
+"speed": 20.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -536,10 +546,8 @@ script = ExtResource("1_6ltq4")
 material = SubResource("ShaderMaterial_57lvd")
 position = Vector2(15, -213)
 sprite_frames = SubResource("SpriteFrames_gn6c1")
-animation = &"dash"
+animation = &"dash_start"
 autoplay = "idle"
-frame = 8
-frame_progress = 1.0
 
 [node name="Hurtbox" type="CollisionShape2D" parent="."]
 position = Vector2(8.5, -195)

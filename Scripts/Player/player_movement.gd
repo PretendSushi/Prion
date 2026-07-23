@@ -192,13 +192,22 @@ func handle_falling(delta):
 			jump_from_wall_cling = false
 			can_dash = true
 	
-func dash():
+func dash_start():
 	if (state_machine.get_movement_state() == state_machine.MovementState.DASH\
 	or player.protein < DASH_PROTEIN_COST)\
 	and !player.god_mode\
 	or !can_dash:
 		return
 	state_machine.set_movement_state(state_machine.MovementState.DASH)
+	state_machine.set_dash_state(state_machine.DashState.START)
+	player.change_camera_follow_speed(DASH_VELOCITY)
+	player.velocity.y = 0
+	player.velocity.x = 0
+	
+func dash():
+	print("here")
+	state_machine.set_movement_state(state_machine.MovementState.DASH)
+	state_machine.set_dash_state(state_machine.DashState.DURATION)
 	player.change_camera_follow_speed(DASH_VELOCITY)
 	if direction:
 		player.velocity.x = DASH_VELOCITY * direction

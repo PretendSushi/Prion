@@ -48,7 +48,12 @@ func play_animations():
 					target_anim = "walk"
 					state_machine.reset_jump()
 		elif state_machine.get_movement_state() == state_machine.MovementState.DASH:
-			target_anim = "dash"
+			if state_machine.get_dash_state() == state_machine.DashState.START:
+				target_anim = "dash_start"
+			elif state_machine.get_dash_state() == state_machine.DashState.DURATION:
+				target_anim = "dash"
+			elif state_machine.get_dash_state() == state_machine.DashState.END:
+				target_anim = "dash_end"
 		else:
 			if state_machine.get_action_state() == state_machine.ActionState.LEECH:
 				if state_machine.get_leech_state() == state_machine.LeechState.START:
@@ -76,7 +81,10 @@ func play_animations():
 		elif state_machine.get_action_state() == state_machine.ActionState.WALL_CLING and !movement.jump_from_wall_cling:
 			target_anim = "wall_cling"
 		elif state_machine.get_movement_state() == state_machine.MovementState.DASH:
-			target_anim = "dash"
+			if state_machine.get_dash_state() == state_machine.DashState.START:
+				target_anim = "dash_start"
+			if state_machine.get_dash_state() == state_machine.DashState.DURATION:
+				target_anim = "dash"
 		else:
 			match state_machine.get_jump_state():
 				state_machine.JumpState.JUMP_START:
@@ -163,11 +171,21 @@ func _on_animation_finished():
 	if animated_sprite.animation == "leech_end":
 		state_machine.set_leech_state(state_machine.LeechState.IDLE)
 		state_machine.set_action_state(state_machine.ActionState.IDLE)
+	if animated_sprite.animation == "dash_start":
+		state_machine.set_dash_state(state_machine.DashState.DURATION)
+		movement.dash()
 	if animated_sprite.animation == "dash":
-		state_machine.set_movement_state(state_machine.MovementState.JUMPING)
-		state_machine.set_jump_state(state_machine.JumpState.JUMP_FALL_START)
-		movement.jump_cancelled = true
+		if collisions.is_on_surface():
+			state_machine.set_dash_state(state_machine.DashState.END)
+		else:
+			state_machine.set_dash_state(state_machine.DashState.IDLE)
+			state_machine.set_movement_state(state_machine.MovementState.JUMPING)
+			state_machine.set_jump_state(state_machine.JumpState.JUMP_FALL_START)
+			movement.jump_cancelled = true
 		player.velocity.x = 0
+	if animated_sprite.animation == "dash_end":
+		state_machine.set_dash_state(state_machine.DashState.IDLE)
+		state_machine.set_movement_state(state_machine.MovementState.IDLE)
 		
 func flip_for_direction():
 	if movement.get_direction_lit() == movement.Directions.LEFT:
