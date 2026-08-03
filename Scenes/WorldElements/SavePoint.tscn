@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://tnwyed04r1rv"]
+[gd_scene load_steps=4 format=3 uid="uid://tnwyed04r1rv"]
 
 [ext_resource type="Script" uid="uid://4k86tc1boh4q" path="res://Scripts/save_point.gd" id="1_frjpq"]
+[ext_resource type="Texture2D" uid="uid://cossv07udrfv" path="res://Assets/World/Interactables/Flowers2.png" id="2_7rdan"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2vkud"]
 size = Vector2(300, 300)
@@ -8,7 +9,13 @@ size = Vector2(300, 300)
 [node name="SavePoint" type="Area2D"]
 script = ExtResource("1_frjpq")
 
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(50, 50)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("2_7rdan")
+
 [node name="ColorRect" type="ColorRect" parent="."]
+visible = false
 offset_right = 100.0
 offset_bottom = 100.0
 color = Color(1, 0, 1, 1)
