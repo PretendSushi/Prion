@@ -25,7 +25,8 @@ position = Vector2(50, 50)
 shape = SubResource("RectangleShape2D_2vkud")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
-offset_left = -50.0
-offset_top = -50.0
-offset_right = 150.0
+offset_left = -181.0
+offset_top = -116.0
+offset_right = 268.0
+bbcode_enabled = true
 horizontal_alignment = 1
