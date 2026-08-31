@@ -29,7 +29,7 @@ metadata/_custom_type_script = "uid://p550xmykutcc"
 script = ExtResource("11_admag")
 room_id = 1
 player_x = 1730.0
-player_y = 0.0
+player_y = -29.0
 entrance_way = 1
 metadata/_custom_type_script = "uid://p550xmykutcc"
 

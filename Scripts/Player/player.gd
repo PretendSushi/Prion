@@ -33,6 +33,8 @@ var protein = 100
 var notes_list = []
 #The current interactable object available to the player
 var current_interactable = null
+#The active hurtbox of the player
+var active_hurtbox
 
 #debug tool
 var god_mode = false
@@ -45,6 +47,9 @@ enum SoundEffects { WALK }
 
 @onready var hit_anim = $HitFlashAnim
 @onready var audio_player = $AudioPlayer
+
+@onready var hurtbox = $Hurtbox
+@onready var jump_hurtbox = $JumpHurtbox
 
 #Modules
 @onready var state_machine = $StateMachine
@@ -65,6 +70,7 @@ func _ready():
 	attacks.init()
 	abilities.init()
 	save_manager.init()
+	active_hurtbox = hurtbox
 	if RoomManager.player_stats != null:
 		apply_data(RoomManager.player_stats)
 		animations.flip_for_direction()
@@ -95,6 +101,15 @@ func _physics_process(delta):
 	player_timers.handle_jump_off(delta)
 	movement.check_wall_cling()
 	player_timers.handle_fall_timer(delta)
+	if !collisions.is_bottom_colliding():
+		active_hurtbox = jump_hurtbox
+		hurtbox.set_deferred("disabled", true)
+		jump_hurtbox.set_deferred("disabled", false)
+	else:
+		active_hurtbox = hurtbox
+		hurtbox.set_deferred("disabled", false)
+		jump_hurtbox.set_deferred("disabled", true)
+	print(active_hurtbox)
 	move_and_slide()
 	
 func _input(event):

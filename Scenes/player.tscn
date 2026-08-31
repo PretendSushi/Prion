@@ -1,4 +1,4 @@
-[gd_scene load_steps=112 format=3 uid="uid://uqe5a2rw7h7h"]
+[gd_scene load_steps=113 format=3 uid="uid://uqe5a2rw7h7h"]
 
 [ext_resource type="Script" uid="uid://bb643hqwrxmyd" path="res://Scripts/Player/player.gd" id="1_6ltq4"]
 [ext_resource type="Shader" uid="uid://d4fv1pxe8clud" path="res://Scripts/hitflash.gdshader" id="2_e6mvm"]
@@ -472,10 +472,13 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jm6k1"]
-size = Vector2(85, 324)
+size = Vector2(85, 293)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_un823"]
+size = Vector2(72, 285)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vq3lt"]
-size = Vector2(85, 324)
+size = Vector2(85, 293)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_igrcy"]
 size = Vector2(268, 273)
@@ -550,13 +553,17 @@ animation = &"walk"
 autoplay = "idle"
 
 [node name="Hurtbox" type="CollisionShape2D" parent="."]
-position = Vector2(8.5, -195)
+position = Vector2(8.5, -179.5)
 shape = SubResource("RectangleShape2D_jm6k1")
+
+[node name="JumpHurtbox" type="CollisionShape2D" parent="."]
+position = Vector2(11, -215)
+shape = SubResource("RectangleShape2D_un823")
 
 [node name="HurtboxArea" type="Area2D" parent="." groups=["PlayerHurtbox"]]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxArea"]
-position = Vector2(8.5, -195)
+position = Vector2(8.5, -179.5)
 shape = SubResource("RectangleShape2D_vq3lt")
 
 [node name="FrontHitbox" type="Area2D" parent="."]
