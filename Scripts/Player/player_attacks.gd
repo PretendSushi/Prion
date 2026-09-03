@@ -25,12 +25,15 @@ func init():
 	abilities = $"../Abilities"
 	player = $".."
 
-func attack():
+func start_attack():
 	#the player can only attack once, then not again until the end of the animation
 	if state_machine.get_action_state() == state_machine.ActionState.ATTACK or state_machine.get_action_state() == state_machine.ActionState.ZERO_GRAV:
 		return
-	#if it is a legit attack, set the state
 	state_machine.set_action_state(state_machine.ActionState.ATTACK)
+	state_machine.set_attack_state(state_machine.AttackState.START)
+
+func attack():
+	state_machine.set_attack_state(state_machine.AttackState.DURATION)
 	#Decide which hitbox to use
 	var hitbox = collisions.get_attack_hitbox()
 	#Find every NPC who should take damage

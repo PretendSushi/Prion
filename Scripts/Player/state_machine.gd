@@ -10,6 +10,7 @@ enum LeechState { IDLE, START, DURATION, END }
 enum DashState { IDLE, START, DURATION, END }
 #redundant, refers to all horizontal movement, in air and otherwise
 enum WalkingState { IDLE, WALKING }
+enum AttackState { IDLE, START, DURATION, END }
 
 #state variables. Should be treated as private
 var transition_state
@@ -20,6 +21,7 @@ var rubber_band_state
 var leech_state
 var walking_state
 var dash_state
+var attack_state
 
 func init():
 	transition_state = TransitionState.IDLE
@@ -30,6 +32,7 @@ func init():
 	leech_state = LeechState.IDLE
 	walking_state = WalkingState.IDLE
 	dash_state = DashState.IDLE
+	attack_state = AttackState.IDLE
 
 func reset_jump():
 	jump_state = JumpState.IDLE
@@ -122,3 +125,14 @@ func set_dash_state(state):
 	if dash_state == state:
 		return
 	dash_state = state
+
+func get_attack_state():
+	return attack_state
+	
+func set_attack_state(state):
+	if !AttackState.values().has(state):
+		print("Error: Invalid dash state")
+		return
+	if attack_state == state:
+		return
+	attack_state = state

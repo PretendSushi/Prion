@@ -109,7 +109,6 @@ func _physics_process(delta):
 		active_hurtbox = hurtbox
 		hurtbox.set_deferred("disabled", false)
 		jump_hurtbox.set_deferred("disabled", true)
-	print(active_hurtbox)
 	move_and_slide()
 	
 func _input(event):
@@ -121,7 +120,7 @@ func check_for_inputs(delta):
 	#Check for attack input 
 	if Input.is_action_just_pressed("Attack"):
 		#This needs to be made more readable. Takes attack takes two arguments, whether up or down are being pressed
-		attacks.attack()
+		attacks.start_attack()
 	#Check for open inventory input, and emit the signal so the inventory code can handle the rest
 	if Input.is_action_just_pressed("Inventory"):
 		emit_signal("show_inventory")

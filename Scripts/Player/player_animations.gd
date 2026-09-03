@@ -27,7 +27,8 @@ func init():
 func play_animations():
 	#this is the animation we will play at the end
 	var target_anim = ""
-	
+	#if state_machine.get_attack_state() == state_machine.AttackState.DURATION:
+		#print("hit")
 	if collisions.is_on_surface():
 		if state_machine.get_action_state() == state_machine.ActionState.RUBBER_BAND:
 			if state_machine.get_rubber_band_state() == state_machine.RubberBandState.START:
@@ -62,8 +63,14 @@ func play_animations():
 					target_anim = "leech"
 				elif state_machine.get_leech_state() == state_machine.LeechState.END:
 					target_anim = "leech_end"
-			elif state_machine.get_action_state() == state_machine.ActionState.ATTACK:
-				target_anim = "attack"
+			elif state_machine.get_attack_state() != state_machine.AttackState.IDLE:
+				match state_machine.get_attack_state():
+					state_machine.AttackState.START:
+						target_anim = "attack_start"
+					state_machine.AttackState.DURATION:
+						target_anim = "attack"
+					state_machine.AttackState.END:
+						target_anim = "attack_end"
 			elif state_machine.get_movement_state() == state_machine.MovementState.WALKING:
 				target_anim = "walk"
 			elif state_machine.get_movement_state() == state_machine.MovementState.SPRINTING:
@@ -131,7 +138,12 @@ func play_animations():
 
 func _on_animation_finished():
 	#changes state at the end of animations. Exists for animation purposes
+	if animated_sprite.animation == "attack_start":
+		attacks.attack()
 	if animated_sprite.animation == "attack":
+		state_machine.set_attack_state(state_machine.AttackState.END)
+	if animated_sprite.animation == "attack_end":
+		state_machine.set_attack_state(state_machine.AttackState.IDLE)
 		state_machine.set_action_state(state_machine.ActionState.IDLE)
 	if animated_sprite.animation == "jump_startup":
 		state_machine.set_jump_state(state_machine.JumpState.JUMP_RISE)
