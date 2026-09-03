@@ -154,7 +154,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"dash",
-"speed": 15.0
+"speed": 25.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -177,12 +177,12 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("9_aclic")
 }, {
-"duration": 1.0,
+"duration": 2.0,
 "texture": ExtResource("10_0y64g")
 }],
 "loop": false,
 "name": &"dash_start",
-"speed": 20.0
+"speed": 30.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -567,7 +567,7 @@ script = ExtResource("1_6ltq4")
 material = SubResource("ShaderMaterial_57lvd")
 position = Vector2(15, -213)
 sprite_frames = SubResource("SpriteFrames_gn6c1")
-animation = &"attack_start"
+animation = &"attack_end"
 autoplay = "idle"
 
 [node name="Hurtbox" type="CollisionShape2D" parent="."]

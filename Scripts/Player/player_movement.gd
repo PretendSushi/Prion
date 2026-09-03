@@ -9,7 +9,7 @@ var direction = 0
 const JUMP_FORCE_FROM_WALL = 300
 const JUMP_VELOCITY = -800.0
 const JUMP_FORCE = 3000
-const DASH_VELOCITY = 1500
+const DASH_VELOCITY = 3000
 const DASH_PROTEIN_COST = 5
 const SPRINT_SPEED = 1400.0
 const GROUND_SPEED = 700.0
@@ -205,7 +205,6 @@ func dash_start():
 	player.velocity.x = 0
 	
 func dash():
-	print("here")
 	state_machine.set_movement_state(state_machine.MovementState.DASH)
 	state_machine.set_dash_state(state_machine.DashState.DURATION)
 	player.change_camera_follow_speed(DASH_VELOCITY)
