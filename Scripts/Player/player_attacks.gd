@@ -31,6 +31,7 @@ func start_attack():
 		return
 	state_machine.set_action_state(state_machine.ActionState.ATTACK)
 	state_machine.set_attack_state(state_machine.AttackState.START)
+	state_machine.determine_attack_dir()
 
 func attack():
 	state_machine.set_attack_state(state_machine.AttackState.DURATION)

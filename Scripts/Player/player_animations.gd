@@ -4,6 +4,7 @@ extends Node2D
 const RB_ANIM_OFFSET = 450
 const LEECH_ANIM_OFFSET = 100
 const WALL_CLING_ANIM_OFFSET = 17
+const DOWN_ATTACK_ANIM_OFFSET = 50
 
 #Modules
 var animated_sprite
@@ -71,6 +72,7 @@ func play_animations():
 						target_anim = "attack"
 					state_machine.AttackState.END:
 						target_anim = "attack_end"
+	
 			elif state_machine.get_movement_state() == state_machine.MovementState.WALKING:
 				target_anim = "walk"
 			elif state_machine.get_movement_state() == state_machine.MovementState.SPRINTING:
@@ -92,6 +94,17 @@ func play_animations():
 				target_anim = "dash_start"
 			if state_machine.get_dash_state() == state_machine.DashState.DURATION:
 				target_anim = "dash"
+		elif state_machine.get_action_state() == state_machine.ActionState.ATTACK:
+			if state_machine.get_attack_state() != state_machine.AttackState.IDLE\
+			and state_machine.get_attack_dir() != state_machine.AttackDir.NEUTRAL:
+				if state_machine.get_attack_dir() == state_machine.AttackDir.DOWN:
+					match state_machine.get_attack_state():
+						state_machine.AttackState.START:
+							target_anim = "down_attack_start"
+						state_machine.AttackState.DURATION:
+							target_anim = "down_attack"
+						state_machine.AttackState.END:
+							target_anim = "down_attack_end"
 		else:
 			match state_machine.get_jump_state():
 				state_machine.JumpState.JUMP_START:
@@ -130,21 +143,25 @@ func play_animations():
 			animated_sprite.offset.x = WALL_CLING_ANIM_OFFSET
 		else:
 			animated_sprite.offset.x = -WALL_CLING_ANIM_OFFSET
+	elif target_anim == "down_attack_start" or target_anim == "down_attack" or target_anim == "down_attack_end":
+		animated_sprite.offset.y = DOWN_ATTACK_ANIM_OFFSET
 	else:
 		animated_sprite.offset.x = 0
+		animated_sprite.offset.y = 0
 	#this is to avoid animations getting infinitely replayed and never ending
 	if animated_sprite.animation != target_anim:
 		animated_sprite.play(target_anim)
 
 func _on_animation_finished():
 	#changes state at the end of animations. Exists for animation purposes
-	if animated_sprite.animation == "attack_start":
+	if animated_sprite.animation == "attack_start" or animated_sprite.animation == "down_attack_start":
 		attacks.attack()
-	if animated_sprite.animation == "attack":
+	if animated_sprite.animation == "attack" or animated_sprite.animation == "down_attack":
 		state_machine.set_attack_state(state_machine.AttackState.END)
-	if animated_sprite.animation == "attack_end":
+	if animated_sprite.animation == "attack_end" or animated_sprite.animation == "down_attack_end":
 		state_machine.set_attack_state(state_machine.AttackState.IDLE)
 		state_machine.set_action_state(state_machine.ActionState.IDLE)
+		state_machine.set_attack_dir(state_machine.AttackDir.NONE)
 	if animated_sprite.animation == "jump_startup":
 		state_machine.set_jump_state(state_machine.JumpState.JUMP_RISE)
 	if animated_sprite.animation == "jump_rise"\

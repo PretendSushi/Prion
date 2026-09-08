@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c01m6drdwt68k"
-path="res://.godot/imported/frame_4.png-763f62873b67885663c8afc91ee691b6.ctex"
+uid="uid://cieeekty8ryjx"
+path="res://.godot/imported/frame_3.png-79a0f966020237586eec0cbae4e43fa9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Sprites/player/attack/second-draft/frame_4.png"
-dest_files=["res://.godot/imported/frame_4.png-763f62873b67885663c8afc91ee691b6.ctex"]
+source_file="res://Assets/Sprites/player/attack/neutral/second-draft/frame_3.png"
+dest_files=["res://.godot/imported/frame_3.png-79a0f966020237586eec0cbae4e43fa9.ctex"]
 
 [params]
 

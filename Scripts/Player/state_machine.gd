@@ -11,6 +11,7 @@ enum DashState { IDLE, START, DURATION, END }
 #redundant, refers to all horizontal movement, in air and otherwise
 enum WalkingState { IDLE, WALKING }
 enum AttackState { IDLE, START, DURATION, END }
+enum AttackDir { NONE, NEUTRAL, UP, DOWN }
 
 #state variables. Should be treated as private
 var transition_state
@@ -22,6 +23,7 @@ var leech_state
 var walking_state
 var dash_state
 var attack_state
+var attack_dir
 
 func init():
 	transition_state = TransitionState.IDLE
@@ -33,6 +35,7 @@ func init():
 	walking_state = WalkingState.IDLE
 	dash_state = DashState.IDLE
 	attack_state = AttackState.IDLE
+	attack_dir = AttackDir.NONE
 
 func reset_jump():
 	jump_state = JumpState.IDLE
@@ -131,8 +134,27 @@ func get_attack_state():
 	
 func set_attack_state(state):
 	if !AttackState.values().has(state):
-		print("Error: Invalid dash state")
+		print("Error: Invalid attack state")
 		return
 	if attack_state == state:
 		return
 	attack_state = state
+
+func determine_attack_dir():
+	if Input.is_action_pressed("Down"):
+		attack_dir = AttackDir.DOWN
+	elif Input.is_action_pressed("Up"):
+		attack_dir = AttackDir.UP 
+	else:
+		attack_dir = AttackDir.NEUTRAL
+		
+func get_attack_dir():
+	return attack_dir
+
+func set_attack_dir(state):
+	if !AttackDir.values().has(state):
+		print("Error: Invalid attack direction")
+		return
+	if attack_dir == state:
+		return
+	attack_dir = state
