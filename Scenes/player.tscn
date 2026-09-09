@@ -34,30 +34,30 @@
 [ext_resource type="Texture2D" uid="uid://bappv1b26ymgc" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0004.png" id="19_nmr2m"]
 [ext_resource type="Texture2D" uid="uid://dy21fuc78l83f" path="res://Assets/Sprites/player/idle/third-draft/frame0005.png" id="19_pg0gw"]
 [ext_resource type="Texture2D" uid="uid://ciobqvlpjw138" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0005.png" id="20_ax3m3"]
-[ext_resource type="Texture2D" uid="uid://dirfmo88tanqp" path="res://Assets/Sprites/player/attack/down/second-draft/frame_4.png" id="20_pgf6i"]
+[ext_resource type="Texture2D" uid="uid://d2nsc54ujvhf0" path="res://Assets/Sprites/player/attack/down/second-draft/frame_4.png" id="20_pgf6i"]
 [ext_resource type="Texture2D" uid="uid://f200gfb88pku" path="res://Assets/Sprites/player/idle/third-draft/frame0006.png" id="20_qavoy"]
 [ext_resource type="Texture2D" uid="uid://lf20mk3e6m4e" path="res://Assets/Sprites/player/leech/leechattack_v001.0006.png" id="20_vq3lt"]
 [ext_resource type="Texture2D" uid="uid://dh7vlu20l45qb" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0006.png" id="21_3vlem"]
-[ext_resource type="Texture2D" uid="uid://1rq3abah00md" path="res://Assets/Sprites/player/attack/down/second-draft/frame_5.png" id="21_bvt37"]
+[ext_resource type="Texture2D" uid="uid://brtglnjlrsxmw" path="res://Assets/Sprites/player/attack/down/second-draft/frame_5.png" id="21_bvt37"]
 [ext_resource type="Texture2D" uid="uid://1lfvcv8ahtg5" path="res://Assets/Sprites/player/leech/leechattack_v001.0007.png" id="21_pukcj"]
 [ext_resource type="Texture2D" uid="uid://cdl4hdojyxe8a" path="res://Assets/Sprites/player/idle/third-draft/frame0007.png" id="21_w4w4b"]
 [ext_resource type="Texture2D" uid="uid://boajw0dlhmk4c" path="res://Assets/Sprites/player/leech/leechattack_v001.0008.png" id="22_1htnp"]
 [ext_resource type="Texture2D" uid="uid://s0o7mikmkwp4" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0007.png" id="22_8eeqe"]
 [ext_resource type="Texture2D" uid="uid://g34bhyl36fsa" path="res://Assets/Sprites/player/jump/second-draft/frame0004.png" id="22_h5cax"]
-[ext_resource type="Texture2D" uid="uid://coa67a53xkvv7" path="res://Assets/Sprites/player/attack/down/second-draft/frame_6.png" id="22_kt3hj"]
-[ext_resource type="Texture2D" uid="uid://1a3cck8x2qc4" path="res://Assets/Sprites/player/attack/down/second-draft/frame_7.png" id="23_2jrev"]
+[ext_resource type="Texture2D" uid="uid://b524gsilcm3r1" path="res://Assets/Sprites/player/attack/down/second-draft/frame_6.png" id="22_kt3hj"]
+[ext_resource type="Texture2D" uid="uid://djgr4xica5gpv" path="res://Assets/Sprites/player/attack/down/second-draft/frame_7.png" id="23_2jrev"]
 [ext_resource type="Texture2D" uid="uid://h12fifjjomyc" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0008.png" id="23_5x828"]
 [ext_resource type="Texture2D" uid="uid://bi8hcj8tdc5xr" path="res://Assets/Sprites/player/jump/second-draft/frame0005.png" id="23_dj0x0"]
 [ext_resource type="Texture2D" uid="uid://bpn87eekkveeg" path="res://Assets/Sprites/player/leech/leechattack_v001.0009.png" id="23_m376e"]
-[ext_resource type="Texture2D" uid="uid://d02hkeldwh2re" path="res://Assets/Sprites/player/attack/down/second-draft/frame_1.png" id="24_3ath1"]
-[ext_resource type="Texture2D" uid="uid://b5dgya5ylf7ln" path="res://Assets/Sprites/player/attack/down/second-draft/frame_8.png" id="24_5j7nw"]
+[ext_resource type="Texture2D" uid="uid://b0kt743fliyjp" path="res://Assets/Sprites/player/attack/down/second-draft/frame_1.png" id="24_3ath1"]
+[ext_resource type="Texture2D" uid="uid://3012cof7uptq" path="res://Assets/Sprites/player/attack/down/second-draft/frame_8.png" id="24_5j7nw"]
 [ext_resource type="Texture2D" uid="uid://bs3h6m6tpkecc" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0009.png" id="24_c1k8q"]
 [ext_resource type="Texture2D" uid="uid://otvow5ur27mn" path="res://Assets/Sprites/player/jump/second-draft/frame0006.png" id="24_f1uaf"]
 [ext_resource type="Texture2D" uid="uid://d4bre2cnuc87f" path="res://Assets/Sprites/player/jump/second-draft/frame0007.png" id="25_6hq81"]
 [ext_resource type="Texture2D" uid="uid://cd4lk7vn2au4u" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0010.png" id="25_e6mvm"]
-[ext_resource type="Texture2D" uid="uid://bc5ejq66tjxtp" path="res://Assets/Sprites/player/attack/down/second-draft/frame_2.png" id="25_pgf6i"]
+[ext_resource type="Texture2D" uid="uid://djo3ya8pff83w" path="res://Assets/Sprites/player/attack/down/second-draft/frame_2.png" id="25_pgf6i"]
 [ext_resource type="Texture2D" uid="uid://bt8xcca62p7ht" path="res://Assets/Sprites/player/rubber_band/rubberbandattack_v001.0011.png" id="26_57lvd"]
-[ext_resource type="Texture2D" uid="uid://cn1quuvieiwpn" path="res://Assets/Sprites/player/attack/down/second-draft/frame_3.png" id="26_bvt37"]
+[ext_resource type="Texture2D" uid="uid://bx1xmfoon0yuy" path="res://Assets/Sprites/player/attack/down/second-draft/frame_3.png" id="26_bvt37"]
 [ext_resource type="Texture2D" uid="uid://cp4aioolhu3nn" path="res://Assets/Sprites/player/jump/third-draft/up/frame0008.png" id="26_w4w4b"]
 [ext_resource type="Texture2D" uid="uid://ct2e3ddpwnmtb" path="res://Assets/Sprites/player/jump/third-draft/up/frame0009.png" id="27_h5cax"]
 [ext_resource type="Texture2D" uid="uid://tleg71bn8cvx" path="res://Assets/Sprites/player/jump/second-draft/frame0001.png" id="27_qavoy"]
@@ -552,7 +552,7 @@ size = Vector2(268, 273)
 size = Vector2(268, 273)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_l6n3p"]
-size = Vector2(268, 147.5)
+size = Vector2(268, 202.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_olqyp"]
 size = Vector2(268, 273)
@@ -647,7 +647,7 @@ shape = SubResource("RectangleShape2D_fs7ks")
 [node name="BottomCollision" type="Area2D" parent="."]
 
 [node name="HitCollision" type="CollisionShape2D" parent="BottomCollision"]
-position = Vector2(0, -62.75)
+position = Vector2(0, -35.25)
 shape = SubResource("RectangleShape2D_l6n3p")
 
 [node name="TopCollision" type="Area2D" parent="."]

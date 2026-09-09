@@ -1,0 +1,158 @@
+[gd_scene load_steps=21 format=3 uid="uid://28176cw1ss1v"]
+
+[ext_resource type="Script" uid="uid://ux1vfmx5bftj" path="res://Scripts/Bosses/hand_boss.gd" id="1_45x51"]
+[ext_resource type="Texture2D" uid="uid://dqwlwghf3501v" path="res://Assets/Sprites/boss/hand/attack01/frame_3.png" id="1_awobo"]
+[ext_resource type="Texture2D" uid="uid://dokamtrvaa0dj" path="res://Assets/Sprites/boss/hand/attack01/frame_4.png" id="2_45x51"]
+[ext_resource type="Texture2D" uid="uid://cd43fqwq8mfi5" path="res://Assets/Sprites/boss/hand/attack01/frame_1.png" id="3_orytp"]
+[ext_resource type="Texture2D" uid="uid://djxtvsotavky3" path="res://Assets/Sprites/boss/hand/attack01/frame_2.png" id="4_k7qi4"]
+[ext_resource type="Texture2D" uid="uid://dgwbja4s6o05o" path="res://Assets/Sprites/boss/hand/left/frame_1.png" id="5_4yt25"]
+[ext_resource type="Texture2D" uid="uid://cl3ousnlw3k2r" path="res://Assets/Sprites/boss/hand/left/frame_2.png" id="6_tdlbf"]
+[ext_resource type="Texture2D" uid="uid://bcod3436s5vt3" path="res://Assets/Sprites/boss/hand/left/frame_3.png" id="7_87oyx"]
+[ext_resource type="Texture2D" uid="uid://dl3v6loytt74w" path="res://Assets/Sprites/boss/hand/left/frame_4.png" id="8_exf4q"]
+[ext_resource type="Texture2D" uid="uid://bpmpaekyqx3hg" path="res://Assets/Sprites/boss/hand/left/frame_5.png" id="9_qniyv"]
+[ext_resource type="Texture2D" uid="uid://cuavseciw7g6g" path="res://Assets/Sprites/boss/hand/right/frame_2.png" id="10_cuxlx"]
+[ext_resource type="Texture2D" uid="uid://4ge3p7dydk75" path="res://Assets/Sprites/boss/hand/right/frame_3.png" id="11_do1bm"]
+[ext_resource type="Texture2D" uid="uid://bbw261q1rg4lm" path="res://Assets/Sprites/boss/hand/right/frame_4.png" id="12_tlhfd"]
+[ext_resource type="Texture2D" uid="uid://cmq0nwpe10dkm" path="res://Assets/Sprites/boss/hand/right/frame_5.png" id="13_yrgn3"]
+[ext_resource type="Texture2D" uid="uid://81fm67kjnmyg" path="res://Assets/Sprites/boss/hand/right/frame_1.png" id="14_huadw"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_kqm22"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_awobo")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_45x51")
+}],
+"loop": false,
+"name": &"attack_end",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_orytp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_k7qi4")
+}],
+"loop": false,
+"name": &"attack_start",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_4yt25")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_tdlbf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_87oyx")
+}],
+"loop": true,
+"name": &"left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_exf4q")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_qniyv")
+}],
+"loop": false,
+"name": &"left_end",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_4yt25")
+}],
+"loop": false,
+"name": &"left_start",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_cuxlx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_do1bm")
+}],
+"loop": true,
+"name": &"right",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("12_tlhfd")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_yrgn3")
+}],
+"loop": false,
+"name": &"right_end",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("14_huadw")
+}],
+"loop": false,
+"name": &"right_start",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_45x51"]
+radius = 334.681
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_orytp"]
+radius = 410.274
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_k7qi4"]
+radius = 292.384
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_45x51"]
+size = Vector2(979, 571.5)
+
+[node name="HandBoss" type="CharacterBody2D"]
+script = ExtResource("1_45x51")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_kqm22")
+animation = &"attack_end"
+
+[node name="Hitbox" type="Area2D" parent="."]
+position = Vector2(343.5, 168.5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(-483.5, 390.5)
+shape = SubResource("CircleShape2D_45x51")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(-148.5, 22.5)
+shape = SubResource("CircleShape2D_orytp")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(-79.5, -322.5)
+shape = SubResource("CircleShape2D_k7qi4")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+position = Vector2(-185.5, 310.75)
+
+[node name="Hurtbox" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(-20.5, 4.25)
+shape = SubResource("RectangleShape2D_45x51")
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
