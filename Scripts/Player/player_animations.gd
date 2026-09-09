@@ -96,8 +96,16 @@ func play_animations():
 				target_anim = "dash"
 		elif state_machine.get_action_state() == state_machine.ActionState.ATTACK:
 			if state_machine.get_attack_state() != state_machine.AttackState.IDLE\
-			and state_machine.get_attack_dir() != state_machine.AttackDir.NEUTRAL:
-				if state_machine.get_attack_dir() == state_machine.AttackDir.DOWN:
+			and state_machine.get_attack_dir() != state_machine.AttackDir.NONE:
+				if state_machine.get_attack_dir() == state_machine.AttackDir.NEUTRAL:
+					match state_machine.get_attack_state():
+						state_machine.AttackState.START:
+							target_anim = "attack_start"
+						state_machine.AttackState.DURATION:
+							target_anim = "attack"
+						state_machine.AttackState.END:
+							target_anim = "attack_end"
+				elif state_machine.get_attack_dir() == state_machine.AttackDir.DOWN:
 					match state_machine.get_attack_state():
 						state_machine.AttackState.START:
 							target_anim = "down_attack_start"
