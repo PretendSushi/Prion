@@ -54,6 +54,8 @@ func attack():
 			var boss = area.get_parent()
 			player_attack.connect(boss._on_player_attack.bind())
 			emit_signal("player_attack", ATTACK_DAMAGE)
+			if hitbox == collisions.get_bottom_hitbox():
+				movement.bounce()
 
 func rubber_band_attack():
 	var hitbox = collisions.get_rubber_band_hitbox()
