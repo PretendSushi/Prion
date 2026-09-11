@@ -48,6 +48,12 @@ func attack():
 		if body.is_in_group("Barrier"):
 			player_attack.connect(body._on_player_attack.bind())
 			emit_signal("player_attack")
+	var areas = hitbox.get_overlapping_areas()
+	for area in areas:
+		if area.get_parent().is_in_group("Boss"):
+			var boss = area.get_parent()
+			player_attack.connect(boss._on_player_attack.bind())
+			emit_signal("player_attack", ATTACK_DAMAGE)
 
 func rubber_band_attack():
 	var hitbox = collisions.get_rubber_band_hitbox()

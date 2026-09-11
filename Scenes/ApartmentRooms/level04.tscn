@@ -76,6 +76,7 @@ position = Vector2(3038, -251)
 position = Vector2(6470, -259)
 
 [connection signal="update_camera_follow_speed" from="Player" to="Camera2D" method="_on_player_update_camera_follow_speed"]
+[connection signal="activate_boss" from="BossTrigger" to="HandBoss" method="_on_boss_trigger_activate_boss"]
 [connection signal="boss_camera" from="BossTrigger" to="Camera2D" method="_on_boss_trigger_boss_camera"]
 [connection signal="deboss_camera" from="BossDetrigger" to="Camera2D" method="_on_boss_detrigger_deboss_camera"]
 [connection signal="deboss_camera" from="BossDetrigger2" to="Camera2D" method="_on_boss_detrigger_deboss_camera"]

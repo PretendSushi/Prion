@@ -1,8 +1,9 @@
-[gd_scene load_steps=21 format=3 uid="uid://28176cw1ss1v"]
+[gd_scene load_steps=23 format=3 uid="uid://28176cw1ss1v"]
 
 [ext_resource type="Script" uid="uid://ux1vfmx5bftj" path="res://Scripts/Bosses/hand_boss.gd" id="1_45x51"]
 [ext_resource type="Texture2D" uid="uid://dqwlwghf3501v" path="res://Assets/Sprites/boss/hand/attack01/frame_3.png" id="1_awobo"]
 [ext_resource type="Texture2D" uid="uid://dokamtrvaa0dj" path="res://Assets/Sprites/boss/hand/attack01/frame_4.png" id="2_45x51"]
+[ext_resource type="Shader" uid="uid://d4fv1pxe8clud" path="res://Scripts/hitflash.gdshader" id="2_orytp"]
 [ext_resource type="Texture2D" uid="uid://cd43fqwq8mfi5" path="res://Assets/Sprites/boss/hand/attack01/frame_1.png" id="3_orytp"]
 [ext_resource type="Texture2D" uid="uid://djxtvsotavky3" path="res://Assets/Sprites/boss/hand/attack01/frame_2.png" id="4_k7qi4"]
 [ext_resource type="Texture2D" uid="uid://dgwbja4s6o05o" path="res://Assets/Sprites/boss/hand/left/frame_1.png" id="5_4yt25"]
@@ -15,6 +16,11 @@
 [ext_resource type="Texture2D" uid="uid://bbw261q1rg4lm" path="res://Assets/Sprites/boss/hand/right/frame_4.png" id="12_tlhfd"]
 [ext_resource type="Texture2D" uid="uid://cmq0nwpe10dkm" path="res://Assets/Sprites/boss/hand/right/frame_5.png" id="13_yrgn3"]
 [ext_resource type="Texture2D" uid="uid://81fm67kjnmyg" path="res://Assets/Sprites/boss/hand/right/frame_1.png" id="14_huadw"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k7qi4"]
+shader = ExtResource("2_orytp")
+shader_parameter/hit_flash_color = Color(1, 1, 1, 1)
+shader_parameter/hit_flash_on = false
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_kqm22"]
 animations = [{
@@ -126,12 +132,13 @@ radius = 292.384
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_45x51"]
 size = Vector2(979, 571.5)
 
-[node name="HandBoss" type="CharacterBody2D"]
+[node name="HandBoss" type="CharacterBody2D" groups=["Boss"]]
 script = ExtResource("1_45x51")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+material = SubResource("ShaderMaterial_k7qi4")
 sprite_frames = SubResource("SpriteFrames_kqm22")
-animation = &"attack_end"
+animation = &"attack_start"
 
 [node name="Hitbox" type="Area2D" parent="."]
 position = Vector2(343.5, 168.5)
@@ -145,7 +152,7 @@ position = Vector2(-148.5, 22.5)
 shape = SubResource("CircleShape2D_orytp")
 
 [node name="CollisionShape2D3" type="CollisionShape2D" parent="Hitbox"]
-position = Vector2(-79.5, -322.5)
+position = Vector2(-108.5, -263.5)
 shape = SubResource("CircleShape2D_k7qi4")
 
 [node name="Hurtbox" type="Area2D" parent="."]

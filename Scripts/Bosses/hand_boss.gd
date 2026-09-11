@@ -6,6 +6,7 @@ const MAX_HEALTH = 1000
 const MOVEMENT_SPEED = 500
 const ATTACK_TIMER = 5
 const ATTACK_ANIM_OFFSET = 250
+const HIT_FLASH_TIMER = 0.2
 
 enum ActionState { IDLE, MOVING, ATTACK }
 enum AttackState { IDLE, START, DURATION, END }
@@ -14,28 +15,35 @@ enum Directions { NONE, LEFT, RIGHT }
 var health
 
 var direction
-var action_state
-var attack_state
+var action_state : ActionState
+var attack_state : AttackState
 
 var attack_timer
+var hit_flash_timer
 
-var can_attack
+var can_attack : bool
+var active : bool
 
 func _ready() -> void:
 	health = MAX_HEALTH
 	attack_timer = ATTACK_TIMER
+	hit_flash_timer = 0
 	action_state = ActionState.IDLE
 	attack_state = AttackState.IDLE
+	active = false
 	can_attack = true
+	animated_sprite.material.set_shader_parameter("hit_flash_on", 0.0)
 
 func _physics_process(delta: float) -> void:
-	var player_x = find_player_x()
-	if player_x:
-		move(player_x)
-	handle_attack_timer(delta)
-	attack()
-	play_animations()
-	move_and_slide()
+	if active:
+		var player_x = find_player_x()
+		if player_x:
+			move(player_x)
+		handle_attack_timer(delta)
+		handle_hit_flash_timer(delta)
+		attack()
+		play_animations()
+		move_and_slide()
 	
 func find_player_x():
 	var player = get_tree().get_first_node_in_group("Player")
@@ -98,6 +106,12 @@ func handle_attack_timer(delta):
 	else:
 		can_attack = true
 
+func handle_hit_flash_timer(delta):
+	if hit_flash_timer > 0:
+		hit_flash_timer -= delta
+	else:
+		animated_sprite.material.set_shader_parameter("hit_flash_on", 0.0)
+
 func _on_animated_sprite_2d_animation_finished() -> void:
 	if animated_sprite.animation == "attack_start":
 		attack_state = AttackState.DURATION
@@ -106,3 +120,15 @@ func _on_animated_sprite_2d_animation_finished() -> void:
 	if animated_sprite.animation == "attack_end":
 		attack_state = AttackState.IDLE
 		action_state = ActionState.IDLE
+
+
+func _on_boss_trigger_activate_boss() -> void:
+	active = true
+	
+func _on_player_attack(attack_dmg):
+	animated_sprite.material.set_shader_parameter("hit_flash_on", 1.0)
+	hit_flash_timer = HIT_FLASH_TIMER
+	health -= attack_dmg
+
+func die():
+	queue_free()
