@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dokamtrvaa0dj"
-path="res://.godot/imported/frame_4.png-5908a7ef39ea900b3bfc75704114b33e.ctex"
+uid="uid://b5mercgs5cv2c"
+path="res://.godot/imported/frame_2.png-1662c429ecc1902145c474a7b1393677.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Sprites/boss/hand/attack01/frame_4.png"
-dest_files=["res://.godot/imported/frame_4.png-5908a7ef39ea900b3bfc75704114b33e.ctex"]
+source_file="res://Assets/Sprites/boss/hand/attack01/second-draft/frame_2.png"
+dest_files=["res://.godot/imported/frame_2.png-1662c429ecc1902145c474a7b1393677.ctex"]
 
 [params]
 

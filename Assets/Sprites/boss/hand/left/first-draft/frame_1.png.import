@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cuavseciw7g6g"
-path="res://.godot/imported/frame_2.png-b4e39c2f114adf64ae5c2f4e9fd405a9.ctex"
+uid="uid://dgwbja4s6o05o"
+path="res://.godot/imported/frame_1.png-fcb85f2916024427d36a69767b4459db.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Sprites/boss/hand/right/frame_2.png"
-dest_files=["res://.godot/imported/frame_2.png-b4e39c2f114adf64ae5c2f4e9fd405a9.ctex"]
+source_file="res://Assets/Sprites/boss/hand/left/first-draft/frame_1.png"
+dest_files=["res://.godot/imported/frame_1.png-fcb85f2916024427d36a69767b4459db.ctex"]
 
 [params]
 

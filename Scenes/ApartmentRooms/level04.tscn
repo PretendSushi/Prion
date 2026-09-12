@@ -38,7 +38,7 @@ position = Vector2(4407, -1534)
 texture = ExtResource("2_fojw8")
 
 [node name="HandBoss" parent="." instance=ExtResource("10_t44cq")]
-position = Vector2(4916, -834)
+position = Vector2(4914, -590)
 
 [node name="TileMap" type="TileMap" parent="."]
 material = SubResource("CanvasItemMaterial_m1alw")
