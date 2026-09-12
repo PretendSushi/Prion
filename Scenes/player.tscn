@@ -614,7 +614,7 @@ script = ExtResource("1_6ltq4")
 material = SubResource("ShaderMaterial_57lvd")
 position = Vector2(15, -213)
 sprite_frames = SubResource("SpriteFrames_gn6c1")
-animation = &"down_attack_end"
+animation = &"rubber_band_ground"
 autoplay = "idle"
 
 [node name="Hurtbox" type="CollisionShape2D" parent="."]

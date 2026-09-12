@@ -4,6 +4,7 @@ enum Directions { LEFT, RIGHT }
 
 var direction_lit
 var direction = 0
+var bounce_count = 0
 
 #Constants
 const JUMP_FORCE_FROM_WALL = 300
@@ -18,6 +19,7 @@ const JUMP_CAP = 400 #max jump height in pixels
 const ROOM_ENTRANCE_AIR_TIME = 0.05
 const ROOM_ENTRANCE_HORIZONTAL_TIME = 0.2
 const BOUNCE_VELOCITY = -1200.0
+const MAX_BOUNCE_COUNT = 5
 
 #Nodes
 var player
@@ -311,7 +313,9 @@ func _auto_move_helper():
 
 func bounce():
 	#for pogoing
-	player.velocity.y = BOUNCE_VELOCITY
+	var mod = (BOUNCE_VELOCITY / MAX_BOUNCE_COUNT) * bounce_count
+	player.velocity.y = BOUNCE_VELOCITY - mod
+	bounce_count += 1
 
 func get_direction():
 	return direction
@@ -324,3 +328,6 @@ func get_direction_lit():
 	
 func set_direction_lit(dir_lit : Directions):
 	direction_lit = dir_lit
+
+func reset_bounce_count():
+	bounce_count = 0

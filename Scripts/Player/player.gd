@@ -109,6 +109,7 @@ func _physics_process(delta):
 		active_hurtbox = hurtbox
 		hurtbox.set_deferred("disabled", false)
 		jump_hurtbox.set_deferred("disabled", true)
+	handle_bounce_count()
 	move_and_slide()
 	
 func _input(event):
@@ -262,3 +263,7 @@ func update_protein():
 
 func change_camera_follow_speed(speed):
 	emit_signal("update_camera_follow_speed", speed)
+
+func handle_bounce_count():
+	if collisions.is_bottom_colliding():
+		movement.reset_bounce_count()
