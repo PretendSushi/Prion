@@ -70,10 +70,10 @@ left_bound = 3055
 right_bound = 6496
 
 [node name="BossDetrigger" parent="." instance=ExtResource("8_7ro2w")]
-position = Vector2(3038, -251)
+position = Vector2(3084, -238)
 
 [node name="BossDetrigger2" parent="." instance=ExtResource("8_7ro2w")]
-position = Vector2(6470, -259)
+position = Vector2(6484, -243)
 
 [connection signal="update_camera_follow_speed" from="Player" to="Camera2D" method="_on_player_update_camera_follow_speed"]
 [connection signal="activate_boss" from="BossTrigger" to="HandBoss" method="_on_boss_trigger_activate_boss"]

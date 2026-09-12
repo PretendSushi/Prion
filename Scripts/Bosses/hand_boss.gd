@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 @onready var animated_sprite = $AnimatedSprite2D
+@onready var animation_player = $AnimationPlayer
 
 const MAX_HEALTH = 1000
 const MOVEMENT_SPEED = 500
@@ -86,9 +87,11 @@ func play_animations():
 	
 	if target_anim == "attack_start" or target_anim == "attack" or target_anim == "attack_end":
 		animated_sprite.offset.y = ATTACK_ANIM_OFFSET
+		animation_player.offset.y = ATTACK_ANIM_OFFSET
 	else:
 		animated_sprite.offset.y = 0
 	animated_sprite.play(target_anim)
+	animation_player.play(target_anim)
 		
 
 func attack():
