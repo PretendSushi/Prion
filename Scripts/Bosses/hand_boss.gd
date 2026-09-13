@@ -84,16 +84,14 @@ func play_animations():
 			target_anim = "attack"
 		elif attack_state == AttackState.END:
 			target_anim = "attack_end"
-	
-	#if target_anim == "attack_start" or target_anim == "attack" or target_anim == "attack_end":
-		#animated_sprite.offset.y = ATTACK_ANIM_OFFSET
-		#animation_player.offset.y = ATTACK_ANIM_OFFSET
+
 	else:
 		animated_sprite.offset.y = 0
-	animated_sprite.play(target_anim)
-	animation_player.play(target_anim)
 		
-
+	if animated_sprite.animation != target_anim:
+		animated_sprite.play(target_anim)
+		animation_player.play(target_anim)
+		
 func attack():
 	if action_state == ActionState.ATTACK or !can_attack:
 		return
