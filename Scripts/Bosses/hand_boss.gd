@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+signal hit_player
+
 @onready var animated_sprite = $AnimatedSprite2D
 @onready var animation_player = $AnimationPlayer
 
@@ -8,6 +10,8 @@ const MOVEMENT_SPEED = 500
 const ATTACK_TIMER = 5
 const ATTACK_ANIM_OFFSET = 250
 const HIT_FLASH_TIMER = 0.2
+const DAMAGE = 20
+const KNOCKBACK = 1000
 
 enum ActionState { IDLE, MOVING, ATTACK }
 enum AttackState { IDLE, START, DURATION, END }
@@ -133,3 +137,7 @@ func _on_player_attack(attack_dmg):
 
 func die():
 	queue_free()
+
+func _on_hitbox_body_entered(body: Node2D) -> void:
+	if body.is_in_group("Player"):
+		emit_signal("hit_player", DAMAGE, KNOCKBACK, global_position)
