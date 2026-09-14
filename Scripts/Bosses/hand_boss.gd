@@ -6,18 +6,21 @@ signal hit_player
 @onready var animation_player = $AnimationPlayer
 
 const MAX_HEALTH = 1000
-const MOVEMENT_SPEED = 500
+const MOVEMENT_SPEED = 1000
 const ATTACK_TIMER = 5
 const ATTACK_ANIM_OFFSET = 250
 const HIT_FLASH_TIMER = 0.2
 const DAMAGE = 20
 const KNOCKBACK = 1000
+const IDLE_TIME = 2
 
 enum ActionState { IDLE, MOVING, ATTACK }
 enum AttackState { IDLE, START, DURATION, END }
 enum Directions { NONE, LEFT, RIGHT }
+enum Phase { ONE, TWO, THREE }
 
 var health
+var curr_target
 
 var direction
 var action_state : ActionState
@@ -25,28 +28,35 @@ var attack_state : AttackState
 
 var attack_timer
 var hit_flash_timer
+var idle_timer
 
 var can_attack : bool
 var active : bool
+var player_reached : bool
 
 func _ready() -> void:
 	health = MAX_HEALTH
 	attack_timer = ATTACK_TIMER
+	idle_timer = IDLE_TIME
 	hit_flash_timer = 0
 	action_state = ActionState.IDLE
 	attack_state = AttackState.IDLE
 	active = false
 	can_attack = true
+	player_reached = false
 	animated_sprite.material.set_shader_parameter("hit_flash_on", 0.0)
 
 func _physics_process(delta: float) -> void:
 	if active:
-		var player_x = find_player_x()
-		if player_x:
-			move(player_x)
-		handle_attack_timer(delta)
+		if curr_target and can_attack:
+			move(curr_target)
+		handle_idle_timer(delta)
+		if curr_target and player_reached:
+			attack()
+			idle_timer = IDLE_TIME
+			curr_target = null
+			player_reached = false
 		handle_hit_flash_timer(delta)
-		attack()
 		play_animations()
 		move_and_slide()
 	
@@ -71,6 +81,7 @@ func move(player_x):
 		velocity.x = 0
 		direction = Directions.NONE
 		action_state = ActionState.IDLE
+		player_reached = true
 		
 func play_animations():
 	var target_anim = "idle"
@@ -97,19 +108,29 @@ func play_animations():
 		animation_player.play(target_anim)
 		
 func attack():
-	if action_state == ActionState.ATTACK or !can_attack:
+	if action_state == ActionState.ATTACK:
 		return
 	action_state = ActionState.ATTACK
 	attack_state = AttackState.START
 	velocity.x = 0
-	can_attack = false
-	attack_timer = ATTACK_TIMER
+	#can_attack = false
+	#attack_timer = ATTACK_TIMER
 	
 func handle_attack_timer(delta):
 	if attack_timer > 0:
 		attack_timer -= delta
 	else:
 		can_attack = true
+
+func handle_idle_timer(delta):
+	if attack_state != AttackState.IDLE:
+		return
+	if idle_timer > 0:
+		idle_timer -= delta
+		action_state = ActionState.IDLE
+	else:
+		can_attack = true
+		phase_one()
 
 func handle_hit_flash_timer(delta):
 	if hit_flash_timer > 0:
@@ -141,3 +162,10 @@ func die():
 func _on_hitbox_body_entered(body: Node2D) -> void:
 	if body.is_in_group("Player"):
 		emit_signal("hit_player", DAMAGE, KNOCKBACK, global_position)
+
+func phase_one():
+	if !can_attack:
+		return
+	if !curr_target:
+		curr_target = find_player_x()
+	
