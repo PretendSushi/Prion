@@ -16,6 +16,7 @@ const IDLE_TIME = 2
 
 enum ActionState { IDLE, MOVING, ATTACK }
 enum AttackState { IDLE, START, DURATION, END }
+enum MovementState { IDLE, START, DURATION, END }
 enum Directions { NONE, LEFT, RIGHT }
 enum Phase { ONE, TWO, THREE }
 
@@ -25,6 +26,7 @@ var curr_target
 var direction
 var action_state : ActionState
 var attack_state : AttackState
+var movement_state: MovementState
 
 var attack_timer
 var hit_flash_timer
@@ -41,6 +43,7 @@ func _ready() -> void:
 	hit_flash_timer = 0
 	action_state = ActionState.IDLE
 	attack_state = AttackState.IDLE
+	movement_state = MovementState.IDLE
 	active = false
 	can_attack = true
 	player_reached = false
@@ -51,7 +54,7 @@ func _physics_process(delta: float) -> void:
 		if curr_target and can_attack:
 			move(curr_target)
 		handle_idle_timer(delta)
-		if curr_target and player_reached:
+		if curr_target and player_reached and movement_state == MovementState.IDLE:
 			attack()
 			idle_timer = IDLE_TIME
 			curr_target = null
@@ -79,17 +82,34 @@ func move(player_x):
 		action_state = ActionState.MOVING
 	else:
 		velocity.x = 0
-		direction = Directions.NONE
+		#direction = Directions.NONE
 		action_state = ActionState.IDLE
 		player_reached = true
 		
+	if action_state == ActionState.MOVING and movement_state == MovementState.IDLE:
+		movement_state = MovementState.START
+	if player_reached and movement_state != MovementState.IDLE:
+		movement_state = MovementState.END
+		
 func play_animations():
 	var target_anim = "idle"
-	if action_state == ActionState.MOVING:
+	if movement_state != MovementState.IDLE:
 		if direction == Directions.RIGHT:
-			target_anim = "right"
+			match movement_state:
+				MovementState.START:
+					target_anim = "right_start"
+				MovementState.DURATION:
+					target_anim = "right"
+				MovementState.END:
+					target_anim = "right_end"
 		elif direction == Directions.LEFT:
-			target_anim = "left"
+			match movement_state:
+				MovementState.START:
+					target_anim = "left_start"
+				MovementState.DURATION:
+					target_anim = "left"
+				MovementState.END:
+					target_anim = "left_end"
 	elif action_state == ActionState.IDLE:
 		target_anim = "idle"
 	elif action_state == ActionState.ATTACK:
@@ -99,9 +119,13 @@ func play_animations():
 			target_anim = "attack"
 		elif attack_state == AttackState.END:
 			target_anim = "attack_end"
-
 	else:
 		animated_sprite.offset.y = 0
+	
+	if action_state == ActionState.ATTACK and direction == Directions.RIGHT:
+		animated_sprite.flip_h = true
+	else:
+		animated_sprite.flip_h = false
 		
 	if animated_sprite.animation != target_anim:
 		animated_sprite.play(target_anim)
@@ -113,8 +137,6 @@ func attack():
 	action_state = ActionState.ATTACK
 	attack_state = AttackState.START
 	velocity.x = 0
-	#can_attack = false
-	#attack_timer = ATTACK_TIMER
 	
 func handle_attack_timer(delta):
 	if attack_timer > 0:
@@ -146,7 +168,10 @@ func _on_animated_sprite_2d_animation_finished() -> void:
 	if animated_sprite.animation == "attack_end":
 		attack_state = AttackState.IDLE
 		action_state = ActionState.IDLE
-
+	if animated_sprite.animation == "left_start" or animated_sprite.animation == "right_start":
+		movement_state = MovementState.DURATION
+	if animated_sprite.animation == "left_end" or animated_sprite.animation == "right_end":
+		movement_state = MovementState.IDLE
 
 func _on_boss_trigger_activate_boss() -> void:
 	active = true
