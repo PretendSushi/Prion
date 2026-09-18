@@ -13,9 +13,11 @@ const HIT_FLASH_TIMER = 0.2
 const DAMAGE = 20
 const KNOCKBACK = 1000
 const IDLE_TIME = 2
+const SLAP_MAX = 3
 
 enum ActionState { IDLE, MOVING, ATTACK }
 enum AttackState { IDLE, START, DURATION, END }
+enum AvailableAttacks { SLAP, CLAP }
 enum MovementState { IDLE, START, DURATION, END }
 enum Directions { NONE, LEFT, RIGHT }
 enum Phase { ONE, TWO, THREE }
@@ -23,10 +25,12 @@ enum Phase { ONE, TWO, THREE }
 var health
 var curr_target
 
-var direction
+var direction : Directions
 var action_state : ActionState
 var attack_state : AttackState
-var movement_state: MovementState
+var curr_attack : AvailableAttacks
+var movement_state : MovementState
+var phase : Phase
 
 var attack_timer
 var hit_flash_timer
@@ -35,6 +39,7 @@ var idle_timer
 var can_attack : bool
 var active : bool
 var player_reached : bool
+var slap_counter
 
 func _ready() -> void:
 	health = MAX_HEALTH
@@ -44,21 +49,25 @@ func _ready() -> void:
 	action_state = ActionState.IDLE
 	attack_state = AttackState.IDLE
 	movement_state = MovementState.IDLE
+	phase = Phase.TWO
 	active = false
 	can_attack = true
 	player_reached = false
+	slap_counter = 0
 	animated_sprite.material.set_shader_parameter("hit_flash_on", 0.0)
 
 func _physics_process(delta: float) -> void:
 	if active:
-		if curr_target and can_attack:
-			move(curr_target)
+		if phase == Phase.ONE:
+			phase_one()
+		if phase == Phase.TWO:
+			if slap_counter == SLAP_MAX:
+				phase_two()
+			else:
+				phase_one()
+		phase_two_helper()
+		check_and_change_phase()
 		handle_idle_timer(delta)
-		if curr_target and player_reached and movement_state == MovementState.IDLE:
-			attack()
-			idle_timer = IDLE_TIME
-			curr_target = null
-			player_reached = false
 		handle_hit_flash_timer(delta)
 		play_animations()
 		move_and_slide()
@@ -113,15 +122,20 @@ func play_animations():
 	elif action_state == ActionState.IDLE:
 		target_anim = "idle"
 	elif action_state == ActionState.ATTACK:
-		if attack_state == AttackState.START:
-			target_anim = "attack_start"
-		elif attack_state == AttackState.DURATION:
-			target_anim = "attack"
-		elif attack_state == AttackState.END:
-			target_anim = "attack_end"
-	else:
-		animated_sprite.offset.y = 0
-	
+		if curr_attack == AvailableAttacks.SLAP:
+			if attack_state == AttackState.START:
+				target_anim = "attack_slap_start"
+			elif attack_state == AttackState.DURATION:
+				target_anim = "attack_slap"
+			elif attack_state == AttackState.END:
+				target_anim = "attack_slap_end"
+		elif curr_attack == AvailableAttacks.CLAP:
+			if attack_state == AttackState.START:
+				target_anim = "attack_clap_start"
+			elif attack_state == AttackState.DURATION:
+				target_anim = "attack_clap"
+			elif attack_state == AttackState.END:
+				target_anim = "attack_clap_end"
 	if action_state == ActionState.ATTACK and direction == Directions.RIGHT:
 		animated_sprite.flip_h = true
 	else:
@@ -136,7 +150,12 @@ func attack():
 		return
 	action_state = ActionState.ATTACK
 	attack_state = AttackState.START
+	movement_state = MovementState.IDLE
 	velocity.x = 0
+	if curr_attack == AvailableAttacks.SLAP:
+		slap_counter += 1
+	if curr_attack == AvailableAttacks.CLAP:
+		slap_counter = 0
 	
 func handle_attack_timer(delta):
 	if attack_timer > 0:
@@ -152,7 +171,6 @@ func handle_idle_timer(delta):
 		action_state = ActionState.IDLE
 	else:
 		can_attack = true
-		phase_one()
 
 func handle_hit_flash_timer(delta):
 	if hit_flash_timer > 0:
@@ -161,11 +179,11 @@ func handle_hit_flash_timer(delta):
 		animated_sprite.material.set_shader_parameter("hit_flash_on", 0.0)
 
 func _on_animated_sprite_2d_animation_finished() -> void:
-	if animated_sprite.animation == "attack_start":
+	if animated_sprite.animation == "attack_slap_start" or animated_sprite.animation == "attack_clap_start":
 		attack_state = AttackState.DURATION
-	if animated_sprite.animation == "attack":
+	if animated_sprite.animation == "attack_slap" or animated_sprite.animation == "attack_clap":
 		attack_state = AttackState.END
-	if animated_sprite.animation == "attack_end":
+	if animated_sprite.animation == "attack_slap_end" or animated_sprite.animation == "attack_clap_end":
 		attack_state = AttackState.IDLE
 		action_state = ActionState.IDLE
 	if animated_sprite.animation == "left_start" or animated_sprite.animation == "right_start":
@@ -188,9 +206,38 @@ func _on_hitbox_body_entered(body: Node2D) -> void:
 	if body.is_in_group("Player"):
 		emit_signal("hit_player", DAMAGE, KNOCKBACK, global_position)
 
+func check_and_change_phase():
+	if health <= (MAX_HEALTH / Phase.size()) * 2:
+		phase = Phase.TWO
+	if health <= (MAX_HEALTH / Phase.size()):
+		phase = Phase.THREE
+
 func phase_one():
 	if !can_attack:
 		return
+	curr_attack = AvailableAttacks.SLAP
 	if !curr_target:
 		curr_target = find_player_x()
-	
+	move(curr_target)
+	if curr_target and player_reached and movement_state == MovementState.IDLE:
+		attack()
+		idle_timer = IDLE_TIME
+		curr_target = null
+		player_reached = false
+		can_attack = false
+
+func phase_two():
+	if phase != Phase.TWO or !can_attack:
+		return
+	curr_attack = AvailableAttacks.CLAP
+	if !curr_target:
+		curr_target = find_player_x()
+	velocity.x = 0
+	attack()
+	idle_timer = IDLE_TIME
+	can_attack = false
+
+func phase_two_helper():
+	if curr_attack == AvailableAttacks.CLAP:
+		if attack_state == AttackState.DURATION:
+			global_position.x = curr_target

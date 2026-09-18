@@ -9,7 +9,7 @@
 [ext_resource type="Script" uid="uid://p550xmykutcc" path="res://Scripts/Data/RoomTransData.gd" id="6_m1alw"]
 [ext_resource type="PackedScene" uid="uid://b81mxy3nse00a" path="res://Scenes/Triggers/BossTrigger.tscn" id="7_fhjua"]
 [ext_resource type="PackedScene" uid="uid://05mkxdcuslwo" path="res://Scenes/Triggers/BossDetrigger.tscn" id="8_7ro2w"]
-[ext_resource type="PackedScene" uid="uid://28176cw1ss1v" path="res://Scenes/Bosses/HandBoss.tscn" id="10_t44cq"]
+[ext_resource type="PackedScene" uid="uid://28176cw1ss1v" path="res://Scenes/Bosses/Hand/HandBoss.tscn" id="10_t44cq"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_m1alw"]
 
