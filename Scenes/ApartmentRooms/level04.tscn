@@ -37,9 +37,6 @@ room_id = 4
 position = Vector2(4407, -1534)
 texture = ExtResource("2_fojw8")
 
-[node name="HandBoss" parent="." instance=ExtResource("10_t44cq")]
-position = Vector2(4914, -470)
-
 [node name="TileMap" type="TileMap" parent="."]
 material = SubResource("CanvasItemMaterial_m1alw")
 tile_set = ExtResource("1_3vlp4")
@@ -75,9 +72,12 @@ position = Vector2(3084, -238)
 [node name="BossDetrigger2" parent="." instance=ExtResource("8_7ro2w")]
 position = Vector2(6484, -243)
 
-[connection signal="hit_player" from="HandBoss" to="Player" method="_on_enemy_hit_player"]
+[node name="HandBoss" parent="." instance=ExtResource("10_t44cq")]
+position = Vector2(4914, -470)
+
 [connection signal="update_camera_follow_speed" from="Player" to="Camera2D" method="_on_player_update_camera_follow_speed"]
 [connection signal="activate_boss" from="BossTrigger" to="HandBoss" method="_on_boss_trigger_activate_boss"]
 [connection signal="boss_camera" from="BossTrigger" to="Camera2D" method="_on_boss_trigger_boss_camera"]
 [connection signal="deboss_camera" from="BossDetrigger" to="Camera2D" method="_on_boss_detrigger_deboss_camera"]
 [connection signal="deboss_camera" from="BossDetrigger2" to="Camera2D" method="_on_boss_detrigger_deboss_camera"]
+[connection signal="hit_player" from="HandBoss" to="Player" method="_on_enemy_hit_player"]

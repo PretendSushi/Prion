@@ -14,10 +14,11 @@ const DAMAGE = 20
 const KNOCKBACK = 1000
 const IDLE_TIME = 2
 const SLAP_MAX = 3
+const SHOOT_MAX = 2
 
 enum ActionState { IDLE, MOVING, ATTACK }
 enum AttackState { IDLE, START, DURATION, END }
-enum AvailableAttacks { SLAP, CLAP }
+enum AvailableAttacks { SLAP, CLAP, SHOOT }
 enum MovementState { IDLE, START, DURATION, END }
 enum Directions { NONE, LEFT, RIGHT }
 enum Phase { ONE, TWO, THREE }
@@ -40,6 +41,7 @@ var can_attack : bool
 var active : bool
 var player_reached : bool
 var slap_counter
+var shot_counter
 
 func _ready() -> void:
 	health = MAX_HEALTH
@@ -49,19 +51,22 @@ func _ready() -> void:
 	action_state = ActionState.IDLE
 	attack_state = AttackState.IDLE
 	movement_state = MovementState.IDLE
-	phase = Phase.TWO
+	phase = Phase.THREE
 	active = false
 	can_attack = true
 	player_reached = false
 	slap_counter = 0
+	shot_counter = 0
 	animated_sprite.material.set_shader_parameter("hit_flash_on", 0.0)
 
 func _physics_process(delta: float) -> void:
 	if active:
 		if phase == Phase.ONE:
 			phase_one()
-		if phase == Phase.TWO:
-			if slap_counter == SLAP_MAX:
+		if phase == Phase.TWO or phase == Phase.THREE:
+			if phase == Phase.THREE and shot_counter < SHOOT_MAX:
+				phase_three()
+			elif slap_counter == SLAP_MAX:
 				phase_two()
 			else:
 				phase_one()
@@ -136,6 +141,13 @@ func play_animations():
 				target_anim = "attack_clap"
 			elif attack_state == AttackState.END:
 				target_anim = "attack_clap_end"
+		elif curr_attack == AvailableAttacks.SHOOT:
+			if attack_state == AttackState.START:
+				target_anim = "attack_shoot_start"
+			elif attack_state == AttackState.DURATION:
+				target_anim = "attack_shoot"
+			elif attack_state == AttackState.END:
+				target_anim = "attack_shoot_end"
 	if action_state == ActionState.ATTACK and direction == Directions.RIGHT:
 		animated_sprite.flip_h = true
 	else:
@@ -156,6 +168,9 @@ func attack():
 		slap_counter += 1
 	if curr_attack == AvailableAttacks.CLAP:
 		slap_counter = 0
+		shot_counter = 0
+	if  curr_attack == AvailableAttacks.SHOOT:
+		shot_counter += 1
 	
 func handle_attack_timer(delta):
 	if attack_timer > 0:
@@ -179,11 +194,11 @@ func handle_hit_flash_timer(delta):
 		animated_sprite.material.set_shader_parameter("hit_flash_on", 0.0)
 
 func _on_animated_sprite_2d_animation_finished() -> void:
-	if animated_sprite.animation == "attack_slap_start" or animated_sprite.animation == "attack_clap_start":
+	if animated_sprite.animation == "attack_slap_start" or animated_sprite.animation == "attack_clap_start" or animated_sprite.animation == "attack_shoot_start":
 		attack_state = AttackState.DURATION
-	if animated_sprite.animation == "attack_slap" or animated_sprite.animation == "attack_clap":
+	if animated_sprite.animation == "attack_slap" or animated_sprite.animation == "attack_clap" or animated_sprite.animation == "attack_shoot":
 		attack_state = AttackState.END
-	if animated_sprite.animation == "attack_slap_end" or animated_sprite.animation == "attack_clap_end":
+	if animated_sprite.animation == "attack_slap_end" or animated_sprite.animation == "attack_clap_end" or animated_sprite.animation == "attack_shoot_end":
 		attack_state = AttackState.IDLE
 		action_state = ActionState.IDLE
 	if animated_sprite.animation == "left_start" or animated_sprite.animation == "right_start":
@@ -227,7 +242,7 @@ func phase_one():
 		can_attack = false
 
 func phase_two():
-	if phase != Phase.TWO or !can_attack:
+	if !can_attack:
 		return
 	curr_attack = AvailableAttacks.CLAP
 	if !curr_target:
@@ -241,3 +256,18 @@ func phase_two_helper():
 	if curr_attack == AvailableAttacks.CLAP:
 		if attack_state == AttackState.DURATION:
 			global_position.x = curr_target
+			
+func phase_three():
+	if phase != Phase.THREE or !can_attack:
+		return
+	curr_attack = AvailableAttacks.SHOOT
+	if !curr_target:
+		curr_target = find_player_x()
+	if curr_target <= global_position.x:
+		direction = Directions.LEFT
+	else:
+		direction = Directions.RIGHT
+	velocity.x = 0
+	attack()
+	idle_timer = IDLE_TIME
+	can_attack = false
