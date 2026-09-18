@@ -32,8 +32,7 @@ func init():
 	unlocked_standard_abilities = []
 	
 	add_standard_abilities(
-		[StandardAbilities.HELICOPTER,
-		StandardAbilities.RUBBER_BAND,
+		[StandardAbilities.RUBBER_BAND,
 		StandardAbilities.STICKY_BAND,
 		StandardAbilities.ZERO_GRAV]
 	)
