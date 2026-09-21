@@ -50,7 +50,6 @@ func position_camera(x, y):
 	camera.global_position.x = x
 	camera.global_position.y = y
 	
-
 func check_for_enemies():
 	var children = get_all_nodes(get_children())
 	for child in children:

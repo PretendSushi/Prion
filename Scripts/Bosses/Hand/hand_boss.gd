@@ -4,6 +4,11 @@ signal hit_player
 
 @onready var animated_sprite = $AnimatedSprite2D
 @onready var animation_player = $AnimationPlayer
+@onready var index_fing = $Index
+@onready var mid_fing = $Mid
+@onready var ring_fing = $Ring
+@onready var pinky_fing = $Pinky
+@onready var finger_scene: PackedScene = preload("res://Scenes/Bosses/Hand/Finger.tscn")
 
 const MAX_HEALTH = 1000
 const MOVEMENT_SPEED = 1000
@@ -269,5 +274,8 @@ func phase_three():
 		direction = Directions.RIGHT
 	velocity.x = 0
 	attack()
+	var finger = finger_scene.instantiate()
+	add_child(finger)
+	finger.global_position = index_fing.global_position
 	idle_timer = IDLE_TIME
 	can_attack = false
