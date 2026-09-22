@@ -1069,13 +1069,14 @@ shape = SubResource("CircleShape2D_tdlbf")
 position = Vector2(-546.25, 2.5)
 
 [node name="Mid" type="Marker2D" parent="."]
-position = Vector2(-447.5, 227.5)
+position = Vector2(-506.25, 76.25)
 
 [node name="Ring" type="Marker2D" parent="."]
 position = Vector2(-481.25, 150)
 
 [node name="Pinky" type="Marker2D" parent="."]
-position = Vector2(-513.75, 73.75)
+position = Vector2(-457.5, 237.5)
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="frame_changed" from="AnimatedSprite2D" to="." method="_on_animated_sprite_frame_changed"]
 [connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]

@@ -20,6 +20,7 @@ const KNOCKBACK = 1000
 const IDLE_TIME = 2
 const SLAP_MAX = 3
 const SHOOT_MAX = 2
+const SHOOT_FRAMES = [ 1, 3, 5, 7 ]
 
 enum ActionState { IDLE, MOVING, ATTACK }
 enum AttackState { IDLE, START, DURATION, END }
@@ -274,8 +275,29 @@ func phase_three():
 		direction = Directions.RIGHT
 	velocity.x = 0
 	attack()
-	var finger = finger_scene.instantiate()
-	add_child(finger)
-	finger.global_position = index_fing.global_position
 	idle_timer = IDLE_TIME
 	can_attack = false
+	
+func phase_three_helper():
+	if curr_attack == AvailableAttacks.SHOOT:
+		if attack_state == AttackState.DURATION:
+			for i in range(SHOOT_FRAMES.size()):
+				if animated_sprite.frame == SHOOT_FRAMES[i]:
+					match i:
+						0:
+							spawn_finger(index_fing)
+						1:
+							spawn_finger(mid_fing)
+						2:
+							spawn_finger(ring_fing)
+						3:
+							spawn_finger(pinky_fing)
+							
+
+func spawn_finger(marker):
+	var finger = finger_scene.instantiate()
+	add_child(finger)
+	finger.global_position = marker.global_position
+
+func _on_animated_sprite_frame_changed() -> void:
+	phase_three_helper()
