@@ -4,10 +4,14 @@ signal hit_player
 
 @onready var animated_sprite = $AnimatedSprite2D
 @onready var animation_player = $AnimationPlayer
-@onready var index_fing = $Index
-@onready var mid_fing = $Mid
-@onready var ring_fing = $Ring
-@onready var pinky_fing = $Pinky
+@onready var index_fing_left = $IndexLeft
+@onready var mid_fing_left = $MidLeft
+@onready var ring_fing_left = $RingLeft
+@onready var pinky_fing_left = $PinkyLeft
+@onready var index_fing_right = $IndexRight
+@onready var mid_fing_right = $MidRight
+@onready var ring_fing_right = $RingRight
+@onready var pinky_fing_right = $PinkyRight
 @onready var finger_scene: PackedScene = preload("res://Scenes/Bosses/Hand/Finger.tscn")
 
 const MAX_HEALTH = 1000
@@ -48,6 +52,9 @@ var active : bool
 var player_reached : bool
 var slap_counter
 var shot_counter
+
+var left_shot_markers = [index_fing_left, mid_fing_left, ring_fing_left, pinky_fing_left]
+var right_shot_markers = [index_fing_right, mid_fing_right, ring_fing_right, pinky_fing_right]
 
 func _ready() -> void:
 	health = MAX_HEALTH
@@ -154,6 +161,7 @@ func play_animations():
 				target_anim = "attack_shoot"
 			elif attack_state == AttackState.END:
 				target_anim = "attack_shoot_end"
+
 	if action_state == ActionState.ATTACK and direction == Directions.RIGHT:
 		animated_sprite.flip_h = true
 	else:
@@ -267,8 +275,7 @@ func phase_three():
 	if phase != Phase.THREE or !can_attack:
 		return
 	curr_attack = AvailableAttacks.SHOOT
-	if !curr_target:
-		curr_target = find_player_x()
+	curr_target = find_player_x()
 	if curr_target <= global_position.x:
 		direction = Directions.LEFT
 	else:
@@ -279,19 +286,30 @@ func phase_three():
 	can_attack = false
 	
 func phase_three_helper():
-	if curr_attack == AvailableAttacks.SHOOT:
-		if attack_state == AttackState.DURATION:
-			for i in range(SHOOT_FRAMES.size()):
-				if animated_sprite.frame == SHOOT_FRAMES[i]:
-					match i:
-						0:
-							spawn_finger(index_fing)
-						1:
-							spawn_finger(mid_fing)
-						2:
-							spawn_finger(ring_fing)
-						3:
-							spawn_finger(pinky_fing)
+	if curr_attack == AvailableAttacks.SHOOT and attack_state == AttackState.DURATION:
+		for i in range(SHOOT_FRAMES.size()):
+			if animated_sprite.frame == SHOOT_FRAMES[i]:
+				match i:
+					0:
+						if direction == Directions.LEFT:
+							spawn_finger(index_fing_left)
+						else:
+							spawn_finger(index_fing_right)
+					1:
+						if direction == Directions.LEFT:
+							spawn_finger(mid_fing_left)
+						else:
+							spawn_finger(mid_fing_right)
+					2:
+						if direction == Directions.LEFT:
+							spawn_finger(ring_fing_left)
+						else:
+							spawn_finger(ring_fing_right)
+					3:
+						if direction == Directions.LEFT:
+							spawn_finger(pinky_fing_left)
+						else:
+							spawn_finger(pinky_fing_right)
 							
 
 func spawn_finger(marker):
