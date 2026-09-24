@@ -162,14 +162,24 @@ func play_animations():
 			elif attack_state == AttackState.END:
 				target_anim = "attack_shoot_end"
 
-	if action_state == ActionState.ATTACK and direction == Directions.RIGHT:
+	if action_state == ActionState.ATTACK and direction == Directions.RIGHT:	
 		animated_sprite.flip_h = true
 	else:
 		animated_sprite.flip_h = false
 		
 	if animated_sprite.animation != target_anim:
 		animated_sprite.play(target_anim)
-		animation_player.play(target_anim)
+		#this will be removed when we have the good anims, just need to play target_anim
+		if action_state == ActionState.ATTACK and curr_attack == AvailableAttacks.SLAP and direction == Directions.RIGHT:
+			match attack_state:
+				AttackState.START:
+					animation_player.play("attack_slap_right_start")
+				AttackState.DURATION:
+					animation_player.play("attack_slap_right")
+				AttackState.END:
+					animation_player.play("attack_slap_right_end")
+		else:
+			animation_player.play(target_anim)
 		
 func attack():
 	if action_state == ActionState.ATTACK:
