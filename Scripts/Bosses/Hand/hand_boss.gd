@@ -52,6 +52,7 @@ var idle_timer
 var can_attack : bool
 var active : bool
 var player_reached : bool
+var has_intro_played: bool
 var slap_counter
 var shot_counter
 
@@ -70,13 +71,16 @@ func _ready() -> void:
 	active = false
 	can_attack = true
 	player_reached = false
+	has_intro_played = false
 	slap_counter = 0
 	shot_counter = 0
 	animated_sprite.material.set_shader_parameter("hit_flash_on", 0.0)
 	emit_signal("initialize_health_bar", MAX_HEALTH)
 
 func _physics_process(delta: float) -> void:
-	if active:
+	if !has_intro_played:
+		play_animations()
+	elif active:
 		if phase == Phase.ONE:
 			phase_one()
 		if phase == Phase.TWO or phase == Phase.THREE:
@@ -170,6 +174,9 @@ func play_animations():
 	else:
 		animated_sprite.flip_h = false
 		
+	if !has_intro_played:
+		target_anim = "intro"
+		
 	if animated_sprite.animation != target_anim:
 		animated_sprite.play(target_anim)
 		#this will be removed when we have the good anims, just need to play target_anim
@@ -234,6 +241,9 @@ func _on_animated_sprite_2d_animation_finished() -> void:
 		movement_state = MovementState.DURATION
 	if animated_sprite.animation == "left_end" or animated_sprite.animation == "right_end":
 		movement_state = MovementState.IDLE
+	if animated_sprite.animation == "intro":
+		print("here")
+		has_intro_played = true
 
 func _on_boss_trigger_activate_boss() -> void:
 	active = true
