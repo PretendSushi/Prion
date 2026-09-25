@@ -17,4 +17,3 @@ func _on_hand_boss_initialize_health_bar(max_health) -> void:
 func _on_hand_boss_update_health_bar(health) -> void:
 	var healthbar_tween = get_tree().create_tween()
 	healthbar_tween.tween_property(bar, "value", health, BAR_TWEEN_DURATION)
-	print(bar.value)

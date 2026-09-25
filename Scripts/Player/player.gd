@@ -112,9 +112,9 @@ func _physics_process(delta):
 	handle_bounce_count()
 	move_and_slide()
 	
-func _input(event):
-	if event is InputEventJoypadButton and event.pressed:
-		print("Button index:", event.button_index)
+#func _input(event):
+	#if event is InputEventJoypadButton and event.pressed:
+		#print("Button index:", event.button_index)
 
 func check_for_inputs(delta):
 	#Movement inputs are not checked here

@@ -64,12 +64,14 @@ func zero_grav():
 	timers.set_zero_grav_timer()
 	
 func leech():
-	if state_machine.get_action_state() == state_machine.ActionState.LEECH:
+	if state_machine.get_action_state() == state_machine.ActionState.LEECH\
+	or state_machine.get_jump_state() != state_machine.JumpState.IDLE:
 		return
 	state_machine.set_action_state(state_machine.ActionState.LEECH)
 	state_machine.set_leech_state(state_machine.LeechState.START)
 	
 func is_leech_successful():
+	player.velocity.x = 0
 	var hitbox = collisions.get_leech_right()
 	if movement.direction_lit == movement.Directions.LEFT:
 		hitbox = collisions.get_leech_left()
@@ -80,14 +82,22 @@ func is_leech_successful():
 			emit_signal("player_leech", attacks.ATTACK_DAMAGE)
 			on_leech_successful()
 			return true
+	var areas = hitbox.get_overlapping_areas()
+	for area in areas:
+		if area.get_parent().is_in_group("Boss"):
+			var boss = area.get_parent()
+			player_leech.connect(boss._on_player_leech.bind())
+			emit_signal("player_leech", attacks.ATTACK_DAMAGE)
+			on_leech_successful()
+			return true
 	return false
 	
 func on_leech_successful():
+	player.velocity.x = 0
 	if player.health + LEECH_HEALTH_GAIN >= 100:
 		player.health = 100
 	else:
 		player.health += LEECH_HEALTH_GAIN
-	print("hit")
 	player.update_health()
 
 func is_standard_ability_unlocked(target_ability: StandardAbilities):

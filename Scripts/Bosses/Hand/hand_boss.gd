@@ -16,7 +16,7 @@ signal initialize_health_bar
 @onready var pinky_fing_right = $PinkyRight
 @onready var finger_scene: PackedScene = preload("res://Scenes/Bosses/Hand/Finger.tscn")
 
-const MAX_HEALTH = 1000
+const MAX_HEALTH = 3000
 const MOVEMENT_SPEED = 1000
 const ATTACK_TIMER = 5
 const ATTACK_ANIM_OFFSET = 250
@@ -191,7 +191,8 @@ func attack():
 	attack_state = AttackState.START
 	movement_state = MovementState.IDLE
 	velocity.x = 0
-	if curr_attack == AvailableAttacks.SLAP:
+	if curr_attack == AvailableAttacks.SLAP\
+	and (phase == Phase.TWO or phase == Phase.THREE):
 		slap_counter += 1
 	if curr_attack == AvailableAttacks.CLAP:
 		slap_counter = 0
@@ -228,6 +229,7 @@ func _on_animated_sprite_2d_animation_finished() -> void:
 	if animated_sprite.animation == "attack_slap_end" or animated_sprite.animation == "attack_clap_end" or animated_sprite.animation == "attack_shoot_end":
 		attack_state = AttackState.IDLE
 		action_state = ActionState.IDLE
+		curr_target = null
 	if animated_sprite.animation == "left_start" or animated_sprite.animation == "right_start":
 		movement_state = MovementState.DURATION
 	if animated_sprite.animation == "left_end" or animated_sprite.animation == "right_end":
@@ -241,7 +243,14 @@ func _on_player_attack(attack_dmg):
 	hit_flash_timer = HIT_FLASH_TIMER
 	health -= attack_dmg
 	emit_signal("update_health_bar", health)
+	if health <= 0:
+		die()
 	
+func _on_player_leech(leech_dmg):
+	health -= leech_dmg
+	emit_signal("update_health_bar")
+	if health <= 0:
+		die()
 
 func die():
 	queue_free()

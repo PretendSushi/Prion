@@ -57,7 +57,7 @@ rotation = 1.5708
 room_trans_data = SubResource("Resource_m1alw")
 
 [node name="RoomTransition2" parent="." instance=ExtResource("4_hs1v1")]
-position = Vector2(1918, 38)
+position = Vector2(1955, 46)
 rotation = 1.5708
 room_trans_data = SubResource("Resource_fhjua")
 
