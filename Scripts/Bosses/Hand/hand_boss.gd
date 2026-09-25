@@ -1,6 +1,8 @@
 extends CharacterBody2D
 
 signal hit_player
+signal update_health_bar
+signal initialize_health_bar
 
 @onready var animated_sprite = $AnimatedSprite2D
 @onready var animation_player = $AnimationPlayer
@@ -64,13 +66,14 @@ func _ready() -> void:
 	action_state = ActionState.IDLE
 	attack_state = AttackState.IDLE
 	movement_state = MovementState.IDLE
-	phase = Phase.THREE
+	phase = Phase.ONE
 	active = false
 	can_attack = true
 	player_reached = false
 	slap_counter = 0
 	shot_counter = 0
 	animated_sprite.material.set_shader_parameter("hit_flash_on", 0.0)
+	emit_signal("initialize_health_bar", MAX_HEALTH)
 
 func _physics_process(delta: float) -> void:
 	if active:
@@ -237,6 +240,8 @@ func _on_player_attack(attack_dmg):
 	animated_sprite.material.set_shader_parameter("hit_flash_on", 1.0)
 	hit_flash_timer = HIT_FLASH_TIMER
 	health -= attack_dmg
+	emit_signal("update_health_bar", health)
+	
 
 func die():
 	queue_free()
