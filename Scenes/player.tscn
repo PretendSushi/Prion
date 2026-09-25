@@ -546,10 +546,10 @@ size = Vector2(72, 285)
 size = Vector2(85, 293)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_igrcy"]
-size = Vector2(268, 273)
+size = Vector2(247, 273)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fs7ks"]
-size = Vector2(268, 273)
+size = Vector2(224, 273)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_l6n3p"]
 size = Vector2(268, 202.5)
@@ -616,6 +616,7 @@ position = Vector2(15, -213)
 sprite_frames = SubResource("SpriteFrames_gn6c1")
 animation = &"attack"
 autoplay = "idle"
+flip_h = true
 
 [node name="Hurtbox" type="CollisionShape2D" parent="."]
 position = Vector2(8.5, -179.5)
@@ -634,14 +635,14 @@ shape = SubResource("RectangleShape2D_vq3lt")
 [node name="FrontHitbox" type="Area2D" parent="."]
 
 [node name="HitCollision" type="CollisionShape2D" parent="FrontHitbox"]
-position = Vector2(163, -181.5)
+position = Vector2(152.5, -181.5)
 shape = SubResource("RectangleShape2D_igrcy")
 debug_color = Color(0, 0.600158, 0.694439, 0.529412)
 
 [node name="BackHitbox" type="Area2D" parent="."]
 
 [node name="HitCollision" type="CollisionShape2D" parent="BackHitbox"]
-position = Vector2(-158, -181)
+position = Vector2(-136, -181)
 shape = SubResource("RectangleShape2D_fs7ks")
 
 [node name="BottomCollision" type="Area2D" parent="."]

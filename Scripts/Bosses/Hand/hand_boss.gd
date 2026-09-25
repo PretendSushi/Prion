@@ -118,7 +118,6 @@ func move(player_x):
 		action_state = ActionState.MOVING
 	else:
 		velocity.x = 0
-		#direction = Directions.NONE
 		action_state = ActionState.IDLE
 		player_reached = true
 		
