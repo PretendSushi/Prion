@@ -60,6 +60,7 @@ var left_shot_markers = [index_fing_left, mid_fing_left, ring_fing_left, pinky_f
 var right_shot_markers = [index_fing_right, mid_fing_right, ring_fing_right, pinky_fing_right]
 
 func _ready() -> void:
+	animation_player.play("idle")
 	health = MAX_HEALTH
 	attack_timer = ATTACK_TIMER
 	idle_timer = IDLE_TIME
@@ -78,24 +79,25 @@ func _ready() -> void:
 	emit_signal("initialize_health_bar", MAX_HEALTH)
 
 func _physics_process(delta: float) -> void:
-	if !has_intro_played:
-		play_animations()
-	elif active:
-		if phase == Phase.ONE:
-			phase_one()
-		if phase == Phase.TWO or phase == Phase.THREE:
-			if phase == Phase.THREE and shot_counter < SHOOT_MAX:
-				phase_three()
-			elif slap_counter == SLAP_MAX:
-				phase_two()
-			else:
+	if active:
+		if !has_intro_played:
+			play_animations()
+		else:
+			if phase == Phase.ONE:
 				phase_one()
-		phase_two_helper()
-		check_and_change_phase()
-		handle_idle_timer(delta)
-		handle_hit_flash_timer(delta)
-		play_animations()
-		move_and_slide()
+			if phase == Phase.TWO or phase == Phase.THREE:
+				if phase == Phase.THREE and shot_counter < SHOOT_MAX:
+					phase_three()
+				elif slap_counter == SLAP_MAX:
+					phase_two()
+				else:
+					phase_one()
+			phase_two_helper()
+			check_and_change_phase()
+			handle_idle_timer(delta)
+			handle_hit_flash_timer(delta)
+			play_animations()
+			move_and_slide()
 	
 func find_player_x():
 	var player = get_tree().get_first_node_in_group("Player")
