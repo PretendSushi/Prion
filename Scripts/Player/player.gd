@@ -134,7 +134,7 @@ func check_for_inputs(delta):
 	if Input.is_action_just_pressed("Leech"):
 		abilities.leech()
 	if Input.is_action_just_pressed("Jump"):
-		movement.handle_jump(delta)
+		movement.handle_jump()
 	if Input.is_action_pressed("Sprint"):
 		movement.handle_sprint()
 	if Input.is_action_just_released("Sprint"):
