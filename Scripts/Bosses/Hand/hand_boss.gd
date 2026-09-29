@@ -24,8 +24,6 @@ const HIT_FLASH_TIMER = 0.2
 const DAMAGE = 20
 const KNOCKBACK = 1000
 const IDLE_TIME = 2
-const SLAP_MAX = 3
-const SHOOT_MAX = 2
 const SHOOT_FRAMES = [ 1, 3, 5, 7 ]
 
 enum ActionState { IDLE, MOVING, ATTACK }
@@ -53,8 +51,6 @@ var can_attack : bool
 var active : bool
 var player_reached : bool
 var has_intro_played: bool
-var slap_counter
-var shot_counter
 
 var left_shot_markers = [index_fing_left, mid_fing_left, ring_fing_left, pinky_fing_left]
 var right_shot_markers = [index_fing_right, mid_fing_right, ring_fing_right, pinky_fing_right]
@@ -73,8 +69,6 @@ func _ready() -> void:
 	can_attack = true
 	player_reached = false
 	has_intro_played = false
-	slap_counter = 0
-	shot_counter = 0
 	animated_sprite.material.set_shader_parameter("hit_flash_on", 0.0)
 	emit_signal("initialize_health_bar", MAX_HEALTH)
 
@@ -85,13 +79,16 @@ func _physics_process(delta: float) -> void:
 		else:
 			if phase == Phase.ONE:
 				phase_one()
-			if phase == Phase.TWO or phase == Phase.THREE:
-				if phase == Phase.THREE and shot_counter < SHOOT_MAX:
-					phase_three()
-				elif slap_counter == SLAP_MAX:
-					phase_two()
-				else:
-					phase_one()
+			elif phase == Phase.TWO or phase == Phase.THREE:
+				var attack_idx
+				if phase == Phase.TWO:
+					attack_idx = randi_range(1, 2)
+				elif phase == Phase.THREE:
+					attack_idx = randi_range(1, 3)
+				match attack_idx:
+					1: phase_one()
+					2: phase_two()
+					3: phase_three()
 			phase_two_helper()
 			check_and_change_phase()
 			handle_idle_timer(delta)
@@ -199,14 +196,6 @@ func attack():
 	attack_state = AttackState.START
 	movement_state = MovementState.IDLE
 	velocity.x = 0
-	if curr_attack == AvailableAttacks.SLAP\
-	and (phase == Phase.TWO or phase == Phase.THREE):
-		slap_counter += 1
-	if curr_attack == AvailableAttacks.CLAP:
-		slap_counter = 0
-		shot_counter = 0
-	if  curr_attack == AvailableAttacks.SHOOT:
-		shot_counter += 1
 	
 func handle_attack_timer(delta):
 	if attack_timer > 0:

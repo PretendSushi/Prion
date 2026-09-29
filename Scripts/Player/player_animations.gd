@@ -97,7 +97,6 @@ func play_animations():
 		elif state_machine.get_action_state() == state_machine.ActionState.ATTACK:
 			if state_machine.get_attack_state() != state_machine.AttackState.IDLE:
 				if state_machine.get_attack_dir() == state_machine.AttackDir.NEUTRAL:
-					print("here")
 					match state_machine.get_attack_state():
 						state_machine.AttackState.START:
 							target_anim = "attack_start"
@@ -130,7 +129,7 @@ func play_animations():
 					target_anim = "jump_falling"
 				state_machine.JumpState.IDLE:
 					target_anim = "jump_fall"
-	print(state_machine.attack_dir)
+
 	if state_machine.get_action_state() == state_machine.ActionState.ZERO_GRAV:
 		animated_sprite.flip_v = true
 	else:
