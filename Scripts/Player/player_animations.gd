@@ -95,9 +95,9 @@ func play_animations():
 			if state_machine.get_dash_state() == state_machine.DashState.DURATION:
 				target_anim = "dash"
 		elif state_machine.get_action_state() == state_machine.ActionState.ATTACK:
-			if state_machine.get_attack_state() != state_machine.AttackState.IDLE\
-			and state_machine.get_attack_dir() != state_machine.AttackDir.NONE:
+			if state_machine.get_attack_state() != state_machine.AttackState.IDLE:
 				if state_machine.get_attack_dir() == state_machine.AttackDir.NEUTRAL:
+					print("here")
 					match state_machine.get_attack_state():
 						state_machine.AttackState.START:
 							target_anim = "attack_start"
@@ -130,7 +130,7 @@ func play_animations():
 					target_anim = "jump_falling"
 				state_machine.JumpState.IDLE:
 					target_anim = "jump_fall"
-	
+	print(state_machine.attack_dir)
 	if state_machine.get_action_state() == state_machine.ActionState.ZERO_GRAV:
 		animated_sprite.flip_v = true
 	else:
@@ -169,7 +169,7 @@ func _on_animation_finished():
 	if animated_sprite.animation == "attack_end" or animated_sprite.animation == "down_attack_end":
 		state_machine.set_attack_state(state_machine.AttackState.IDLE)
 		state_machine.set_action_state(state_machine.ActionState.IDLE)
-		state_machine.set_attack_dir(state_machine.AttackDir.NONE)
+		state_machine.set_attack_dir(state_machine.AttackDir.NEUTRAL)
 	if animated_sprite.animation == "jump_startup":
 		state_machine.set_jump_state(state_machine.JumpState.JUMP_RISE)
 	if animated_sprite.animation == "jump_rise"\

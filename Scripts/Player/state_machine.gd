@@ -11,7 +11,7 @@ enum DashState { IDLE, START, DURATION, END }
 #redundant, refers to all horizontal movement, in air and otherwise
 enum WalkingState { IDLE, WALKING }
 enum AttackState { IDLE, START, DURATION, END }
-enum AttackDir { NONE, NEUTRAL, UP, DOWN }
+enum AttackDir { NEUTRAL, UP, DOWN }
 
 #state variables. Should be treated as private
 var transition_state
@@ -35,7 +35,7 @@ func init():
 	walking_state = WalkingState.IDLE
 	dash_state = DashState.IDLE
 	attack_state = AttackState.IDLE
-	attack_dir = AttackDir.NONE
+	attack_dir = AttackDir.NEUTRAL
 
 func reset_jump():
 	jump_state = JumpState.IDLE

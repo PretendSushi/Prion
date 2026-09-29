@@ -101,40 +101,6 @@ func move(delta):
 	elif direction_lit == Directions.LEFT:
 		animated_sprite.flip_h = true
 		
-#func handle_jump(delta):
-	#if state_machine.get_action_state() == state_machine.ActionState.WALL_CLING:
-		#jump_cancelled = false
-		#jump_from_wall_cling = true
-	#if jump_cancelled:
-		#if state_machine.get_jump_state() != state_machine.JumpState.DOUBLE_JUMP\
-		#and !double_jump_cancelled\
-		#and abilities.is_standard_ability_unlocked(abilities.StandardAbilities.HELICOPTER):
-			#state_machine.set_jump_state(state_machine.JumpState.DOUBLE_JUMP)
-		#else:
-			#return
-	#if state_machine.get_movement_state() == state_machine.MovementState.JUMPING and collisions.is_top_colliding():
-		#jump_cancelled = true
-		#return
-	#if state_machine.get_jump_state() == state_machine.JumpState.DOUBLE_JUMP and collisions.is_top_colliding():
-		#double_jump_cancelled = true
-		#return
-		#
-	#if state_machine.get_movement_state() != state_machine.MovementState.JUMPING\
-	#or state_machine.get_action_state() == state_machine.ActionState.WALL_CLING\
-	#or state_machine.get_jump_state() == state_machine.JumpState.DOUBLE_JUMP:
-		#if jump_from_wall_cling and !player_timers.get_jump_off_flag():
-			#player.velocity.x = JUMP_FORCE_FROM_WALL * -direction
-			#player_timers.set_jump_off_timer()
-			#player_timers.set_jump_off_flag(true)
-			#animated_sprite.flip_h = !animated_sprite.flip_h
-		#state_machine.set_movement_state(state_machine.MovementState.JUMPING)
-		#if state_machine.get_jump_state() != state_machine.JumpState.DOUBLE_JUMP:
-			#state_machine.set_jump_state(state_machine.JumpState.JUMP_START)
-		#jump_start_y = player.global_position.y
-		#if state_machine.get_action_state() == state_machine.ActionState.ZERO_GRAV:
-			#player.velocity.y = -JUMP_VELOCITY
-		#else:
-			#player.velocity.y = JUMP_VELOCITY
 func handle_jump():
 	if (jump_cancelled and double_jump_cancelled)\
 	or state_machine.get_jump_state() == state_machine.JumpState.DOUBLE_JUMP:
