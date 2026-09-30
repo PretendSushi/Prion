@@ -17,13 +17,13 @@ signal initialize_health_bar
 @onready var finger_scene: PackedScene = preload("res://Scenes/Bosses/Hand/Finger.tscn")
 
 const MAX_HEALTH = 3000
-const MOVEMENT_SPEED = 1000
+const MOVEMENT_SPEED = 1200
 const ATTACK_TIMER = 5
 const ATTACK_ANIM_OFFSET = 250
 const HIT_FLASH_TIMER = 0.2
 const DAMAGE = 20
 const KNOCKBACK = 1000
-const IDLE_TIME = 2
+const IDLE_TIME = 1.5
 const SHOOT_FRAMES = [ 1, 3, 5, 7 ]
 
 enum ActionState { IDLE, MOVING, ATTACK }
@@ -51,6 +51,7 @@ var can_attack : bool
 var active : bool
 var player_reached : bool
 var has_intro_played: bool
+var attack_idx := 0
 
 var left_shot_markers = [index_fing_left, mid_fing_left, ring_fing_left, pinky_fing_left]
 var right_shot_markers = [index_fing_right, mid_fing_right, ring_fing_right, pinky_fing_right]
@@ -64,7 +65,7 @@ func _ready() -> void:
 	action_state = ActionState.IDLE
 	attack_state = AttackState.IDLE
 	movement_state = MovementState.IDLE
-	phase = Phase.ONE
+	phase = Phase.THREE
 	active = false
 	can_attack = true
 	player_reached = false
@@ -80,11 +81,6 @@ func _physics_process(delta: float) -> void:
 			if phase == Phase.ONE:
 				phase_one()
 			elif phase == Phase.TWO or phase == Phase.THREE:
-				var attack_idx
-				if phase == Phase.TWO:
-					attack_idx = randi_range(1, 2)
-				elif phase == Phase.THREE:
-					attack_idx = randi_range(1, 3)
 				match attack_idx:
 					1: phase_one()
 					2: phase_two()
@@ -196,6 +192,7 @@ func attack():
 	attack_state = AttackState.START
 	movement_state = MovementState.IDLE
 	velocity.x = 0
+	attack_idx = 0
 	
 func handle_attack_timer(delta):
 	if attack_timer > 0:
@@ -211,6 +208,12 @@ func handle_idle_timer(delta):
 		action_state = ActionState.IDLE
 	else:
 		can_attack = true
+		if attack_idx == 0:
+			if phase == Phase.TWO:
+				attack_idx = randi_range(1, 2)
+				print(attack_idx)
+			elif phase == Phase.THREE:
+				attack_idx = randi_range(1, 3)
 
 func handle_hit_flash_timer(delta):
 	if hit_flash_timer > 0:
@@ -232,7 +235,6 @@ func _on_animated_sprite_2d_animation_finished() -> void:
 	if animated_sprite.animation == "left_end" or animated_sprite.animation == "right_end":
 		movement_state = MovementState.IDLE
 	if animated_sprite.animation == "intro":
-		print("here")
 		has_intro_played = true
 
 func _on_boss_trigger_activate_boss() -> void:
