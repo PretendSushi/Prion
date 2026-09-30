@@ -25,6 +25,7 @@ const DAMAGE = 20
 const KNOCKBACK = 1000
 const IDLE_TIME = 1.5
 const SHOOT_FRAMES = [ 1, 3, 5, 7 ]
+const REPEAT_ATTACK_MAX = 3
 
 enum ActionState { IDLE, MOVING, ATTACK }
 enum AttackState { IDLE, START, DURATION, END }
@@ -40,6 +41,7 @@ var direction : Directions
 var action_state : ActionState
 var attack_state : AttackState
 var curr_attack : AvailableAttacks
+var last_attack: AvailableAttacks
 var movement_state : MovementState
 var phase : Phase
 
@@ -52,6 +54,7 @@ var active : bool
 var player_reached : bool
 var has_intro_played: bool
 var attack_idx := 0
+var repeat_attack_counter := 0
 
 var left_shot_markers = [index_fing_left, mid_fing_left, ring_fing_left, pinky_fing_left]
 var right_shot_markers = [index_fing_right, mid_fing_right, ring_fing_right, pinky_fing_right]
@@ -82,9 +85,9 @@ func _physics_process(delta: float) -> void:
 				phase_one()
 			elif phase == Phase.TWO or phase == Phase.THREE:
 				match attack_idx:
-					1: phase_one()
-					2: phase_two()
-					3: phase_three()
+					0: phase_one()
+					1: phase_two()
+					2: phase_three()
 			phase_two_helper()
 			check_and_change_phase()
 			handle_idle_timer(delta)
@@ -193,6 +196,11 @@ func attack():
 	movement_state = MovementState.IDLE
 	velocity.x = 0
 	attack_idx = 0
+	if curr_attack == last_attack:
+		repeat_attack_counter += 1
+	else:
+		last_attack = curr_attack
+		repeat_attack_counter = 1
 	
 func handle_attack_timer(delta):
 	if attack_timer > 0:
@@ -210,10 +218,13 @@ func handle_idle_timer(delta):
 		can_attack = true
 		if attack_idx == 0:
 			if phase == Phase.TWO:
-				attack_idx = randi_range(1, 2)
-				print(attack_idx)
+				attack_idx = randi_range(0, 1)
+				while repeat_attack_counter >= REPEAT_ATTACK_MAX and attack_idx == last_attack:
+					attack_idx = randi_range(0,1)
 			elif phase == Phase.THREE:
-				attack_idx = randi_range(1, 3)
+				attack_idx = randi_range(0, 2)
+				while repeat_attack_counter >= REPEAT_ATTACK_MAX and attack_idx == last_attack:
+					attack_idx = randi_range(0,2)
 
 func handle_hit_flash_timer(delta):
 	if hit_flash_timer > 0:
