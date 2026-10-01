@@ -68,7 +68,7 @@ func _ready() -> void:
 	action_state = ActionState.IDLE
 	attack_state = AttackState.IDLE
 	movement_state = MovementState.IDLE
-	phase = Phase.THREE
+	phase = Phase.ONE
 	active = false
 	can_attack = true
 	player_reached = false

@@ -26,10 +26,6 @@ offset_bottom = 217.0
 layout_mode = 2
 text = "Audio"
 
-[node name="VidBtn" type="Button" parent="VBoxContainer"]
-layout_mode = 2
-text = "Video"
-
 [node name="ConBtn" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 text = "Controls"
@@ -40,6 +36,5 @@ text = "Back"
 
 [connection signal="back" from="VideoSettingsMenu" to="." method="_on_video_settings_menu_back"]
 [connection signal="back" from="ControlSettingsMenu" to="." method="_on_control_settings_menu_back"]
-[connection signal="pressed" from="VBoxContainer/VidBtn" to="." method="_on_vid_btn_pressed"]
 [connection signal="pressed" from="VBoxContainer/ConBtn" to="." method="_on_con_btn_pressed"]
 [connection signal="pressed" from="VBoxContainer/BackBtn" to="." method="_on_back_btn_pressed"]

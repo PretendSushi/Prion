@@ -10,7 +10,7 @@ extends Camera2D
 var boss_trigger_entered = false
 var zoom_speed = 2.0
 var target_zoom# = Vector2(0.5, 0.5)
-var base_zoom = Vector2(0.5, 0.5)
+var base_zoom = Vector2(4, 4)
 
 func _ready():
 	zoom = Vector2(GraphicsManager.get_zoom(), GraphicsManager.get_zoom())
