@@ -71,6 +71,7 @@ offset_left = 14.0
 offset_top = 20.0
 offset_right = 477.0
 offset_bottom = 124.0
+scale = Vector2(0.75, 0.75)
 theme = SubResource("Theme_xqxlx")
 theme_override_styles/background = SubResource("StyleBoxFlat_xn6qu")
 theme_override_styles/fill = SubResource("StyleBoxFlat_ta3dr")
@@ -78,7 +79,8 @@ value = 50.0
 show_percentage = false
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(246, 80)
+position = Vector2(187, 65)
+scale = Vector2(0.75, 0.75)
 texture = ExtResource("2_qc5w2")
 
 [node name="Proteinbar" type="ProgressBar" parent="."]
@@ -86,13 +88,13 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -426.0
-offset_top = 18.0
-offset_right = -26.0
-offset_bottom = 38.0
+offset_left = -1901.0
+offset_top = 157.0
+offset_right = -1501.0
+offset_bottom = 177.0
 grow_horizontal = 0
+scale = Vector2(0.75, 0.75)
 theme_override_styles/background = SubResource("StyleBoxFlat_sd512")
 theme_override_styles/fill = SubResource("StyleBoxFlat_jo1ms")
 value = 50.0
-fill_mode = 1
 show_percentage = false
