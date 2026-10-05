@@ -1,7 +1,8 @@
 extends Node2D
 
+const COLL_NOTES_FILE_PATH = "res://Resources/CollectedNoteIDs.json"
+
 var enemy = null
-var SPAWN_INTERVAL = 5.0
 var time_passed = 0.0
 @onready var player = $Player
 
@@ -36,6 +37,7 @@ func _ready():
 		var settings = GraphicsManager.load_settings()
 		GraphicsManager.apply_settings(settings)
 	GraphicsManager.rebuild_settings()
+	hide_collected_notes()
 	
 func _physics_process(delta):
 	pass
@@ -89,3 +91,26 @@ func get_data_to_save():
 
 func apply_save_data(data):
 	room_id = data["room_id"]
+
+func hide_collected_notes():
+	var coll_note_ids = read_collected_notes()
+	if !coll_note_ids:
+		return
+	var room_notes = get_tree().get_nodes_in_group("Note")
+	for coll_id in coll_note_ids:
+		for note in room_notes:
+			if int(coll_id["id"]) == note.note_data.note_id:
+				note.visible = false
+
+func read_collected_notes():
+	var data = []
+	var file = FileAccess.open(COLL_NOTES_FILE_PATH, FileAccess.READ)
+	
+	if file == null:
+		print("Failed to open file")
+		return null
+	
+	var content = file.get_as_text()
+	file.close()
+	data = JSON.parse_string(content)
+	return data

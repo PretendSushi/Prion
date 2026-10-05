@@ -1,11 +1,10 @@
-[gd_scene load_steps=17 format=3 uid="uid://i2khwini8146"]
+[gd_scene load_steps=16 format=3 uid="uid://i2khwini8146"]
 
 [ext_resource type="Script" uid="uid://cob3thhyjfwnv" path="res://Scripts/level.gd" id="1_qcfsa"]
 [ext_resource type="Texture2D" uid="uid://cfuffmh2wqrn6" path="res://Assets/World/Backgrounds/ApartmentsRoom0.png" id="2_owdy6"]
 [ext_resource type="TileSet" uid="uid://nhgkuh44o1ro" path="res://Resources/Tilesets/level_tileset.tres" id="3_22kvq"]
 [ext_resource type="PackedScene" uid="uid://tnwyed04r1rv" path="res://Scenes/WorldElements/SavePoint.tscn" id="4_5csn7"]
 [ext_resource type="PackedScene" uid="uid://cf32yyk7lufyu" path="res://Scenes/Pickups/Note.tscn" id="5_vqbjw"]
-[ext_resource type="Resource" uid="uid://covbq8jtvemra" path="res://Resources/NoteReflection.tres" id="6_djous"]
 [ext_resource type="Script" uid="uid://dkehqfja5imcv" path="res://Scripts/Player/camera.gd" id="7_age4r"]
 [ext_resource type="PackedScene" uid="uid://uqe5a2rw7h7h" path="res://Scenes/player.tscn" id="8_uykej"]
 [ext_resource type="PackedScene" uid="uid://c74e7gplr6lsc" path="res://Scenes/Enemies/enemy.tscn" id="9_js3ec"]
@@ -16,7 +15,7 @@
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_pa6b8"]
 light_mode = 1
 
-[sub_resource type="Resource" id="Resource_22kvq"]
+[sub_resource type="Resource" id="Resource_qcfsa"]
 resource_local_to_scene = true
 script = ExtResource("11_admag")
 room_id = 2
@@ -56,9 +55,8 @@ layer_0/tile_data = PackedInt32Array(1572704, 65538, 1, 1507168, 65538, 1, 14416
 [node name="SavePoint" parent="." instance=ExtResource("4_5csn7")]
 position = Vector2(-1985, 41)
 
-[node name="Note" parent="." instance=ExtResource("5_vqbjw")]
+[node name="Note" parent="." groups=["Note"] instance=ExtResource("5_vqbjw")]
 position = Vector2(-1199, 1098)
-note_data = ExtResource("6_djous")
 
 [node name="Camera" type="Camera2D" parent="." groups=["Camera"]]
 position = Vector2(-1643, 915)
@@ -82,7 +80,7 @@ position = Vector2(-2051, -674)
 
 [node name="RoomTransition" parent="." groups=["RoomTransitionTriggers"] instance=ExtResource("10_sfdqh")]
 position = Vector2(2977, 851)
-room_trans_data = SubResource("Resource_22kvq")
+room_trans_data = SubResource("Resource_qcfsa")
 
 [node name="RoomTransition2" parent="." groups=["RoomTransitionTriggers"] instance=ExtResource("10_sfdqh")]
 position = Vector2(-1029, -1171)
