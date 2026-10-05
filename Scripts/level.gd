@@ -1,6 +1,6 @@
 extends Node2D
 
-const COLL_NOTES_FILE_PATH = "res://Resources/CollectedNoteIDs.json"
+const COLL_NOTES_FILE_PATH = "user://CollectedNoteIDs.json"
 
 var enemy = null
 var time_passed = 0.0
@@ -99,7 +99,7 @@ func hide_collected_notes():
 	var room_notes = get_tree().get_nodes_in_group("Note")
 	for coll_id in coll_note_ids:
 		for note in room_notes:
-			if int(coll_id["id"]) == note.note_data.note_id:
+			if int(coll_id) == note.note_data.note_id:
 				note.visible = false
 
 func read_collected_notes():
