@@ -32,7 +32,7 @@ func _ready():
 		
 	var camera = get_tree().get_first_node_in_group("Camera")
 	if camera:
-		camera.change_zoom(2160, GraphicsManager.get_resolution().y)
+		camera.change_zoom(2160, 2160)
 	if GraphicsManager.config_exists():
 		var settings = GraphicsManager.load_settings()
 		GraphicsManager.apply_settings(settings)

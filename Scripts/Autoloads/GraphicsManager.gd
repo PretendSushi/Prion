@@ -14,7 +14,7 @@ const ULTRA_RES_ID = 3
 
 const PATH = "user://graphicssettings.json"
 
-var resolution := Vector2i(1920, 1080)
+#var resolution := Vector2i(3840, 2160)
 var resolution_id
 var window_size
 var zoom = 4
@@ -28,13 +28,15 @@ func on_setings_changed(res, win_size, res_id):
 	#save_settings({ "window_mode" : win_size, "resolution" : res_id })
 	
 func get_resolution():
-	return resolution
+	pass
+	#return resolution
 	
 func get_window_size():
 	return window_size
 
 func get_res_mult():
-	return resolution.y/BASE_RES
+	pass
+	#return resolution.y/BASE_RES
 	
 func get_zoom():
 	return zoom
