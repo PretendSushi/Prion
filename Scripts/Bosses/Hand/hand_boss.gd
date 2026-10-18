@@ -105,11 +105,17 @@ func move(player_x):
 	if action_state == ActionState.ATTACK:
 		return
 	if player_x + 10 > global_position.x and player_x - 10 > global_position.x:
-		velocity.x = MOVEMENT_SPEED
+		if movement_state == MovementState.START or movement_state == MovementState.END:
+			velocity.x = MOVEMENT_SPEED/10
+		else:
+			velocity.x = MOVEMENT_SPEED
 		direction = Directions.RIGHT
 		action_state = ActionState.MOVING
 	elif player_x + 10 < global_position.x and player_x - 10 < global_position.x:
-		velocity.x = -MOVEMENT_SPEED
+		if movement_state == MovementState.START or movement_state == MovementState.END:
+			velocity.x = -MOVEMENT_SPEED/2
+		else:
+			velocity.x = -MOVEMENT_SPEED
 		direction = Directions.LEFT
 		action_state = ActionState.MOVING
 	else:
@@ -128,11 +134,11 @@ func play_animations():
 		if direction == Directions.RIGHT:
 			match movement_state:
 				MovementState.START:
-					target_anim = "right_start"
+					target_anim = "left_start"
 				MovementState.DURATION:
-					target_anim = "right"
+					target_anim = "left"
 				MovementState.END:
-					target_anim = "right_end"
+					target_anim = "left_end"
 		elif direction == Directions.LEFT:
 			match movement_state:
 				MovementState.START:
@@ -166,7 +172,8 @@ func play_animations():
 			elif attack_state == AttackState.END:
 				target_anim = "attack_shoot_end"
 
-	if action_state == ActionState.ATTACK and direction == Directions.RIGHT:	
+	if (action_state == ActionState.ATTACK and direction == Directions.RIGHT)\
+	or (action_state == ActionState.MOVING and direction == Directions.RIGHT):
 		animated_sprite.flip_h = true
 	else:
 		animated_sprite.flip_h = false

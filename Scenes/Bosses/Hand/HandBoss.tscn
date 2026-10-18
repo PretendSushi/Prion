@@ -1,20 +1,11 @@
-[gd_scene load_steps=88 format=3 uid="uid://28176cw1ss1v"]
+[gd_scene load_steps=94 format=3 uid="uid://28176cw1ss1v"]
 
 [ext_resource type="Script" uid="uid://ux1vfmx5bftj" path="res://Scripts/Bosses/Hand/hand_boss.gd" id="1_45x51"]
 [ext_resource type="Shader" uid="uid://d4fv1pxe8clud" path="res://Scripts/hitflash.gdshader" id="2_orytp"]
-[ext_resource type="Texture2D" uid="uid://chhjtks426y5x" path="res://Assets/Sprites/boss/hand/attack01/second-draft/frame_3.png" id="3_orytp"]
-[ext_resource type="Texture2D" uid="uid://c3i0qou0sxs1y" path="res://Assets/Sprites/boss/hand/attack01/second-draft/frame_4.png" id="4_k7qi4"]
 [ext_resource type="Texture2D" uid="uid://dmt1ub8f1pasr" path="res://Assets/Sprites/boss/hand/attack02/first-draft/frame_7.png" id="4_tlhfd"]
-[ext_resource type="Texture2D" uid="uid://d3r1t6m0vfxgb" path="res://Assets/Sprites/boss/hand/attack01/second-draft/frame_1.png" id="5_4yt25"]
 [ext_resource type="Texture2D" uid="uid://cvacri3bsnivu" path="res://Assets/Sprites/boss/hand/attack02/first-draft/frame_4.png" id="5_yrgn3"]
 [ext_resource type="Texture2D" uid="uid://cnrjjterkvqro" path="res://Assets/Sprites/boss/hand/attack02/first-draft/frame_5.png" id="6_huadw"]
-[ext_resource type="Texture2D" uid="uid://b5mercgs5cv2c" path="res://Assets/Sprites/boss/hand/attack01/second-draft/frame_2.png" id="6_tdlbf"]
 [ext_resource type="Texture2D" uid="uid://bs7f61s1glaw0" path="res://Assets/Sprites/boss/hand/attack02/first-draft/frame_6.png" id="7_kqm22"]
-[ext_resource type="Texture2D" uid="uid://d3a075xv4ey7r" path="res://Assets/Sprites/boss/hand/left/second-draft/frame_1.png" id="7_orytp"]
-[ext_resource type="Texture2D" uid="uid://bxk7mwfggviks" path="res://Assets/Sprites/boss/hand/left/second-draft/frame_2.png" id="8_k7qi4"]
-[ext_resource type="Texture2D" uid="uid://d5cxwerwov8c" path="res://Assets/Sprites/boss/hand/left/second-draft/frame_3.png" id="9_4yt25"]
-[ext_resource type="Texture2D" uid="uid://cgftx2v21ancf" path="res://Assets/Sprites/boss/hand/left/second-draft/frame_4.png" id="10_tdlbf"]
-[ext_resource type="Texture2D" uid="uid://dum6p8pp84u0g" path="res://Assets/Sprites/boss/hand/left/second-draft/frame_5.png" id="11_87oyx"]
 [ext_resource type="Texture2D" uid="uid://bc7pojiwi0b4k" path="res://Assets/Sprites/boss/hand/right/second-draft/frame_2.png" id="12_orytp"]
 [ext_resource type="Texture2D" uid="uid://ccw4xv5u08cwc" path="res://Assets/Sprites/boss/hand/attack03/hand/frame_01.png" id="12_pbi3s"]
 [ext_resource type="Texture2D" uid="uid://dx6ods7eoo0j7" path="res://Assets/Sprites/boss/hand/attack03/hand/frame_02.png" id="13_0a15q"]
@@ -32,9 +23,14 @@
 [ext_resource type="Texture2D" uid="uid://b5qfg3dfpg2gv" path="res://Assets/Sprites/boss/hand/attack02/first-draft/frame_1.png" id="21_20k3c"]
 [ext_resource type="Texture2D" uid="uid://vri7rkcgliqc" path="res://Assets/Sprites/boss/hand/attack03/hand/frame_10.png" id="21_hup3j"]
 [ext_resource type="Texture2D" uid="uid://lgc1swof7cro" path="res://Assets/Sprites/boss/hand/attack02/first-draft/frame_2.png" id="22_a6gnd"]
+[ext_resource type="Texture2D" uid="uid://b488h7wv6fxbc" path="res://Assets/Sprites/boss/hand/attack01/third-draft/frame_3.png" id="22_p8lg3"]
 [ext_resource type="Texture2D" uid="uid://dwfhap0gaijyr" path="res://Assets/Sprites/boss/hand/attack02/first-draft/frame_3.png" id="23_ag2h1"]
+[ext_resource type="Texture2D" uid="uid://botorobqxb6t6" path="res://Assets/Sprites/boss/hand/attack01/third-draft/frame_4.png" id="23_vsskc"]
+[ext_resource type="Texture2D" uid="uid://c63ejm063wnk6" path="res://Assets/Sprites/boss/hand/attack01/third-draft/frame_5.png" id="24_a0v7u"]
 [ext_resource type="Texture2D" uid="uid://dehqqiv2vfwyd" path="res://Assets/Sprites/boss/hand/attack02/first-draft/frame_8.png" id="24_p61b2"]
 [ext_resource type="Texture2D" uid="uid://bmrw58dmsmjf" path="res://Assets/Sprites/boss/hand/attack02/first-draft/frame_9.png" id="25_d7yyp"]
+[ext_resource type="Texture2D" uid="uid://dt771u5dgoabe" path="res://Assets/Sprites/boss/hand/attack01/third-draft/frame_6.png" id="25_p8lg3"]
+[ext_resource type="Texture2D" uid="uid://boy75sg1afwp1" path="res://Assets/Sprites/boss/hand/attack01/third-draft/frame_2.png" id="26_uj5v0"]
 [ext_resource type="Texture2D" uid="uid://dp431qek6tn8x" path="res://Assets/Sprites/boss/hand/intro/frame_01.png" id="27_1tp1k"]
 [ext_resource type="Texture2D" uid="uid://cqkgkvmkm1a0e" path="res://Assets/Sprites/boss/hand/intro/frame_02.png" id="28_wcn8c"]
 [ext_resource type="Texture2D" uid="uid://cawja50auif0u" path="res://Assets/Sprites/boss/hand/intro/frame_03.png" id="29_a1485"]
@@ -59,6 +55,16 @@
 [ext_resource type="Texture2D" uid="uid://dq1g1aq1tmn00" path="res://Assets/Sprites/boss/hand/intro/frame_22.png" id="48_fp6yy"]
 [ext_resource type="Texture2D" uid="uid://xb0vxmuo85ws" path="res://Assets/Sprites/boss/hand/intro/frame_23.png" id="49_e2kln"]
 [ext_resource type="Texture2D" uid="uid://3c6dkvyu8ukb" path="res://Assets/Sprites/boss/hand/intro/frame_24.png" id="50_dh2ln"]
+[ext_resource type="Texture2D" uid="uid://dqg15o0gj2bns" path="res://Assets/Sprites/boss/hand/left/third-draft/frame_03.png" id="51_p8lg3"]
+[ext_resource type="Texture2D" uid="uid://ophtslwhvmny" path="res://Assets/Sprites/boss/hand/left/third-draft/frame_04.png" id="52_vsskc"]
+[ext_resource type="Texture2D" uid="uid://sia2hc0eowbo" path="res://Assets/Sprites/boss/hand/left/third-draft/frame_05.png" id="53_a0v7u"]
+[ext_resource type="Texture2D" uid="uid://c8tb5ydfcdsc2" path="res://Assets/Sprites/boss/hand/left/third-draft/frame_06.png" id="54_uj5v0"]
+[ext_resource type="Texture2D" uid="uid://crj2a5emdayky" path="res://Assets/Sprites/boss/hand/left/third-draft/frame_07.png" id="55_k85k6"]
+[ext_resource type="Texture2D" uid="uid://dwkxo2n2y452g" path="res://Assets/Sprites/boss/hand/left/third-draft/frame_08.png" id="56_522ea"]
+[ext_resource type="Texture2D" uid="uid://cmmkjyde3v1st" path="res://Assets/Sprites/boss/hand/left/third-draft/frame_09.png" id="57_ueqah"]
+[ext_resource type="Texture2D" uid="uid://uglb82qacq3d" path="res://Assets/Sprites/boss/hand/left/third-draft/frame_10.png" id="58_oighn"]
+[ext_resource type="Texture2D" uid="uid://djas1us1wahod" path="res://Assets/Sprites/boss/hand/left/third-draft/frame_01.png" id="59_oxy5v"]
+[ext_resource type="Texture2D" uid="uid://bvy6287gjoj4y" path="res://Assets/Sprites/boss/hand/left/third-draft/frame_02.png" id="60_tylf4"]
 
 [sub_resource type="Animation" id="Animation_87oyx"]
 length = 0.001
@@ -1465,34 +1471,40 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("3_orytp")
+"texture": ExtResource("22_p8lg3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_vsskc")
 }],
 "loop": false,
 "name": &"attack_slap",
-"speed": 5.0
+"speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("4_k7qi4")
+"texture": ExtResource("24_a0v7u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_p8lg3")
 }],
 "loop": false,
 "name": &"attack_slap_end",
-"speed": 5.0
+"speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_4yt25")
+"texture": ExtResource("59_oxy5v")
 }, {
-"duration": 1.0,
-"texture": ExtResource("6_tdlbf")
+"duration": 2.0,
+"texture": ExtResource("26_uj5v0")
 }],
 "loop": false,
 "name": &"attack_slap_start",
-"speed": 5.0
+"speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("7_orytp")
+"texture": ExtResource("59_oxy5v")
 }],
 "loop": true,
 "name": &"idle",
@@ -1577,33 +1589,57 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("8_k7qi4")
+"texture": ExtResource("51_p8lg3")
 }, {
 "duration": 1.0,
-"texture": ExtResource("9_4yt25")
+"texture": ExtResource("52_vsskc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("53_a0v7u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("54_uj5v0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("55_k85k6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("56_522ea")
+}, {
+"duration": 1.0,
+"texture": ExtResource("57_ueqah")
+}, {
+"duration": 1.0,
+"texture": ExtResource("58_oighn")
 }],
 "loop": true,
 "name": &"left",
-"speed": 5.0
+"speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("10_tdlbf")
+"texture": ExtResource("56_522ea")
 }, {
 "duration": 1.0,
-"texture": ExtResource("11_87oyx")
+"texture": ExtResource("57_ueqah")
+}, {
+"duration": 1.0,
+"texture": ExtResource("58_oighn")
 }],
 "loop": false,
 "name": &"left_end",
-"speed": 5.0
+"speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("7_orytp")
+"texture": ExtResource("59_oxy5v")
+}, {
+"duration": 1.0,
+"texture": ExtResource("60_tylf4")
 }],
 "loop": false,
 "name": &"left_start",
-"speed": 5.0
+"speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -1663,8 +1699,9 @@ libraries = {
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 material = SubResource("ShaderMaterial_k7qi4")
 sprite_frames = SubResource("SpriteFrames_kqm22")
-animation = &"attack_clap"
-flip_h = true
+animation = &"attack_slap_end"
+frame = 1
+frame_progress = 1.0
 
 [node name="Hitbox" type="Area2D" parent="."]
 position = Vector2(343.5, 168.5)
