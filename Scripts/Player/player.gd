@@ -24,7 +24,7 @@ const STEP_SFX_PATH = "res://Assets/Sounds/Player/Step.wav"
 var step_sfx
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
-var gravity = 1800#ProjectSettings.get_setting("physics/2d/default_gravity")
+var gravity =1800#ProjectSettings.get_setting("physics/2d/default_gravity")
 #You know what this tracks
 var health = 100
 #Basically mana

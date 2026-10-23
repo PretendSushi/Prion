@@ -1537,7 +1537,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"idle",
-"speed": 6.0
+"speed": 8.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -1728,8 +1728,7 @@ libraries = {
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 material = SubResource("ShaderMaterial_k7qi4")
 sprite_frames = SubResource("SpriteFrames_kqm22")
-animation = &"idle"
-frame_progress = 0.0594972
+animation = &"left_end"
 
 [node name="Hitbox" type="Area2D" parent="."]
 position = Vector2(343.5, 168.5)
